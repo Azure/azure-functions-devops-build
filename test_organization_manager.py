@@ -1,9 +1,10 @@
+from __future__ import print_function
+
 import unittest, string, random
 from azure.cli.core import get_default_cli
 from azure.cli.core._profile import Profile
-from src.organization.organization_manager import OrganizationManager
-from src.user.user_manager import UserManager
-from src.organization.models.region_details import RegionDetails
+from azure_devops_build_manager.organization.organization_manager import OrganizationManager
+from azure_devops_build_manager.user.user_manager import UserManager
 
 class TestOrganizationManager(unittest.TestCase):
 
