@@ -10,7 +10,7 @@ import pick
 
 class BuilderManager(object):
 
-    def __init__(self, base_url='https://{}.visualstudio.com', organization_name="", project_name="", repository_name="", creds=None, create_project_url='https://dev.azure.com'):
+    def __init__(self, base_url='https://{}.visualstudio.com', organization_name="", project_name="", repository_name="", creds=None):
         self._organization_name = organization_name
         self._project_name = project_name
         self._repository_name = repository_name
@@ -46,6 +46,7 @@ class BuilderManager(object):
         # get the project object
         project = self.get_project_by_name(self._project_name)
         definition = self.get_definition_by_name(project, build_definition_name)
+        print(project, definition)
         # find the references to the project and to the build definition
         team_project_reference = self.get_project_reference(project)
         build_definition_reference = self.get_build_definition_reference(team_project_reference, definition)

@@ -51,7 +51,7 @@ class OrganizationDetails(Model):
                 , failedPurchaseReason = None):
         self.accountId = accountId
         self.accountHostType = accountHostType
-        self.accountHostType = accountHostType
+        self.accountName = accountName
         self.subscriptionId = subscriptionId
         self.subscriptionStatus = subscriptionStatus
         self.resourceGroupName = resourceGroupName
