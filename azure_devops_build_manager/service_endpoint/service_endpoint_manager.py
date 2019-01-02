@@ -64,6 +64,10 @@ class ServiceEndpointManager(object):
 
         self.endpoint = self._service_endpoint_client.create_service_endpoint(service_endpoint, project.id)
 
+    def list_service_endpoints(self):
+        project = self.get_project_by_name(self._project_name)
+        return self._service_endpoint_client.get_service_endpoints(project.id)
+
     def get_project_by_name(self, name):
         for p in self._core_client.get_projects():
             if p.name == name:
