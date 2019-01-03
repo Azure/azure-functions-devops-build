@@ -1,0 +1,268 @@
+{
+    "source": 1,
+    "revision": 1,
+    "description": "",
+    "createdBy": {
+        "displayName": "Oliver Dolk",
+        "url": "https://app.vssps.visualstudio.com/A5c97c876-7d27-4426-aea7-328073bddf5d/_apis/Identities/425fa298-2b47-62da-8c38-ed04c05f04de",
+        "_links": {
+            "avatar": {
+                "href": "https://dev.azure.com/t-oldolk/_apis/GraphProfile/MemberAvatars/aad.NDI1ZmEyOTgtMmI0Ny03MmRhLThjMzgtZWQwNGMwNWYwNGRl"
+            }
+        },
+        "id": "425fa298-2b47-62da-8c38-ed04c05f04de",
+        "uniqueName": "t-oldolk@microsoft.com",
+        "imageUrl": "https://dev.azure.com/t-oldolk/_api/_common/identityImage?id=425fa298-2b47-62da-8c38-ed04c05f04de",
+        "descriptor": "aad.NDI1ZmEyOTgtMmI0Ny03MmRhLThjMzgtZWQwNGMwNWYwNGRl"
+    },
+    "createdOn": "2019-01-03T00:01:38.557Z",
+    "modifiedBy": {
+        "displayName": "Oliver Dolk",
+        "url": "https://app.vssps.visualstudio.com/A5c97c876-7d27-4426-aea7-328073bddf5d/_apis/Identities/425fa298-2b47-62da-8c38-ed04c05f04de",
+        "_links": {
+            "avatar": {
+                "href": "https://dev.azure.com/t-oldolk/_apis/GraphProfile/MemberAvatars/aad.NDI1ZmEyOTgtMmI0Ny03MmRhLThjMzgtZWQwNGMwNWYwNGRl"
+            }
+        },
+        "id": "425fa298-2b47-62da-8c38-ed04c05f04de",
+        "uniqueName": "t-oldolk@microsoft.com",
+        "imageUrl": "https://dev.azure.com/t-oldolk/_api/_common/identityImage?id=425fa298-2b47-62da-8c38-ed04c05f04de",
+        "descriptor": "aad.NDI1ZmEyOTgtMmI0Ny03MmRhLThjMzgtZWQwNGMwNWYwNGRl"
+    },
+    "modifiedOn": "2019-01-03T00:01:38.557Z",
+    "isDeleted": false,
+    "variables": {},
+    "variableGroups": [],
+    "environments": [
+        {
+            "id": 11,
+            "name": "deploy build",
+            "rank": 1,
+            "owner": {
+                "displayName": "Oliver Dolk",
+                "url": "https://app.vssps.visualstudio.com/A5c97c876-7d27-4426-aea7-328073bddf5d/_apis/Identities/425fa298-2b47-62da-8c38-ed04c05f04de",
+                "_links": {
+                    "avatar": {
+                        "href": "https://dev.azure.com/t-oldolk/_apis/GraphProfile/MemberAvatars/aad.NDI1ZmEyOTgtMmI0Ny03MmRhLThjMzgtZWQwNGMwNWYwNGRl"
+                    }
+                },
+                "id": "425fa298-2b47-62da-8c38-ed04c05f04de",
+                "uniqueName": "t-oldolk@microsoft.com",
+                "imageUrl": "https://dev.azure.com/t-oldolk/_api/_common/identityImage?id=425fa298-2b47-62da-8c38-ed04c05f04de",
+                "descriptor": "aad.NDI1ZmEyOTgtMmI0Ny03MmRhLThjMzgtZWQwNGMwNWYwNGRl"
+            },
+            "variables": {},
+            "variableGroups": [],
+            "preDeployApprovals": {
+                "approvals": [
+                    {
+                        "rank": 1,
+                        "isAutomated": true,
+                        "isNotificationOn": false,
+                        "id": 31
+                    }
+                ],
+                "approvalOptions": {
+                    "executionOrder": 1
+                }
+            },
+            "deployStep": {
+                "tasks": [],
+                "id": 32
+            },
+            "postDeployApprovals": {
+                "approvals": [
+                    {
+                        "rank": 1,
+                        "isAutomated": true,
+                        "isNotificationOn": false,
+                        "id": 33
+                    }
+                ],
+                "approvalOptions": {
+                    "executionOrder": 2
+                }
+            },
+            "deployPhases": [
+                {
+                    "deploymentInput": {
+                        "parallelExecution": {
+                            "parallelExecutionType": 0
+                        },
+                        "skipArtifactsDownload": false,
+                        "artifactsDownloadInput": {
+                            "downloadInputs": []
+                        },
+                        "queueId": 9,
+                        "demands": [],
+                        "enableAccessToken": false,
+                        "timeoutInMinutes": 0,
+                        "jobCancelTimeoutInMinutes": 1,
+                        "condition": "succeeded()",
+                        "overrideInputs": {},
+                        "dependencies": []
+                    },
+                    "rank": 1,
+                    "phaseType": 1,
+                    "name": "Agent job",
+                    "refName": null,
+                    "workflowTasks": [
+                        {
+                            "name": "AzureBlob File Copy",
+                            "refName": "",
+                            "enabled": true,
+                            "timeoutInMinutes": 0,
+                            "inputs": {
+                                "SourcePath": "$(System.DefaultWorkingDirectory)/SH/drop/build$(Build.BuildId).zip",
+                                "ConnectedServiceNameSelector": "ConnectedServiceNameARM",
+                                "ConnectedServiceName": "",
+                                "ConnectedServiceNameARM": "432ba47c-4d6d-4b23-bda3-463e0c61d853",
+                                "Destination": "AzureBlob",
+                                "StorageAccount": "",
+                                "StorageAccountRM": "dolkpythonappse9cae",
+                                "ContainerName": "build-container",
+                                "BlobPrefix": "",
+                                "EnvironmentName": "",
+                                "EnvironmentNameRM": "",
+                                "ResourceFilteringMethod": "machineNames",
+                                "MachineNames": "",
+                                "vmsAdminUserName": "",
+                                "vmsAdminPassword": "",
+                                "TargetPath": "",
+                                "AdditionalArgumentsForBlobCopy": "",
+                                "AdditionalArgumentsForVMCopy": "",
+                                "enableCopyPrerequisites": "false",
+                                "CopyFilesInParallel": "true",
+                                "CleanTargetBeforeCopy": "false",
+                                "skipCACheck": "true",
+                                "outputStorageUri": "",
+                                "outputStorageContainerSasToken": ""
+                            },
+                            "taskId": "eb72cb01-a7e5-427b-a8a1-1b31ccac8a43",
+                            "version": "2.*",
+                            "definitionType": "task",
+                            "alwaysRun": false,
+                            "continueOnError": false,
+                            "overrideInputs": {},
+                            "condition": "succeeded()",
+                            "environment": {}
+                        }
+                    ],
+                    "phaseInputs": {
+                        "phaseinput_artifactdownloadinput": {
+                            "artifactsDownloadInput": {
+                                "downloadInputs": []
+                            },
+                            "skipArtifactsDownload": false
+                        }
+                    }
+                }
+            ],
+            "environmentOptions": {
+                "emailNotificationType": "OnlyOnFailure",
+                "emailRecipients": "release.environment.owner;release.creator",
+                "skipArtifactsDownload": false,
+                "timeoutInMinutes": 0,
+                "enableAccessToken": false,
+                "publishDeploymentStatus": false,
+                "badgeEnabled": false,
+                "autoLinkWorkItems": false,
+                "pullRequestDeploymentEnabled": false
+            },
+            "demands": [],
+            "conditions": [],
+            "executionPolicy": {
+                "queueDepthCount": 0,
+                "concurrencyCount": 0
+            },
+            "schedules": [],
+            "currentRelease": {
+                "id": 0,
+                "url": "https://vsrm.dev.azure.com/t-oldolk/68b11a95-6fae-48bf-9a9d-ac16a0f85721/_apis/Release/releases/0",
+                "_links": {}
+            },
+            "retentionPolicy": {
+                "daysToKeep": 300,
+                "releasesToKeep": 3,
+                "retainBuild": true
+            },
+            "properties": {},
+            "preDeploymentGates": {
+                "id": 0,
+                "gatesOptions": null,
+                "gates": []
+            },
+            "postDeploymentGates": {
+                "id": 0,
+                "gatesOptions": null,
+                "gates": []
+            },
+            "environmentTriggers": [],
+            "badgeUrl": "https://vsrm.dev.azure.com/t-oldolk/_apis/public/Release/badge/68b11a95-6fae-48bf-9a9d-ac16a0f85721/11/11",
+            "processParameters": {}
+        }
+    ],
+    "artifacts": [
+        {
+            "sourceId": "68b11a95-6fae-48bf-9a9d-ac16a0f85721:30",
+            "type": "Build",
+            "alias": "drop",
+            "definitionReference": {
+                "defaultVersionType": {
+                    "id": "latestType",
+                    "name": "Latest"
+                },
+                "definition": {
+                    "id": "30",
+                    "name": "drop"
+                },
+                "project": {
+                    "id": "68b11a95-6fae-48bf-9a9d-ac16a0f85721",
+                    "name": "windows_function_app_samples"
+                },
+                "artifactSourceDefinitionUrl": {
+                    "id": "https://dev.azure.com/t-oldolk/_permalink/_build/index?collectionId=7759e5ff-1d2c-407b-a8f0-a29c616f88dc&projectId=68b11a95-6fae-48bf-9a9d-ac16a0f85721&definitionId=30",
+                    "name": ""
+                },
+                "defaultVersionTags": {
+                    "id": "",
+                    "name": ""
+                },
+                "defaultVersionBranch": {
+                    "id": "",
+                    "name": ""
+                },
+                "defaultVersionSpecific": {
+                    "id": "",
+                    "name": ""
+                }
+            },
+            "isPrimary": true,
+            "isRetained": false
+        }
+    ],
+    "triggers": [],
+    "releaseNameFormat": "",
+    "retentionPolicy": {
+        "daysToKeep": 300
+    },
+    "tags": [],
+    "pipelineProcess": {
+        "type": 1
+    },
+    "properties": {},
+    "id": 11,
+    "name": "node-functionapp-repo pipeline4",
+    "path": "\\",
+    "projectReference": null,
+    "url": "https://vsrm.dev.azure.com/t-oldolk/68b11a95-6fae-48bf-9a9d-ac16a0f85721/_apis/Release/definitions/11",
+    "_links": {
+        "self": {
+            "href": "https://vsrm.dev.azure.com/t-oldolk/68b11a95-6fae-48bf-9a9d-ac16a0f85721/_apis/Release/definitions/11"
+        },
+        "web": {
+            "href": "https://dev.azure.com/t-oldolk/68b11a95-6fae-48bf-9a9d-ac16a0f85721/_release?definitionId=11"
+        }
+    },
+    "comment": ""
+}
