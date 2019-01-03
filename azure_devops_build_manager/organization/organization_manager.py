@@ -21,7 +21,7 @@ class OrganizationManager(object):
     # validate an organization name by checking it does not already exist and that it fits name restrictions
     def validate_organization_name(self, organizationName):
         if re.search("[^0-9A-Za-z-]", organizationName):
-            return models.ValidateAccountName(valid=False, message="The name supplied contains forbidden characters. Only alphanumeric characters and dashes are allowed")
+            return models.ValidateAccountName(valid=False, message="The name supplied contains forbidden characters. Only alphanumeric characters and dashes are allowed. Please try another organization name.")
 
         #construct url
         url = '/_AzureSpsAccount/ValidateAccountName'
@@ -111,7 +111,7 @@ class OrganizationManager(object):
             print(response.text, file=stderr)
             raise HttpOperationError(self._deserialize, response)
         else:
-            deserialized = self._deserialize('Organization', response)
+            deserialized = self._deserialize('NewOrganization', response)
 
         return deserialized
 
