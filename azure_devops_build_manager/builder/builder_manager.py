@@ -41,12 +41,14 @@ class BuilderManager(object):
 
         return build_definition
 
+    def list_definitions(self):
+        project = self.get_project_by_name(self._project_name)
+        return self._build_client.get_definitions(project=project.id)
 
     def create_build(self, build_definition_name, poolId, poolName):
         # get the project object
         project = self.get_project_by_name(self._project_name)
         definition = self.get_definition_by_name(project, build_definition_name)
-        print(project, definition)
         # find the references to the project and to the build definition
         team_project_reference = self.get_project_reference(project)
         build_definition_reference = self.get_build_definition_reference(team_project_reference, definition)

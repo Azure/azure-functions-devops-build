@@ -22,138 +22,54 @@ class ReleaseManager(object):
         self._core_client = connection.get_client('vsts.core.v4_0.core_client.CoreClient')
         self._release_client = connection.get_client('vsts.release.v4_1.release_client.ReleaseClient')
 
-    def create_release_definition(self, build_name, artifact_name):
+    def create_release_definition(self, build_name, artifact_name, pool):
         project = self.get_project_by_name(self._project_name)
         build = self.get_build_by_name(project, build_name)
         retention_policy_environment = self.get_retention_policy()
         artifact = self.get_artifact(build, project, artifact_name)
+        pre_release_approvals, post_release_approvals = self.get_pre_post_approvals()
 
-        # release_deploy_step = models.release_definition_deploy_step.ReleaseDefinitionDeployStep(
-        #     id=2
-        # )
-
-        pre_approval = models.release_definition_approval_step.ReleaseDefinitionApprovalStep(
-            id = 22,
-            rank = 1,
-            is_automated = True,
-            is_notification_on = False
+        release_deploy_step = models.release_definition_deploy_step.ReleaseDefinitionDeployStep(
+            id=2
         )
 
-        post_approval = models.release_definition_approval_step.ReleaseDefinitionApprovalStep(
-            id = 24,
-            rank = 1,
-            is_automated = True,
-            is_notification_on = False
-        )
+        triggers =  {
+            "triggerType": 1,
+            "triggerConditions": None,
+            "artifactAlias": artifact_name
+        }
 
+        deploymentInput = {}
+        deploymentInput["parallelExecution"] = { "parallelExecutionType": 0 }
+        deploymentInput["queueId"] = pool.id
 
-        pre_release_approvals = models.release_definition_approvals.ReleaseDefinitionApprovals(
-            approvals=[pre_approval]
-        )
+        blobtask = {}
+        blobtask["name"] = "AzureBlob File Copy"
+        blobtask_inputs = {}
+        blobtask_inputs["SourcePath"] = "drop/build$(Build.BuildId).zip"
+        blobtask_inputs["ConnectedServiceNameSelector"] = 'ConnectedServiceNameARM'
+        blobtask_inputs["ConnectedServiceNameARM"] = "432ba47c-4d6d-4b23-bda3-463e0c61d853"
+        blobtask_inputs["Destination"] = "AzureBlob"
+        blobtask_inputs["StorageAccountRM"] = "dolkpythonappse9cae"
+        blobtask_inputs["ContainerName"] = 'azure-build'
+        blobtask["inputs"] = blobtask_inputs
+        blobtask["version"] = "2.*"
+        blobtask["definitionType"] = "task"
+        blobtask["taskId"] = "eb72cb01-a7e5-427b-a8a1-1b31ccac8a43"
 
-        post_release_approvals = models.release_definition_approvals.ReleaseDefinitionApprovals(
-            approvals=[post_approval]
-        )
-
-        deploy_phases = [
-                    {
-                        "deploymentInput": {
-                            "parallelExecution": {
-                                "parallelExecutionType": 0
-                            },
-                            "skipArtifactsDownload": False,
-                            "artifactsDownloadInput": {
-                                "downloadInputs": [
-                                    {
-                                        "artifactItems": [],
-                                        "alias": self.build.name,
-                                        "artifactType": "Build",
-                                        "artifactDownloadMode": "All"
-                                    }
-                                ]
-                            },
-                            "queueId": self.build.poolid,
-                            "demands": [],
-                            "enableAccessToken": False,
-                            "timeoutInMinutes": 0,
-                            "jobCancelTimeoutInMinutes": 1,
-                            "condition": "succeeded()",
-                            "overrideInputs": {},
-                            "dependencies": []
-                        },
+        deploy_phase =  {
+                        "deploymentInput": deploymentInput,
                         "rank": 1,
                         "phaseType": 1,
                         "name": "Agent job",
-                        "refName": None,
-                        "workflowTasks": [
-                            {
-                                "name": "AzureBlob File Copy",
-                                "refName": "",
-                                "enabled": True,
-                                "timeoutInMinutes": 0,
-                                "inputs": {
-                                    "SourcePath": "$(System.DefaultWorkingDirectory)/" + self.build.name + "/drop/build$(Build.BuildId).zip",
-                                    "ConnectedServiceNameSelector": "ConnectedServiceNameARM",
-                                    "ConnectedServiceName": "",
-                                    "ConnectedServiceNameARM": "b96bc246-5aef-4abd-8a6c-73f5113bacb1", #self.service_endpoint.endpoint.id,    #"3765b613-bcbb-433b-9971-09a76371193c",
-                                    "Destination": "AzureBlob",
-                                    "StorageAccount": "",
-                                    "StorageAccountRM": self.resource.storage['name'], #"dolkpythonappse9cae", #may need to replace this
-                                    "ContainerName": "build-container", #may need to replace this
-                                    "BlobPrefix": "",
-                                    "EnvironmentName": "",
-                                    "EnvironmentNameRM": "",
-                                    "ResourceFilteringMethod": "machineNames",
-                                    "MachineNames": "",
-                                    "vmsAdminUserName": "",
-                                    "vmsAdminPassword": "",
-                                    "TargetPath": "",
-                                    "AdditionalArguments": "",
-                                    "enableCopyPrerequisites": "false",
-                                    "CopyFilesInParallel": "true",
-                                    "CleanTargetBeforeCopy": "false",
-                                    "skipCACheck": "true",
-                                    "outputStorageUri": "",
-                                    "outputStorageContainerSasToken": ""
-                                },
-                                "taskId": "eb72cb01-a7e5-427b-a8a1-1b31ccac8a43",
-                                "version": "1.*",
-                                "definitionType": "task",
-                                "alwaysRun": False,
-                                "continueOnError": False,
-                                "overrideInputs": {},
-                                "condition": "succeeded()",
-                                "environment": {}
-                            },
-                            {
-                                "name": "Set App Settings: ",
-                                "refName": "",
-                                "enabled": True,
-                                "timeoutInMinutes": 0,
-                                "inputs": {
-                                    "ConnectedServiceName": "b96bc246-5aef-4abd-8a6c-73f5113bacb1", #self.service_endpoint.endpoint.id, #"3765b613-bcbb-433b-9971-09a76371193c",
-                                    "WebAppName": self.resource.resource['name'], #"dolk-python-appservice",
-                                    "ResourceGroupName": self.resource.resource['name'], #"dolk-python-appservice",
-                                    "Slot": "",
-                                    "AppSettings": "WEBSITE_RUN_FROM_PACKAGE='https://" + self.resource.resource['name'] + ".blob.core.windows.net/build-container/build" + str(self.build.build.id) + ".zip'\nkey2='value2'\noliver='godlike'" #https://dolkpythonconsu9f80.blob.core.windows.net/build-container/build2.zip
-                                },
-                                "taskId": "9d2e4cf0-f3bb-11e6-978b-770d284f4f2d",
-                                "version": "2.*",
-                                "definitionType": "task",
-                                "alwaysRun": False,
-                                "continueOnError": False,
-                                "overrideInputs": {},
-                                "condition": "succeeded()",
-                                "environment": {}
-                            }
-                        ],
+                        "workflowTasks": [blobtask],
                         "phaseInputs": {
                             "phaseinput_artifactdownloadinput": {
                                 "artifactsDownloadInput": {
                                     "downloadInputs": [
                                         {
                                             "artifactItems": [],
-                                            "alias": self.build.name,
+                                            "alias": build.definition.name,
                                             "artifactType": "Build",
                                             "artifactDownloadMode": "All"
                                         }
@@ -163,7 +79,8 @@ class ReleaseManager(object):
                             }
                         }
                     }
-                ]
+        
+        deploy_phases = [deploy_phase]
 
         release_definition_environment = models.release_definition_environment.ReleaseDefinitionEnvironment(
             name ="deploy build",
@@ -177,9 +94,10 @@ class ReleaseManager(object):
 
 
         release_definition = models.release_definition.ReleaseDefinition(
-            name = self.build.name + " pipeline",
+            name = build.definition.name + " pipeline",
             environments=[release_definition_environment],
-            artifacts=[artifact]
+            artifacts=[artifact],
+            triggers=triggers
         )
 
         
@@ -211,23 +129,24 @@ class ReleaseManager(object):
         return None
 
     def get_build_by_name(self, project, name):
+        builds = []
         for p in self._build_client.get_builds(project=project.id):
-            if p.name == name:
-                return p
-        return None
+            if p.definition.name == name:
+                builds.append(p)
+        sorted_builds = sorted(builds, key=lambda x : x.finish_time, reverse=True)
+        return sorted_builds[0]
 
     def get_retention_policy(self):
         return models.environment_retention_policy.EnvironmentRetentionPolicy(
-                    days_to_keep=600, releases_to_keep=3, retain_build=True
+                    days_to_keep=300, releases_to_keep=3, retain_build=True
                 )
 
     def get_artifact(self, build, project, artifact_name):
-        artifacts = self._build_client.get_artifacts(build.id, project)
+        artifacts = self._build_client.get_artifacts(build.id, project.id)
         artifact = None
         for a in artifacts:
             if a.name == artifact_name:
                 artifact = a
-
         definition_reference = {}
         definition_reference["project"] = {"id":project.id,"name":project.name}
         definition_reference["definition"] = {"id":artifact.id,"name":artifact.name}
@@ -238,3 +157,29 @@ class ReleaseManager(object):
             alias = artifact.name,
             type = "Build",
             definition_reference=definition_reference)
+
+    def get_pre_post_approvals(self):
+        pre_approval = models.release_definition_approval_step.ReleaseDefinitionApprovalStep(
+            id = 0,
+            rank = 1,
+            is_automated = True,
+            is_notification_on = False
+        )
+
+        post_approval = models.release_definition_approval_step.ReleaseDefinitionApprovalStep(
+            id = 0,
+            rank = 1,
+            is_automated = True,
+            is_notification_on = False
+        )
+
+
+        pre_release_approvals = models.release_definition_approvals.ReleaseDefinitionApprovals(
+            approvals=[pre_approval]
+        )
+
+        post_release_approvals = models.release_definition_approvals.ReleaseDefinitionApprovals(
+            approvals=[post_approval]
+        )
+
+        return pre_release_approvals, post_release_approvals

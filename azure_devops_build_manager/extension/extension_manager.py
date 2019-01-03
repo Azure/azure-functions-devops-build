@@ -33,4 +33,5 @@ class ExtensionManager(object):
 
         return extension
 
-        
+    def get_extensions(self):
+        return self._extension_management_client.get_installed_extensions()
