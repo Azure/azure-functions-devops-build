@@ -5,13 +5,14 @@ from msrest.serialization import TZ_UTC
 from dateutil.relativedelta import relativedelta
 import subprocess, json, requests
 import vsts.release.v4_1.models as models
-
+from azure_devops_build_manager.pool.pool_manager import PoolManager 
 
 class ReleaseManager(object):
 
     def __init__(self, base_url='https://{}.visualstudio.com', organization_name="", project_name="", creds=None):
         self._organization_name = organization_name
         self._project_name = project_name
+        self._creds = creds
         # set up all the necessary vsts/azure devops sdk requirements
         organization_url = 'https://dev.azure.com/' + self._organization_name
         # Create a connection to the org
@@ -22,7 +23,8 @@ class ReleaseManager(object):
         self._core_client = connection.get_client('vsts.core.v4_0.core_client.CoreClient')
         self._release_client = connection.get_client('vsts.release.v4_1.release_client.ReleaseClient')
 
-    def create_release_definition(self, build_name, artifact_name, pool):
+    def create_release_definition(self, build_name, artifact_name, pool_name, release_definition_name):
+        pool = self.get_pool_by_name(pool_name)
         project = self.get_project_by_name(self._project_name)
         build = self.get_build_by_name(project, build_name)
         retention_policy_environment = self.get_retention_policy()
@@ -69,7 +71,7 @@ class ReleaseManager(object):
                                     "downloadInputs": [
                                         {
                                             "artifactItems": [],
-                                            "alias": build.definition.name,
+                                            "alias": artifact_name,
                                             "artifactType": "Build",
                                             "artifactDownloadMode": "All"
                                         }
@@ -94,7 +96,7 @@ class ReleaseManager(object):
 
 
         release_definition = models.release_definition.ReleaseDefinition(
-            name = build.definition.name + " pipeline",
+            name = release_definition_name,
             environments=[release_definition_environment],
             artifacts=[artifact],
             triggers=triggers
@@ -103,7 +105,9 @@ class ReleaseManager(object):
         
         self._release_client.create_release_definition(release_definition, project.id)
 
-
+    def list_release_definitions(self):
+        project = self.get_project_by_name(self._project_name)
+        return self._release_client.get_release_definitions(project.id)
 
     def create_release(self, release_definition_name):
         project = self.get_project_by_name(self._project_name)
@@ -114,6 +118,19 @@ class ReleaseManager(object):
         )
 
         self._release_client.create_release(release_start_metadata, project.id)
+
+    def list_releases(self):
+        project = self.get_project_by_name(self._project_name)
+        return self._release_client.get_releases(project.id)
+
+
+    def get_pool_by_name(self, pool_name):
+        pool_manager = PoolManager(organization_name=self._organization_name, project_name=self._project_name, creds=self._creds)
+        pools = pool_manager.get_pools()
+        for pool in pools.value:
+            if pool.name == pool_name:
+                return pool
+        return None
 
 
     def get_project_by_name(self, name):

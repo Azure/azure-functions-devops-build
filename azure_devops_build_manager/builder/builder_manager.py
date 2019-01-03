@@ -6,7 +6,7 @@ import vsts.task_agent.v4_1.models as task_agent_models
 import datetime
 import os
 import requests
-import pick
+from azure_devops_build_manager.pool.pool_manager import PoolManager 
 
 class BuilderManager(object):
 
@@ -14,6 +14,7 @@ class BuilderManager(object):
         self._organization_name = organization_name
         self._project_name = project_name
         self._repository_name = repository_name
+        self._creds = creds
         # set up all the necessary vsts/azure devops sdk requirements
         organization_url = 'https://dev.azure.com/' + self._organization_name
         # Create a connection to the org
@@ -45,7 +46,8 @@ class BuilderManager(object):
         project = self.get_project_by_name(self._project_name)
         return self._build_client.get_definitions(project=project.id)
 
-    def create_build(self, build_definition_name, poolId, poolName):
+    def create_build(self, build_definition_name, pool_name):
+        pool = self.get_pool_by_name(pool_name)
         # get the project object
         project = self.get_project_by_name(self._project_name)
         definition = self.get_definition_by_name(project, build_definition_name)
@@ -53,10 +55,21 @@ class BuilderManager(object):
         team_project_reference = self.get_project_reference(project)
         build_definition_reference = self.get_build_definition_reference(team_project_reference, definition)
 
-        pool_queue = build_models.agent_pool_queue.AgentPoolQueue(id=poolId, name=poolName)
+        pool_queue = build_models.agent_pool_queue.AgentPoolQueue(id=pool.id, name=pool_name)
         build = build_models.build.Build(definition=build_definition_reference, queue=pool_queue)
-        self.build = self._build_client.queue_build(build, project=project.id)
+        return self._build_client.queue_build(build, project=project.id)
 
+    def list_builds(self):
+        project = self.get_project_by_name(self._project_name)
+        return self._build_client.get_builds(project=project.id)
+
+    def get_pool_by_name(self, pool_name):
+        pool_manager = PoolManager(organization_name=self._organization_name, project_name=self._project_name, creds=self._creds)
+        pools = pool_manager.get_pools()
+        for pool in pools.value:
+            if pool.name == pool_name:
+                return pool
+        return None
 
     def get_process(self):
         process = {}
