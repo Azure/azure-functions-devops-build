@@ -18,20 +18,21 @@ class ExtensionManager(object):
         # Get a client (the "core" client provides access to projects, teams, etc)
         self._extension_management_client = connection.get_client('vsts.extension_management.v4_1.extension_management_client.ExtensionManagementClient')
 
-    def create_extension(self, extensionName, publisherName):
+    def create_extension(self, extension_name, publisher_name):
 
-        #extension = self._extension_management_client.get_installed_extension_by_name(publisherName, extensionName)
+        extensions = self.list_extensions()
 
         #test if extension is already installed
+        installed = False
+        for extension in extensions:
+            if (extension.publisher_id == publisher_name) and (extension.extension_id == extension_name):
+                installed = True
+                break
 
-        #if installed skip
-
-
-        #else do the installation
-
-        extension = self._extension_management_client.install_extension_by_name(publisherName, extensionName)
+        if not installed:
+            extension = self._extension_management_client.install_extension_by_name(publisher_name, extension_name)
 
         return extension
 
-    def get_extensions(self):
+    def list_extensions(self):
         return self._extension_management_client.get_installed_extensions()

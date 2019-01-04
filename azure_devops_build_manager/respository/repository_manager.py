@@ -11,6 +11,8 @@ import vsts.git.v4_1.models.git_repository_create_options as git_repository_crea
 import re
 import time
 import os
+from subprocess import DEVNULL, STDOUT, check_call
+from . import models
 
 class RepositoryManager(object):
 
@@ -53,19 +55,22 @@ class RepositoryManager(object):
     """
     def setup_repository(self, repository_name):
         if self.repository_exists():
-            error = {}
-            error['message'] = """There is already an existing repository in this folder. If it is a github repository please create an
+            message = """There is already an existing repository in this folder. If it is a github repository please create an
                                   access token and then use the command 'az functionapp devops-build repository github --token {OATH TOKEN}'
                                   If this is not an exisitng github or azure devops repository we are unable to support a build through azure
                                   devops. Please either delete the reference to the repository in the current folder. """
-            return error
+            succeeded = False
+            return models.repository_response.RepositoryResponse(message, succeeded)
         else:
-            origin_command = "git remote add origin https://" + self.organization_name + ".visualstudio.com/" + self.project_name + "/_git/" + repository_name
-            os.system("git init")
-            os.system("git add -A")
-            os.system("git commit -a -m \"creating functions app\"")
-            os.system(origin_command)
-            os.system("git push -u origin --all")
+            origin_command = ["git", "remote", "add", "origin", "https://" + self.organization_name + ".visualstudio.com/" + self.project_name + "/_git/" + repository_name]
+            check_call('git init'.split(), stdout=DEVNULL, stderr=STDOUT)
+            check_call('git add -A'.split(), stdout=DEVNULL, stderr=STDOUT)
+            check_call(["git", "commit", "-a", "-m", "\"creating functions app\""], stdout=DEVNULL, stderr=STDOUT)
+            check_call(origin_command, stdout=DEVNULL, stderr=STDOUT)
+            check_call('git push -u origin --all'.split(), stdout=DEVNULL, stderr=STDOUT)
+            message = "succeeded"
+            succeeded = True
+            return models.repository_response.RepositoryResponse(message, succeeded)
 
     def get_project_by_name(self, name):
         for p in self._core_client.get_projects():

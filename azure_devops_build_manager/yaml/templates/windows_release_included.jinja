@@ -1,4 +1,8 @@
 # Starter template for Azure functions build for {{language}} {{appType}}
+
+trigger:
+- master
+
 pool:
   vmImage: 'VS2017-Win2016'
 
@@ -17,6 +21,12 @@ steps:
     archiveFile: "$(System.DefaultWorkingDirectory)/$(Build.BuildId).zip"
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'
+    PathtoPublish: '$(System.DefaultWorkingDirectory)'
     name: 'drop'
 
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    connectionType: 'AzureRM'
+    azureSubscription: {{ subscription_name }}
+    appType: 'functionApp'
+    webAppName: {{ functionapp_name }}

@@ -1,0 +1,292 @@
+{
+    "source": 1,
+    "revision": 1,
+    "description": "",
+    "createdBy": {
+        "displayName": "Oliver Dolk",
+        "url": "https://app.vssps.visualstudio.com/A77f19388-cd3c-4d0d-8843-dcac4635e95a/_apis/Identities/425fa298-2b47-62da-8c38-ed04c05f04de",
+        "_links": {
+            "avatar": {
+                "href": "https://dev.azure.com/dolk-az-python-dedicated/_apis/GraphProfile/MemberAvatars/aad.NDI1ZmEyOTgtMmI0Ny03MmRhLThjMzgtZWQwNGMwNWYwNGRl"
+            }
+        },
+        "id": "425fa298-2b47-62da-8c38-ed04c05f04de",
+        "uniqueName": "t-oldolk@microsoft.com",
+        "imageUrl": "https://dev.azure.com/dolk-az-python-dedicated/_api/_common/identityImage?id=425fa298-2b47-62da-8c38-ed04c05f04de",
+        "descriptor": "aad.NDI1ZmEyOTgtMmI0Ny03MmRhLThjMzgtZWQwNGMwNWYwNGRl"
+    },
+    "createdOn": "2019-01-04T00:16:59.820Z",
+    "modifiedBy": {
+        "displayName": "Oliver Dolk",
+        "url": "https://app.vssps.visualstudio.com/A77f19388-cd3c-4d0d-8843-dcac4635e95a/_apis/Identities/425fa298-2b47-62da-8c38-ed04c05f04de",
+        "_links": {
+            "avatar": {
+                "href": "https://dev.azure.com/dolk-az-python-dedicated/_apis/GraphProfile/MemberAvatars/aad.NDI1ZmEyOTgtMmI0Ny03MmRhLThjMzgtZWQwNGMwNWYwNGRl"
+            }
+        },
+        "id": "425fa298-2b47-62da-8c38-ed04c05f04de",
+        "uniqueName": "t-oldolk@microsoft.com",
+        "imageUrl": "https://dev.azure.com/dolk-az-python-dedicated/_api/_common/identityImage?id=425fa298-2b47-62da-8c38-ed04c05f04de",
+        "descriptor": "aad.NDI1ZmEyOTgtMmI0Ny03MmRhLThjMzgtZWQwNGMwNWYwNGRl"
+    },
+    "modifiedOn": "2019-01-04T00:16:59.820Z",
+    "isDeleted": false,
+    "variables": {},
+    "variableGroups": [],
+    "environments": [
+        {
+            "id": 2,
+            "name": "deploy build",
+            "rank": 1,
+            "owner": {
+                "displayName": "Oliver Dolk",
+                "url": "https://app.vssps.visualstudio.com/A77f19388-cd3c-4d0d-8843-dcac4635e95a/_apis/Identities/425fa298-2b47-62da-8c38-ed04c05f04de",
+                "_links": {
+                    "avatar": {
+                        "href": "https://dev.azure.com/dolk-az-python-dedicated/_apis/GraphProfile/MemberAvatars/aad.NDI1ZmEyOTgtMmI0Ny03MmRhLThjMzgtZWQwNGMwNWYwNGRl"
+                    }
+                },
+                "id": "425fa298-2b47-62da-8c38-ed04c05f04de",
+                "uniqueName": "t-oldolk@microsoft.com",
+                "imageUrl": "https://dev.azure.com/dolk-az-python-dedicated/_api/_common/identityImage?id=425fa298-2b47-62da-8c38-ed04c05f04de",
+                "descriptor": "aad.NDI1ZmEyOTgtMmI0Ny03MmRhLThjMzgtZWQwNGMwNWYwNGRl"
+            },
+            "variables": {},
+            "variableGroups": [],
+            "preDeployApprovals": {
+                "approvals": [
+                    {
+                        "rank": 1,
+                        "isAutomated": true,
+                        "isNotificationOn": false,
+                        "id": 4
+                    }
+                ],
+                "approvalOptions": {
+                    "executionOrder": 1
+                }
+            },
+            "deployStep": {
+                "tasks": [],
+                "id": 5
+            },
+            "postDeployApprovals": {
+                "approvals": [
+                    {
+                        "rank": 1,
+                        "isAutomated": true,
+                        "isNotificationOn": false,
+                        "id": 6
+                    }
+                ],
+                "approvalOptions": {
+                    "executionOrder": 2
+                }
+            },
+            "deployPhases": [
+                {
+                    "deploymentInput": {
+                        "parallelExecution": {
+                            "parallelExecutionType": 0
+                        },
+                        "skipArtifactsDownload": false,
+                        "artifactsDownloadInput": {
+                            "downloadInputs": [
+                                {
+                                    "alias": "drop",
+                                    "artifactType": "Build",
+                                    "artifactDownloadMode": "All",
+                                    "artifactItems": []
+                                }
+                            ]
+                        },
+                        "queueId": 93,
+                        "demands": [],
+                        "enableAccessToken": false,
+                        "timeoutInMinutes": 0,
+                        "jobCancelTimeoutInMinutes": 1,
+                        "condition": "succeeded()",
+                        "overrideInputs": {},
+                        "dependencies": []
+                    },
+                    "rank": 1,
+                    "phaseType": 1,
+                    "name": "Agent job",
+                    "refName": null,
+                    "workflowTasks": [
+                        {
+                            "name": "Azure App Service Deploy: dolk-az-python-dedicated",
+                            "refName": null,
+                            "enabled": true,
+                            "timeoutInMinutes": 0,
+                            "inputs": {
+                                "ConnectionType": "AzureRM",
+                                "ConnectedServiceName": "5fb697ae-2ff5-4882-9e5a-43625cfebe32",
+                                "PublishProfilePath": "$(System.DefaultWorkingDirectory)/**/*.pubxml",
+                                "PublishProfilePassword": "",
+                                "WebAppKind": "functionAppLinux",
+                                "WebAppName": "dolk-az-python-dedicated",
+                                "DeployToSlotOrASEFlag": "false",
+                                "ResourceGroupName": "",
+                                "SlotName": "production",
+                                "DockerNamespace": "",
+                                "DockerRepository": "",
+                                "DockerImageTag": "",
+                                "VirtualApplication": "",
+                                "Package": "$(System.DefaultWorkingDirectory)/**/*.zip",
+                                "RuntimeStack": "",
+                                "RuntimeStackFunction": "",
+                                "StartupCommand": "",
+                                "ScriptType": "",
+                                "InlineScript": ":: You can provide your deployment commands here. One command per line.",
+                                "ScriptPath": "",
+                                "WebConfigParameters": "",
+                                "AppSettings": "",
+                                "ConfigurationSettings": "",
+                                "UseWebDeploy": "false",
+                                "DeploymentType": "webDeploy",
+                                "TakeAppOfflineFlag": "false",
+                                "SetParametersFile": "",
+                                "RemoveAdditionalFilesFlag": "false",
+                                "ExcludeFilesFromAppDataFlag": "false",
+                                "AdditionalArguments": "",
+                                "RenameFilesFlag": "false",
+                                "XmlTransformation": "false",
+                                "XmlVariableSubstitution": "false",
+                                "JSONFiles": ""
+                            },
+                            "taskId": "497d490f-eea7-4f2b-ab94-48d9c1acdcb1",
+                            "version": "4.*",
+                            "definitionType": "task",
+                            "alwaysRun": false,
+                            "continueOnError": false,
+                            "overrideInputs": {},
+                            "condition": "succeeded()",
+                            "environment": {}
+                        }
+                    ],
+                    "phaseInputs": {
+                        "phaseinput_artifactdownloadinput": {
+                            "artifactsDownloadInput": {
+                                "downloadInputs": [
+                                    {
+                                        "alias": "drop",
+                                        "artifactType": "Build",
+                                        "artifactDownloadMode": "All",
+                                        "artifactItems": []
+                                    }
+                                ]
+                            },
+                            "skipArtifactsDownload": false
+                        }
+                    }
+                }
+            ],
+            "environmentOptions": {
+                "emailNotificationType": "OnlyOnFailure",
+                "emailRecipients": "release.environment.owner;release.creator",
+                "skipArtifactsDownload": false,
+                "timeoutInMinutes": 0,
+                "enableAccessToken": false,
+                "publishDeploymentStatus": false,
+                "badgeEnabled": false,
+                "autoLinkWorkItems": false,
+                "pullRequestDeploymentEnabled": false
+            },
+            "demands": [],
+            "conditions": [],
+            "executionPolicy": {
+                "queueDepthCount": 0,
+                "concurrencyCount": 0
+            },
+            "schedules": [],
+            "currentRelease": {
+                "id": 2,
+                "url": "https://vsrm.dev.azure.com/dolk-az-python-dedicated/e2c4c4be-5c15-47e4-a822-ff0da5423f2d/_apis/Release/releases/2",
+                "_links": {}
+            },
+            "retentionPolicy": {
+                "daysToKeep": 300,
+                "releasesToKeep": 3,
+                "retainBuild": true
+            },
+            "properties": {},
+            "preDeploymentGates": {
+                "id": 0,
+                "gatesOptions": null,
+                "gates": []
+            },
+            "postDeploymentGates": {
+                "id": 0,
+                "gatesOptions": null,
+                "gates": []
+            },
+            "environmentTriggers": [],
+            "badgeUrl": "https://vsrm.dev.azure.com/dolk-az-python-dedicated/_apis/public/Release/badge/e2c4c4be-5c15-47e4-a822-ff0da5423f2d/2/2",
+            "processParameters": {}
+        }
+    ],
+    "artifacts": [
+        {
+            "sourceId": "e2c4c4be-5c15-47e4-a822-ff0da5423f2d:10",
+            "type": "Build",
+            "alias": "drop",
+            "definitionReference": {
+                "defaultVersionType": {
+                    "id": "latestType",
+                    "name": "Latest"
+                },
+                "definition": {
+                    "id": "10",
+                    "name": "therat"
+                },
+                "project": {
+                    "id": "e2c4c4be-5c15-47e4-a822-ff0da5423f2d",
+                    "name": "therat"
+                },
+                "artifactSourceDefinitionUrl": {
+                    "id": "https://dev.azure.com/dolk-az-python-dedicated/_permalink/_build/index?collectionId=fcafaca0-a7c3-4dde-95b4-4959f46697b3&projectId=e2c4c4be-5c15-47e4-a822-ff0da5423f2d&definitionId=10",
+                    "name": ""
+                },
+                "defaultVersionTags": {
+                    "id": "",
+                    "name": ""
+                },
+                "defaultVersionBranch": {
+                    "id": "",
+                    "name": ""
+                },
+                "defaultVersionSpecific": {
+                    "id": "",
+                    "name": ""
+                }
+            },
+            "isPrimary": true,
+            "isRetained": false
+        }
+    ],
+    "triggers": [],
+    "releaseNameFormat": "",
+    "retentionPolicy": {
+        "daysToKeep": 300
+    },
+    "tags": [],
+    "pipelineProcess": {
+        "type": 1
+    },
+    "properties": {},
+    "id": 2,
+    "name": "test-1",
+    "path": "\\",
+    "projectReference": null,
+    "url": "https://vsrm.dev.azure.com/dolk-az-python-dedicated/e2c4c4be-5c15-47e4-a822-ff0da5423f2d/_apis/Release/definitions/2",
+    "_links": {
+        "self": {
+            "href": "https://vsrm.dev.azure.com/dolk-az-python-dedicated/e2c4c4be-5c15-47e4-a822-ff0da5423f2d/_apis/Release/definitions/2"
+        },
+        "web": {
+            "href": "https://dev.azure.com/dolk-az-python-dedicated/e2c4c4be-5c15-47e4-a822-ff0da5423f2d/_release?definitionId=2"
+        }
+    },
+    "comment": ""
+}

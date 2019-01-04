@@ -1,0 +1,31 @@
+{
+    "definitionId": 1,
+    "isDraft": false,
+    "description": "",
+    "manualEnvironments": [],
+    "artifacts": [
+        {
+            "alias": "_therat",
+            "instanceReference": {
+                "id": "7",
+                "name": "20190104.1",
+                "definitionId": "10",
+                "definitionName": "therat",
+                "sourceBranch": "refs/heads/master",
+                "sourceVersion": "955d7909a85bbfd280d3fd7be433dd626798019f",
+                "sourceRepositoryId": "cfa73232-b11f-4ac2-98f3-1f32f9432a69",
+                "sourceRepositoryType": "TfsGit"
+            }
+        }
+    ],
+    "variables": {},
+    "environmentsMetadata": [
+        {
+            "definitionEnvironmentId": 1,
+            "variables": {}
+        }
+    ],
+    "properties": {
+        "ReleaseCreationSource": "ReleaseHub"
+    }
+}

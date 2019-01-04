@@ -47,6 +47,7 @@ class ProjectManager(object):
             project = self.get_project_by_name(projectName)
             return project
         except Exception as e:
+            print(e)
             return e
 
     #get existing projects
@@ -119,6 +120,7 @@ class ProjectManager(object):
         return deserialized
 
     def get_project_by_name(self, name):
+        time.sleep(0.3)
         for p in self._core_client.get_projects():
             if p.name == name:
                 return p

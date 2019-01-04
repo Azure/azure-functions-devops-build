@@ -45,19 +45,7 @@ class ReleaseManager(object):
         deploymentInput["parallelExecution"] = { "parallelExecutionType": 0 }
         deploymentInput["queueId"] = pool.id
 
-        blobtask = {}
-        blobtask["name"] = "AzureBlob File Copy"
-        blobtask_inputs = {}
-        blobtask_inputs["SourcePath"] = "drop/build$(Build.BuildId).zip"
-        blobtask_inputs["ConnectedServiceNameSelector"] = 'ConnectedServiceNameARM'
-        blobtask_inputs["ConnectedServiceNameARM"] = "432ba47c-4d6d-4b23-bda3-463e0c61d853"
-        blobtask_inputs["Destination"] = "AzureBlob"
-        blobtask_inputs["StorageAccountRM"] = "dolkpythonappse9cae"
-        blobtask_inputs["ContainerName"] = 'azure-build'
-        blobtask["inputs"] = blobtask_inputs
-        blobtask["version"] = "2.*"
-        blobtask["definitionType"] = "task"
-        blobtask["taskId"] = "eb72cb01-a7e5-427b-a8a1-1b31ccac8a43"
+
 
         deploy_phase =  {
                         "deploymentInput": deploymentInput,
@@ -114,7 +102,9 @@ class ReleaseManager(object):
         release_definition = self.get_release_definition_by_name(project, release_definition_name)
 
         release_start_metadata = models.release_start_metadata.ReleaseStartMetadata(
-            definition_id=release_definition.id
+            definition_id=release_definition.id,
+            is_draft=False,
+            properties={"ReleaseCreationSource": "ReleaseHub"}
         )
 
         self._release_client.create_release(release_start_metadata, project.id)
@@ -166,7 +156,7 @@ class ReleaseManager(object):
                 artifact = a
         definition_reference = {}
         definition_reference["project"] = {"id":project.id,"name":project.name}
-        definition_reference["definition"] = {"id":artifact.id,"name":artifact.name}
+        definition_reference["definition"] = {"id":build.definition.id,"name":build.definition.name}
         definition_reference["defaultVersionType"] = {"id": "latestType", "name": "Latest"}
 
         return models.artifact.Artifact(
@@ -200,3 +190,40 @@ class ReleaseManager(object):
         )
 
         return pre_release_approvals, post_release_approvals
+
+    def get_blob_task(self, connectedServiceNameARM, storage_name):
+        blobtask = {}
+        blobtask["name"] = "AzureBlob File Copy"
+        blobtask["enabled"] = True
+        blobtask_inputs = {}
+        blobtask_inputs["SourcePath"] = "$(System.DefaultWorkingDirectory)/drop/drop/build$(Build.BuildId).zip"
+        blobtask_inputs["ConnectedServiceNameSelector"] = 'ConnectedServiceNameARM'
+        blobtask_inputs["ConnectedServiceNameARM"] = connectedServiceNameARM
+        blobtask_inputs["Destination"] = "AzureBlob"
+        blobtask_inputs["StorageAccountRM"] = storage_name
+        blobtask_inputs["ContainerName"] = 'azure-build'
+        blobtask_inputs["outputStorageUri"] = "outputstorageuri"
+        blobtask_inputs["outputStorageContainerSasToken"] = "sastoken"
+        blobtask["inputs"] = blobtask_inputs
+        blobtask["version"] = "2.*"
+        blobtask["definitionType"] = "task"
+        blobtask["taskId"] = "eb72cb01-a7e5-427b-a8a1-1b31ccac8a43"
+        return blobtask
+
+    def get_app_service_deploy_task_linux(self, connectedServiceNameARM, functionapp_name):
+        appservicetask = {}
+        appservicetask["name"] = "Azure App Service Deploy: dolk-az-python-dedicated"
+        appservicetask["enabled"] = True
+        appservicetask["taskId"] = "497d490f-eea7-4f2b-ab94-48d9c1acdcb1"
+        appservicetask["version"] = "4.*"
+        appservicetask["definitionType"] = "task"
+        appservicetask_inputs = {}
+        appservicetask_inputs["ConnectionType"] = "AzureRM"
+        appservicetask_inputs["ConnectedServiceName"] = connectedServiceNameARM
+        appservicetask_inputs["PublishProfilePath"] = "$(System.DefaultWorkingDirectory)/**/*.pubxml"
+        appservicetask_inputs["WebAppKind"] = "functionAppLinux"
+        appservicetask_inputs["WebAppName"] = functionapp_name
+        appservicetask_inputs["SlotName"] = "production"
+        appservicetask_inputs["Package"] = "$(System.DefaultWorkingDirectory)/**/*.zip"
+        appservicetask["inputs"] = appservicetask_inputs
+        return appservicetask
