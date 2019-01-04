@@ -1,14 +1,12 @@
 from __future__ import print_function
 from sys import stderr
+import time
 from msrest.service_client import ServiceClient
 from msrest import Configuration, Deserializer
 from msrest.exceptions import HttpOperationError
-from msrest.authentication import BasicAuthentication
 from vsts.vss_connection import VssConnection
 import vsts.core.v4_1.models.team_project as team_project
-import vsts.core.v4_1.models.reference_links as reference_links
-import re
-import time
+
 from . import models
 
 class ProjectManager(object):

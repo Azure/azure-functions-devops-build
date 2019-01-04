@@ -12,7 +12,6 @@ class TestExtensionManager(unittest.TestCase):
         profile = Profile(cli_ctx=cli_ctx)
         creds, _, _ = profile.get_login_credentials(subscription_id=None)
         extension_manager = ExtensionManager(organization_name="t-oldolk", creds=creds)
-
         extensions = extension_manager.list_extensions()
         self.assertTrue(type(extensions) == list)
 
@@ -20,10 +19,8 @@ class TestExtensionManager(unittest.TestCase):
         cli_ctx = get_default_cli()
         profile = Profile(cli_ctx=cli_ctx)
         creds, _, _ = profile.get_login_credentials(subscription_id=None)
-        extension_manager = ExtensionManager(organization_name="olly-d", creds=creds)
-
+        extension_manager = ExtensionManager(organization_name="t-oldolk", creds=creds)
         new_extension = extension_manager.create_extension('AzureAppServiceSetAppSettings', 'hboelman')
-
         self.assertTrue(new_extension.publisher_id == 'hboelman')
         self.assertTrue(new_extension.extension_id == 'AzureAppServiceSetAppSettings')
         

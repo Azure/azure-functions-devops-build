@@ -1,38 +1,35 @@
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+# --------------------------------------------------------------------------------------------
 
-import vsts.service_endpoint.v4_1.models as models
-from vsts.vss_connection import VssConnection
-import uuid
-import datetime
-from msrest.serialization import TZ_UTC
-from dateutil.relativedelta import relativedelta
-import subprocess, json, requests
+from azure_devops_build_manager.base.base_manager import BaseManager
 
-class ExtensionManager(object):
+class ExtensionManager(BaseManager):
+    """ Manage DevOps Extensions
 
-    def __init__(self, base_url='https://{}.visualstudio.com', organization_name="", creds=None):
-        self._organization_name = organization_name
-        # set up all the necessary vsts/azure devops sdk requirements
-        organization_url = 'https://dev.azure.com/' + self._organization_name
-        # Create a connection to the org
-        connection = VssConnection(base_url=organization_url, creds=creds)
-        # Get a client (the "core" client provides access to projects, teams, etc)
-        self._extension_management_client = connection.get_client('vsts.extension_management.v4_1.extension_management_client.ExtensionManagementClient')
+    Install a new extension within an organization or view existing extensions.
+
+    Attributes:
+        See BaseManager
+    """
+
+    def __init__(self, organization_name="", creds=None):
+        """Inits ExtensionManager as per BaseManager"""
+        super(ExtensionManager, self).__init__(creds, organization_name=organization_name)
 
     def create_extension(self, extension_name, publisher_name):
-
+        """Installs an extension in Azure DevOps if it does not already exist"""
         extensions = self.list_extensions()
-
-        #test if extension is already installed
-        installed = False
-        for extension in extensions:
-            if (extension.publisher_id == publisher_name) and (extension.extension_id == extension_name):
-                installed = True
-                break
-
-        if not installed:
+        extension = next((extension for extension in extensions
+                          if (extension.publisher_id == publisher_name)
+                          and (extension.extension_id == extension_name)), None)
+        # If the extension wasn't in the installed extensions than we know we need to install it
+        if extension is None:
             extension = self._extension_management_client.install_extension_by_name(publisher_name, extension_name)
 
         return extension
 
     def list_extensions(self):
+        """Lists an extensions already installed in Azure DevOps"""
         return self._extension_management_client.get_installed_extensions()
