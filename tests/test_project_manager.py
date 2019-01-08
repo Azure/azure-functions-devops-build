@@ -17,6 +17,14 @@ class TestProjectManager(unittest.TestCase):
         self.assertTrue(hasattr(projects, 'value'))
         self.assertTrue(hasattr(projects, 'count'))
         
+    def test_create_project(self):
+        cli_ctx = get_default_cli()
+        profile = Profile(cli_ctx=cli_ctx)
+        creds, _, _ = profile.get_login_credentials(subscription_id=None)
+        project_manager = ProjectManager(organization_name="az-cli-tests", creds=creds)
+
+        p = project_manager.create_project("car2")
+
     
 if __name__ == '__main__':
     unittest.main()

@@ -1,32 +1,28 @@
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+# --------------------------------------------------------------------------------------------
 
+import json
+import subprocess
 import vsts.service_endpoint.v4_1.models as models
-from vsts.vss_connection import VssConnection
-import uuid
-import datetime
-from msrest.serialization import TZ_UTC
-from dateutil.relativedelta import relativedelta
-import subprocess, json, requests
+from azure_devops_build_manager.base.base_manager import BaseManager
 
-class ServiceEndpointManager(object):
+class ServiceEndpointManager(BaseManager):
+    """ Manage DevOps service endpoints within projects
 
-    def __init__(self, base_url='https://{}.visualstudio.com', organization_name="", project_name="", creds=None):
-        self._organization_name = organization_name
-        self._project_name = project_name
-        # set up all the necessary vsts/azure devops sdk requirements
-        organization_url = 'https://dev.azure.com/' + self._organization_name
-        # Create a connection to the org
-        connection = VssConnection(base_url=organization_url, creds=creds)
-        # Get a client (the "core" client provides access to projects, teams, etc)
-        self._agent_client = connection.get_client("vsts.task_agent.v4_1.task_agent_client.TaskAgentClient")
-        self._build_client = connection.get_client('vsts.build.v4_1.build_client.BuildClient')
-        self._core_client = connection.get_client('vsts.core.v4_0.core_client.CoreClient')
-        self._service_endpoint_client = connection.get_client('vsts.service_endpoint.v4_1.service_endpoint_client.ServiceEndpointClient')
+    Attributes:
+        See BaseManager
+    """
+    
+    def __init__(self, organization_name="", project_name="", creds=None):
+        """Inits ServiceEndpointManager as per BaseManager"""
+        super(ServiceEndpointManager, self).__init__(creds, organization_name=organization_name,
+                                                     project_name=project_name)
 
     def create_service_endpoint(self, servicePrincipalName):
-        project = self.get_project_by_name(self._project_name)
-        
-        print("Warning: we are using your current subscription as per the command 'az account show'. If you would like to use another subscription please change and use \
-            'az account set'")
+        """Create a new service endpoint within a project with an associated service principal"""
+        project = self._get_project_by_name(self._project_name)
 
         command = "az account show --o json"
         token_resp = subprocess.check_output(command, shell=True).decode()
@@ -36,22 +32,22 @@ class ServiceEndpointManager(object):
         data["subscriptionId"] = account['id']
         data["subscriptionName"] = account['name']
         data["environment"] = "AzureCloud"
-        data["scopeLevel"] =  "Subscription"
+        data["scopeLevel"] = "Subscription"
 
-        #need to generate a service principal here
-
-        command = "az ad sp create-for-rbac --o json --name " + servicePrincipalName
+        # A service principal name has to include the http to be valid
+        servicePrincipalNameHttp = "http://" + servicePrincipalName
+        command = "az ad sp create-for-rbac --o json --name " + servicePrincipalNameHttp
         token_resp = subprocess.check_output(command, shell=True).decode()
         token_resp_dict = json.loads(token_resp)
 
         auth = models.endpoint_authorization.EndpointAuthorization(
-            parameters= {
+            parameters={
                 "tenantid": token_resp_dict['tenant'],
                 "serviceprincipalid": token_resp_dict['appId'],
                 "authenticationType": "spnKey",
                 "serviceprincipalkey": token_resp_dict['password']
             },
-            scheme = "ServicePrincipal"
+            scheme="ServicePrincipal"
         )
 
         service_endpoint = models.service_endpoint.ServiceEndpoint(
@@ -59,17 +55,12 @@ class ServiceEndpointManager(object):
             authorization=auth,
             data=data,
             name=token_resp_dict['displayName'],
-            type="azurerm"        
+            type="azurerm"
         )
 
-        self.endpoint = self._service_endpoint_client.create_service_endpoint(service_endpoint, project.id)
+        return self._service_endpoint_client.create_service_endpoint(service_endpoint, project.id)
 
     def list_service_endpoints(self):
-        project = self.get_project_by_name(self._project_name)
+        """List exisiting service endpoints within a project"""
+        project = self._get_project_by_name(self._project_name)
         return self._service_endpoint_client.get_service_endpoints(project.id)
-
-    def get_project_by_name(self, name):
-        for p in self._core_client.get_projects():
-            if p.name == name:
-                return p
-        return None

@@ -3,15 +3,16 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 # --------------------------------------------------------------------------------------------
 
-from __future__ import print_function
-from sys import stderr
 import re
+import logging
 from msrest.service_client import ServiceClient
 from msrest import Configuration, Deserializer
 from msrest.exceptions import HttpOperationError
+
 from . import models
 
-class OrganizationManager(object):
+
+class OrganizationManager():
     """ Manage DevOps organizations
 
     Create or list existing organizations
@@ -56,9 +57,9 @@ class OrganizationManager(object):
         # Handle Response
         deserialized = None
         if response.status_code not in [200]:
-            print("GET", request.url, file=stderr)
-            print("response:", response.status_code, file=stderr)
-            print(response.text, file=stderr)
+            logging.error("GET %s", request.url)
+            logging.error("response: %s", response.status_code)
+            logging.error(response.text)
             raise HttpOperationError(self._deserialize, response)
         else:
             deserialized = self._deserialize('ValidateAccountName', response)
@@ -86,9 +87,9 @@ class OrganizationManager(object):
         # Handle Response
         deserialized = None
         if response.status_code not in [200]:
-            print("GET", request.url, file=stderr)
-            print("response:", response.status_code, file=stderr)
-            print(response.text, file=stderr)
+            logging.error("GET %s", request.url)
+            logging.error("response: %s", response.status_code)
+            logging.error(response.text)
             raise HttpOperationError(self._deserialize, response)
         else:
             deserialized = self._deserialize('Organizations', response)
@@ -120,9 +121,9 @@ class OrganizationManager(object):
         # Handle Response
         deserialized = None
         if response.status_code not in [200]:
-            print("POST", request.url, file=stderr)
-            print("response:", response.status_code, file=stderr)
-            print(response.text, file=stderr)
+            logging.error("GET %s", request.url)
+            logging.error("response: %s", response.status_code)
+            logging.error(response.text)
             raise HttpOperationError(self._deserialize, response)
         else:
             deserialized = self._deserialize('NewOrganization', response)
@@ -146,9 +147,9 @@ class OrganizationManager(object):
         # Handle Response
         deserialized = None
         if response.status_code not in [200]:
-            print("GET", request.url, file=stderr)
-            print("response:", response.status_code, file=stderr)
-            print(response.text, file=stderr)
+            logging.error("GET %s", request.url)
+            logging.error("response: %s", response.status_code)
+            logging.error(response.text)
             raise HttpOperationError(self._deserialize, response)
         else:
             deserialized = self._deserialize('Regions', response)

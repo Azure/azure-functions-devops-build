@@ -67,7 +67,7 @@ class BuilderManager(BaseManager):
         """Helper function to get the pool object from its name"""
         pool_manager = PoolManager(organization_name=self._organization_name,
                                    project_name=self._project_name, creds=self._creds)
-        pools = pool_manager.get_pools()
+        pools = pool_manager.list_pools()
         return next((pool for pool in pools.value if pool.name == pool_name), None)
 
     def _get_process(self):

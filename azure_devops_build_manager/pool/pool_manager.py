@@ -1,5 +1,9 @@
-from __future__ import print_function
-from sys import stderr
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+# --------------------------------------------------------------------------------------------
+import logging
+
 from msrest.service_client import ServiceClient
 from msrest import Configuration, Deserializer
 from msrest.exceptions import HttpOperationError
@@ -16,6 +20,7 @@ class PoolManager(BaseManager):
     """
 
     def __init__(self, base_url='https://{}.visualstudio.com', creds=None, organization_name="", project_name=""):
+        """Inits PoolManager"""
         super(PoolManager, self).__init__(creds, organization_name=organization_name, project_name=project_name)
         base_url = base_url.format(organization_name)
         self._config = Configuration(base_url=base_url)
@@ -24,6 +29,7 @@ class PoolManager(BaseManager):
         self._deserialize = Deserializer(client_models)
 
     def list_pools(self):
+        """List what pools this project has"""
         project = self._get_project_by_name(self._project_name)
 
         # Construct URL
@@ -40,9 +46,9 @@ class PoolManager(BaseManager):
         # Handle Response
         deserialized = None
         if response.status_code not in [200]:
-            print("GET", request.url, file=stderr)
-            print("response:", response.status_code, file=stderr)
-            print(response.text, file=stderr)
+            logging.error("GET %s", request.url)
+            logging.error("response: %s", response.status_code)
+            logging.error(response.text)
             raise HttpOperationError(self._deserialize, response)
         else:
             deserialized = self._deserialize('Pools', response)

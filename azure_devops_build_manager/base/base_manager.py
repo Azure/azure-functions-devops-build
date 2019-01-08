@@ -29,6 +29,8 @@ class BaseManager(object):
         self._core_client = self._connection.get_client('vsts.core.v4_0.core_client.CoreClient')
         self._extension_management_client = self._connection.get_client('vsts.extension_management.v4_1.extension_management_client.ExtensionManagementClient') # pylint: disable=line-too-long
         self._git_client = self._connection.get_client("vsts.git.v4_1.git_client.GitClient")
+        self._release_client = self._connection.get_client('vsts.release.v4_1.release_client.ReleaseClient')
+        self._service_endpoint_client = self._connection.get_client('vsts.service_endpoint.v4_1.service_endpoint_client.ServiceEndpointClient')
 
     def _get_project_by_name(self, project_name):
         """Helper function to get the project object from its name"""
@@ -44,3 +46,7 @@ class BaseManager(object):
         """Helper function to get definition object from its name"""
         definitions = self._build_client.get_definitions(project.id)
         return next((definition for definition in definitions if definition.name == definition_name), None)
+
+    def _get_build_by_name(self, project, name):
+        builds = sorted(self._build_client.get_builds(project=project.id), key=lambda x: x.finish_time, reverse=True)
+        return next((build for build in builds if build.definition.name == name))
