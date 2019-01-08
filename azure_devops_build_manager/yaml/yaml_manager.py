@@ -101,15 +101,14 @@ class YamlManager(object):
 
     def _node_dependencies(self):
         """Helper to create the standard node dependencies"""
-        dependencies = ['- script: |', '   npm install', '   npm run build', "  displayName: 'Install dependencies'"]
+        dependencies = ['- script: |', '    npm install', '    npm run build', "  displayName: 'Install dependencies'"]
         return dependencies
 
     def _net_dependencies(self):
         """Helper to create the standard net dependencies"""
-        # TODO net dependencies
-        logging.critical("net dependencies are currently not implemented")
-        return []
-    
+        dependencies = ['- script: |', '    dotnet restore', '    dotnet build']
+        return dependencies
+
     def _java_dependencies(self):
         """Helper to create the standard java dependencies"""
         # TODO java dependencies

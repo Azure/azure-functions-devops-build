@@ -12,7 +12,7 @@ class TestArtifactManager(unittest.TestCase):
         organization_name = "function-deployments-releases"
         project_name = "blah"
         artifact_manager = ArtifactManager(organization_name=organization_name, project_name=project_name, creds=creds)
-        print(artifact_manager.list_artifacts("1")[0])
+        self.assertTrue(type(artifact_manager.list_artifacts("1")) == list)
         
 if __name__ == '__main__':
     unittest.main()

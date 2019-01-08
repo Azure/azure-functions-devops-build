@@ -14,7 +14,7 @@ steps:
   inputs:
     rootFolderOrFile: "$(System.DefaultWorkingDirectory)"
     includeRootFolder: false
-    archiveFile: "$(System.DefaultWorkingDirectory)/$(Build.BuildId).zip"
+    archiveFile: "$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip"
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'
