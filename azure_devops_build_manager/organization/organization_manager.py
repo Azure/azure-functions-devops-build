@@ -1,62 +1,77 @@
-from __future__ import print_function
-from sys import stderr
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+# --------------------------------------------------------------------------------------------
+
+import re
+import logging
 from msrest.service_client import ServiceClient
 from msrest import Configuration, Deserializer
 from msrest.exceptions import HttpOperationError
-import re
+
 from . import models
 
-class OrganizationManager(object):
 
-    def __init__(self, base_url='https://app.vssps.visualstudio.com', creds=None, create_organization_url='https://app.vsaex.visualstudio.com'):
-        self._config = Configuration(base_url= base_url)
+class OrganizationManager():
+    """ Manage DevOps organizations
+
+    Create or list existing organizations
+
+    Attributes:
+        config: url configuration
+        client: authentication client
+        dserialize: deserializer to process http responses into python classes
+    """
+
+    def __init__(self, base_url='https://app.vssps.visualstudio.com', creds=None,
+                 create_organization_url='https://app.vsaex.visualstudio.com'):
+        """Inits OrganizationManager"""
+        self._config = Configuration(base_url=base_url)
         self._client = ServiceClient(creds, self._config)
         #need to make a secondary client for the creating organization as it uses a different base url
-        self._create_organization_config = Configuration(base_url= create_organization_url)
+        self._create_organization_config = Configuration(base_url=create_organization_url)
         self._create_organization_client = ServiceClient(creds, self._create_organization_config)
-        #create the deserializer for the models
         client_models = {k: v for k, v in models.__dict__.items() if isinstance(v, type)}
         self._deserialize = Deserializer(client_models)
-        
-    # validate an organization name by checking it does not already exist and that it fits name restrictions
-    def validate_organization_name(self, organizationName):
-        if re.search("[^0-9A-Za-z-]", organizationName):
-            return models.ValidateAccountName(valid=False, message="The name supplied contains forbidden characters. Only alphanumeric characters and dashes are allowed. Please try another organization name.")
 
+    def validate_organization_name(self, organization_name):
+        """Validate an organization name by checking it does not already exist and that it fits name restrictions"""
+        if re.search("[^0-9A-Za-z-]", organization_name):
+            return models.ValidateAccountName(valid=False, message="""The name supplied contains forbidden characters.
+                                                                      Only alphanumeric characters and dashes are allowed.
+                                                                      Please try another organization name.""")
         #construct url
         url = '/_AzureSpsAccount/ValidateAccountName'
 
         #construct query parameters
         query_paramters = {}
-        query_paramters['accountName'] = organizationName
+        query_paramters['accountName'] = organization_name
 
         #construct header parameters
         header_paramters = {}
         header_paramters['Accept'] = 'application/json'
-        
+
         request = self._client.get(url, params=query_paramters)
         response = self._client.send(request, headers=header_paramters)
 
         # Handle Response
         deserialized = None
         if response.status_code not in [200]:
-            print("GET", request.url, file=stderr)
-            print("response:", response.status_code, file=stderr)
-            print(response.text, file=stderr)
+            logging.error("GET %s", request.url)
+            logging.error("response: %s", response.status_code)
+            logging.error(response.text)
             raise HttpOperationError(self._deserialize, response)
         else:
             deserialized = self._deserialize('ValidateAccountName', response)
 
         return deserialized
 
-
-    #get what organizations/accounts this user/member is part of
-    def get_organizations(self, id):
-        #construct url
+    def list_organizations(self, member_id):
+        """List what organizations this user is part of"""
         url = '/_apis/Commerce/Subscription'
 
         query_paramters = {}
-        query_paramters['memberId'] = id
+        query_paramters['memberId'] = member_id
         query_paramters['includeMSAAccounts'] = True
         query_paramters['queryOnlyOwnerAccounts'] = True
         query_paramters['inlcudeDisabledAccounts'] = False
@@ -72,29 +87,29 @@ class OrganizationManager(object):
         # Handle Response
         deserialized = None
         if response.status_code not in [200]:
-            print("GET", request.url, file=stderr)
-            print("response:", response.status_code, file=stderr)
-            print(response.text, file=stderr)
+            logging.error("GET %s", request.url)
+            logging.error("response: %s", response.status_code)
+            logging.error(response.text)
             raise HttpOperationError(self._deserialize, response)
         else:
             deserialized = self._deserialize('Organizations', response)
 
         return deserialized
 
-    def create_organization(self, regionCode, organizationName):
-        #construct url
+    def create_organization(self, region_code, organization_name):
+        """Create a new organization for user"""
         url = '/_apis/HostAcquisition/collections'
 
         #construct query parameters
         query_paramters = {}
-        query_paramters['collectionName'] = organizationName
-        query_paramters['preferredRegion'] = regionCode
+        query_paramters['collectionName'] = organization_name
+        query_paramters['preferredRegion'] = region_code
         query_paramters['api-version'] = '4.0-preview.1'
 
         #construct header parameters
         header_paramters = {}
         header_paramters['Accept'] = 'application/json'
-        header_paramters['Content-Type'] ='application/json'
+        header_paramters['Content-Type'] = 'application/json'
 
         #construct the payload
         payload = {}
@@ -106,16 +121,18 @@ class OrganizationManager(object):
         # Handle Response
         deserialized = None
         if response.status_code not in [200]:
-            print("POST", request.url, file=stderr)
-            print("response:", response.status_code, file=stderr)
-            print(response.text, file=stderr)
+            logging.error("GET %s", request.url)
+            logging.error("response: %s", response.status_code)
+            logging.error(response.text)
             raise HttpOperationError(self._deserialize, response)
         else:
             deserialized = self._deserialize('NewOrganization', response)
 
         return deserialized
 
-    def get_regions(self):
+    def list_regions(self):
+        """List what regions organizations can exist in"""
+
         # Construct URL
         url = '/_apis/commerce/regions'
 
@@ -130,9 +147,9 @@ class OrganizationManager(object):
         # Handle Response
         deserialized = None
         if response.status_code not in [200]:
-            print("GET", request.url, file=stderr)
-            print("response:", response.status_code, file=stderr)
-            print(response.text, file=stderr)
+            logging.error("GET %s", request.url)
+            logging.error("response: %s", response.status_code)
+            logging.error(response.text)
             raise HttpOperationError(self._deserialize, response)
         else:
             deserialized = self._deserialize('Regions', response)
@@ -140,5 +157,6 @@ class OrganizationManager(object):
         return deserialized
 
     def close_connection(self):
+        """Close the sessions"""
         self._client.close()
         self._create_organization_client.close()

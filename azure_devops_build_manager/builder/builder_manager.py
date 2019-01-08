@@ -1,133 +1,117 @@
-from vsts.vss_connection import VssConnection
-from msrest.authentication import BasicAuthentication
-import vsts.core.v4_1.models as core_models
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+# --------------------------------------------------------------------------------------------
+
 import vsts.build.v4_1.models as build_models
-import vsts.task_agent.v4_1.models as task_agent_models
-import datetime
-import os
-import requests
-from azure_devops_build_manager.pool.pool_manager import PoolManager 
 
-class BuilderManager(object):
+from azure_devops_build_manager.base.base_manager import BaseManager
+from azure_devops_build_manager.pool.pool_manager import PoolManager
 
-    def __init__(self, base_url='https://{}.visualstudio.com', organization_name="", project_name="", repository_name="", creds=None):
-        self._organization_name = organization_name
-        self._project_name = project_name
-        self._repository_name = repository_name
-        self._creds = creds
-        # set up all the necessary vsts/azure devops sdk requirements
-        organization_url = 'https://dev.azure.com/' + self._organization_name
-        # Create a connection to the org
-        connection = VssConnection(base_url=organization_url, creds=creds)
-        # Get a client (the "core" client provides access to projects, teams, etc)
-        self._agent_client = connection.get_client("vsts.task_agent.v4_1.task_agent_client.TaskAgentClient")
-        self._build_client = connection.get_client('vsts.build.v4_1.build_client.BuildClient')
-        self._core_client = connection.get_client('vsts.core.v4_0.core_client.CoreClient')
-        self._git_client = connection.get_client("vsts.git.v4_1.git_client.GitClient")
 
-    def create_definition(self, build_definition_name):
-        # get the project and repository objects
-        project = self.get_project_by_name(self._project_name)
-        repository = self.get_repository_by_name(project, self._repository_name)
+class BuilderManager(BaseManager):
+    """ Manage DevOps Builds
 
-        # find the references to the repository and projects
-        build_repository = build_models.build_repository.BuildRepository(default_branch="master", id=repository.id, name=repository.name, type="TfsGit")
-        team_project_reference = self.get_project_reference(project)
+    This class enables users to create DevOps build definitions and builds specifically for yaml file builds.
+    It can also be used to retrieve existing build definitions and builds.
 
-        # create the definition of the build definition
-        build_definition_definition = self.get_build_definition(team_project_reference, build_repository, build_definition_name)
+    Attributes:
+        See BaseManager
+    """
 
-        # create the definition itself
-        build_definition = self._build_client.create_definition(build_definition_definition, project=project.name)
+    def __init__(self, organization_name="", project_name="", repository_name="", creds=None):
+        """Inits BuilderManager as per BaseManager"""
+        super(BuilderManager, self).__init__(creds, organization_name, project_name, repository_name=repository_name)
 
-        return build_definition
+    def create_definition(self, build_definition_name, pool_name):
+        """Create a build definition in Azure DevOps"""
+        project = self._get_project_by_name(self._project_name)
+        repository = self._get_repository_by_name(project, self._repository_name)
+        pool = self._get_pool_by_name(pool_name)
+
+        # create the relevant objects that are needed for the build definition (this is the minimum amount needed)
+        pool_queue = build_models.agent_pool_queue.AgentPoolQueue(id=pool.id, name=pool.name)
+        build_repository = build_models.build_repository.BuildRepository(default_branch="master", id=repository.id,
+                                                                         name=repository.name, type="TfsGit")
+        team_project_reference = self._get_project_reference(project)
+        build_definition = self._get_build_definition(team_project_reference, build_repository,
+                                                      build_definition_name, pool_queue)
+
+        return self._build_client.create_definition(build_definition, project=project.name)
 
     def list_definitions(self):
-        project = self.get_project_by_name(self._project_name)
+        """List the build definitions that exist in Azure DevOps"""
+        project = self._get_project_by_name(self._project_name)
         return self._build_client.get_definitions(project=project.id)
 
     def create_build(self, build_definition_name, pool_name):
-        pool = self.get_pool_by_name(pool_name)
-        # get the project object
-        project = self.get_project_by_name(self._project_name)
-        definition = self.get_definition_by_name(project, build_definition_name)
-        # find the references to the project and to the build definition
-        team_project_reference = self.get_project_reference(project)
-        build_definition_reference = self.get_build_definition_reference(team_project_reference, definition)
+        """Create a build definition in Azure DevOps"""
+        pool = self._get_pool_by_name(pool_name)
+        project = self._get_project_by_name(self._project_name)
+        definition = self._get_definition_by_name(project, build_definition_name)
 
+        # create the relevant objects that are needed for the build (this is the minimum amount needed)
+        team_project_reference = self._get_project_reference(project)
+        build_definition_reference = self._get_build_definition_reference(team_project_reference, definition)
         pool_queue = build_models.agent_pool_queue.AgentPoolQueue(id=pool.id, name=pool_name)
         build = build_models.build.Build(definition=build_definition_reference, queue=pool_queue)
+
         return self._build_client.queue_build(build, project=project.id)
 
     def list_builds(self):
-        project = self.get_project_by_name(self._project_name)
+        """List the builds that exist in Azure DevOps"""
+        project = self._get_project_by_name(self._project_name)
         return self._build_client.get_builds(project=project.id)
 
-    def get_pool_by_name(self, pool_name):
-        pool_manager = PoolManager(organization_name=self._organization_name, project_name=self._project_name, creds=self._creds)
-        pools = pool_manager.get_pools()
-        for pool in pools.value:
-            if pool.name == pool_name:
-                return pool
-        return None
+    def _get_pool_by_name(self, pool_name):
+        """Helper function to get the pool object from its name"""
+        pool_manager = PoolManager(organization_name=self._organization_name,
+                                   project_name=self._project_name, creds=self._creds)
+        pools = pool_manager.list_pools()
+        return next((pool for pool in pools.value if pool.name == pool_name), None)
 
-    def get_process(self):
+    def _get_process(self):
+        """Helper function to create process dictionary"""
         process = {}
         process["yamlFilename"] = "azure-pipelines.yml"
         process["type"] = 2
         process["resources"] = {}
         return process
 
-
-    def get_project_reference(self, project):
-        team_project_ref = build_models.team_project_reference.TeamProjectReference(
+    def _get_project_reference(self, project):
+        """Helper function to create project reference"""
+        team_project_reference = build_models.team_project_reference.TeamProjectReference(
             abbreviation=project.abbreviation,
             description=project.description,
-            id=project.id, 
+            id=project.id,
             name=project.name,
             revision=project.revision,
             state=project.state,
             url=project.url,
             visibility=project.visibility
             )
-        return team_project_ref
+        return team_project_reference
 
-    def get_build_definition(self, team_project_reference, build_repository, build_definition_name):
-        process = self.get_process()
-        build_def = build_models.build_definition.BuildDefinition(
+    def _get_build_definition(self, team_project_reference, build_repository, build_definition_name, pool_queue):
+        """Helper function to create build definition"""
+        process = self._get_process()
+        build_definition = build_models.build_definition.BuildDefinition(
             project=team_project_reference,
             type=2,
             name=build_definition_name,
             process=process,
             repository=build_repository,
+            queue=pool_queue
         )
-        return build_def
+        return build_definition
 
-    def get_build_definition_reference(self, team_project_reference, build_definition):
+    def _get_build_definition_reference(self, team_project_reference, build_definition):
+        """Helper function to create build definition reference"""
         build_definition_reference = build_models.definition_reference.DefinitionReference(
-            created_date= build_definition.created_date,
-            project=team_project_reference, 
+            created_date=build_definition.created_date,
+            project=team_project_reference,
             type=build_definition.type,
             name=build_definition.name,
             id=build_definition.id
         )
         return build_definition_reference
-
-
-    def get_project_by_name(self, name):
-        for p in self._core_client.get_projects():
-            if p.name == name:
-                return p
-        return None
-
-    def get_repository_by_name(self, project, name):
-        for p in self._git_client.get_repositories(project.id):
-            if p.name == name:
-                return p
-        return None
-
-    def get_definition_by_name(self, project, name):
-        for p in self._build_client.get_definitions(project.id):
-            if p.name == name:
-                return p
-        return None

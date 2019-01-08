@@ -1,3 +1,8 @@
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+# --------------------------------------------------------------------------------------------
+
 from msrest.serialization import Model
 
 class OrganizationDetails(Model):
@@ -27,28 +32,28 @@ class OrganizationDetails(Model):
     }
 
     def __init__(self
-                , accountId = None
-                , accountHostType = None
-                , accountName = None
-                , subscriptionId = None
-                , subscriptionStatus = None
-                , resourceGroupName = None
-                , geoLocation = None
-                , locale = None
-                , regionDisplayName = None
-                , serviceUrls = None
-                , accountTenantId = None
-                , isAccountOwner = None
-                , resourceName = None
-                , subscriptionName = None
-                , isEligibleForPurchase = None
-                , isPrepaidFundSubscription = None
-                , isPricingAvailable = None
-                , subscriptionOfferCode = None
-                , offerType = None
-                , subscriptionTenantId = None
-                , subscriptionObjectId = None
-                , failedPurchaseReason = None):
+                , accountId=None
+                , accountHostType=None
+                , accountName=None
+                , subscriptionId=None
+                , subscriptionStatus=None
+                , resourceGroupName=None
+                , geoLocation=None
+                , locale=None
+                , regionDisplayName=None
+                , serviceUrls=None
+                , accountTenantId=None
+                , isAccountOwner=None
+                , resourceName=None
+                , subscriptionName=None
+                , isEligibleForPurchase=None
+                , isPrepaidFundSubscription=None
+                , isPricingAvailable=None
+                , subscriptionOfferCode=None
+                , offerType=None
+                , subscriptionTenantId=None
+                , subscriptionObjectId=None
+                , failedPurchaseReason=None):
         self.accountId = accountId
         self.accountHostType = accountHostType
         self.accountName = accountName
@@ -71,4 +76,3 @@ class OrganizationDetails(Model):
         self.subscriptionTenantId = subscriptionTenantId
         self.subscriptionObjectId = subscriptionObjectId
         self.failedPurchaseReason = failedPurchaseReason
-

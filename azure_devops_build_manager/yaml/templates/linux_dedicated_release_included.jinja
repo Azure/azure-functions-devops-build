@@ -16,5 +16,11 @@ steps:
     archiveFile: "$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip"
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'
+    PathtoPublish: '$(System.DefaultWorkingDirectory)'
     name: 'drop'
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    connectionType: 'AzureRM'
+    azureSubscription: {{ subscription_name }}
+    appType: 'functionAppLinux'
+    webAppName: {{ functionapp_name }}

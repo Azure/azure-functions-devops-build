@@ -53,7 +53,7 @@ class TestOrganizationManager(unittest.TestCase):
         creds, _, _ = profile.get_login_credentials(subscription_id=None)
 
         organization_manager = OrganizationManager(base_url='https://app.vssps.visualstudio.com', creds=creds)
-        regions = organization_manager.get_regions()
+        regions = organization_manager.list_regions()
         
         self.assertEqual(regions.count, 7)
 
@@ -91,8 +91,8 @@ class TestOrganizationManager(unittest.TestCase):
 
         self.assertRegex(userid.id, r"^[0-9A-Za-z-]+$")
 
-        organizations = organization_manager.get_organizations(userid.id)
-
+        organizations = organization_manager.list_organizations(userid.id)
+        print(organizations.value[0])
         self.assertTrue(len(organizations.value), organizations.count)
     
 if __name__ == '__main__':
