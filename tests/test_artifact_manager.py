@@ -2,6 +2,7 @@ import unittest
 from azure.cli.core import get_default_cli
 from azure.cli.core._profile import Profile
 from azure_devops_build_manager.artifact.artifact_manager import ArtifactManager
+from ._config import ORGANIZATION_NAME, PROJECT_NAME
 
 class TestArtifactManager(unittest.TestCase):
 

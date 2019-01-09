@@ -3,6 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 # --------------------------------------------------------------------------------------------
 
+import os.path as path
 import logging
 from jinja2 import Environment, PackageLoader, select_autoescape
 from azure_devops_build_manager.constants import (LINUX_CONSUMPTION, LINUX_DEDICATED, WINDOWS, PYTHON, NODE, NET, JAVA)
@@ -51,6 +52,7 @@ class YamlManager(object):
             f.write(yaml)
 
 
+
     def _linux_consumption_yaml(self, dependencies, functionapp_name, storage_name, subscription_name, include_release):
         """Helper to create the yaml for linux consumption"""
         env = Environment(
@@ -94,14 +96,26 @@ class YamlManager(object):
                                      subscription_name=subscription_name, functionapp_name=functionapp_name)
         return outputText
 
+    def _requires_extensions(self):
+        return True if path.exists('.csproj') else False
+
     def _python_dependencies(self):
         """Helper to create the standard python dependencies"""
-        dependencies = ["- script: pip3 install -r requirements.txt"]
+        if self._requires_extensions():
+            dependencies = ['- script: |', '    dotnet restore',
+                            '    dotnet build', '    pip3 install -r requirements.txt']
+        else:
+            dependencies = ["- script: pip3 install -r requirements.txt"]
         return dependencies
 
     def _node_dependencies(self):
         """Helper to create the standard node dependencies"""
-        dependencies = ['- script: |', '    npm install', '    npm run build', "  displayName: 'Install dependencies'"]
+        if self._requires_extensions():
+            dependencies = ['- script: |', '    dotnet restore',
+                            '    dotnet build', '    npm install',
+                            '    npm run build', "  displayName: 'Install dependencies'"]
+        else:
+            dependencies = ['- script: |', '    npm install', '    npm run build', "  displayName: 'Install dependencies'"]
         return dependencies
 
     def _net_dependencies(self):
@@ -111,6 +125,6 @@ class YamlManager(object):
 
     def _java_dependencies(self):
         """Helper to create the standard java dependencies"""
-        # TODO java dependencies
+        dependencies = ['- script: |', '    dotnet restore', '    dotnet build', '   mvn clean deploy']
         logging.critical("java dependencies are currently not implemented")
-        return []
+        return dependencies
