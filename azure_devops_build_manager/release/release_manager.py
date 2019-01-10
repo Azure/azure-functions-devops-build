@@ -72,7 +72,7 @@ class ReleaseManager(BaseManager):
             triggers=triggers
         )
 
-        self._release_client.create_release_definition(release_definition, project.id)
+        return self._release_client.create_release_definition(release_definition, project.id)
 
     def list_release_definitions(self):
         project = self.get_project_by_name(self._project_name)
@@ -88,7 +88,7 @@ class ReleaseManager(BaseManager):
             properties={"ReleaseCreationSource": "ReleaseHub"}
         )
 
-        self._release_client.create_release(release_start_metadata, project.id)
+        return self._release_client.create_release(release_start_metadata, project.id)
 
     def list_releases(self):
         project = self.get_project_by_name(self._project_name)
