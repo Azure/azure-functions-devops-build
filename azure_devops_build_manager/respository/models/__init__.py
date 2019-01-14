@@ -4,7 +4,8 @@
 # --------------------------------------------------------------------------------------------
 
 from .repository_response import RepositoryResponse
-
+from .github_connection import GithubConnection
 __all__ = [
-    'RepositoryResponse'
+    'RepositoryResponse',
+    'GithubConnection'
 ]

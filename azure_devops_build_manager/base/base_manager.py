@@ -48,5 +48,14 @@ class BaseManager(object):
         return next((definition for definition in definitions if definition.name == definition_name), None)
 
     def _get_build_by_name(self, project, name):
+        """Helper function to get build object from its name"""
         builds = sorted(self._build_client.get_builds(project=project.id), key=lambda x: x.finish_time, reverse=True)
         return next((build for build in builds if build.definition.name == name))
+
+    def _get_github_repository_by_name(self, project, name):
+        """Helper function to get a github repository object from its name"""
+        service_endpoints = self._service_endpoint_client.get_service_endpoints(project.id)
+        github_endpoint = next((endpoint for endpoint in service_endpoints if endpoint.type == "github"), None)
+        repositories = self._build_client.list_repositories(project.id, 'github', github_endpoint.id)
+        repository_match = next((repository for repository in repositories.repositories if repository.name == name), None)
+        return repository_match

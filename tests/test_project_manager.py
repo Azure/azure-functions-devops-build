@@ -1,3 +1,8 @@
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+# --------------------------------------------------------------------------------------------
+
 from __future__ import print_function
 
 import unittest, string, random
@@ -13,7 +18,6 @@ class TestProjectManager(unittest.TestCase):
         creds, _, _ = profile.get_login_credentials(subscription_id=None)
         project_manager = ProjectManager(organization_name="t-oldolk", creds=creds)
         projects = project_manager.get_existing_projects()
-
         self.assertTrue(hasattr(projects, 'value'))
         self.assertTrue(hasattr(projects, 'count'))
         
@@ -22,7 +26,6 @@ class TestProjectManager(unittest.TestCase):
         profile = Profile(cli_ctx=cli_ctx)
         creds, _, _ = profile.get_login_credentials(subscription_id=None)
         project_manager = ProjectManager(organization_name="az-cli-tests", creds=creds)
-
         p = project_manager.create_project("car2")
 
     
