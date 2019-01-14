@@ -32,6 +32,12 @@ class RepositoryManager(BaseManager):
         """List the current repositories in a project"""
         return self._git_client.get_repositories(self._project_name)
 
+    def list_commits(self, repository_name):
+        project = self._get_project_by_name(self._project_name)
+        repository = self._get_repository_by_name(project, repository_name)
+        return self._git_client.get_commits(repository.id, None, project=project.id)
+
+
     def setup_repository(self, repository_name):
         """This command sets up the repository locally - it initialises the git file and creates the initial push ect"""
         if self._repository_exists():

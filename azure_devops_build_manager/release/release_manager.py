@@ -51,6 +51,8 @@ class ReleaseManager(BaseManager):
 
         deploy_phases = self._get_deploy_phases(deployment_input, workflowtasks, phase_inputs)
 
+        condition = models.condition.Condition(condition_type=1, name="ReleaseStarted", value="")
+
         release_definition_environment = models.release_definition_environment.ReleaseDefinitionEnvironment(
             name="deploy build",
             rank=1,
@@ -58,7 +60,8 @@ class ReleaseManager(BaseManager):
             pre_deploy_approvals=pre_release_approvals,
             post_deploy_approvals=post_release_approvals,
             deploy_phases=deploy_phases,
-            deploy_step=release_deploy_step
+            deploy_step=release_deploy_step,
+            conditions=[condition]
         )
 
 
@@ -69,7 +72,7 @@ class ReleaseManager(BaseManager):
             triggers=triggers
         )
 
-        self._release_client.create_release_definition(release_definition, project.id)
+        return self._release_client.create_release_definition(release_definition, project.id)
 
     def list_release_definitions(self):
         project = self.get_project_by_name(self._project_name)
@@ -85,7 +88,7 @@ class ReleaseManager(BaseManager):
             properties={"ReleaseCreationSource": "ReleaseHub"}
         )
 
-        self._release_client.create_release(release_start_metadata, project.id)
+        return self._release_client.create_release(release_start_metadata, project.id)
 
     def list_releases(self):
         project = self.get_project_by_name(self._project_name)
@@ -116,10 +119,11 @@ class ReleaseManager(BaseManager):
         return None
 
     def _get_triggers(self, artifact_name):
-        triggers = {}
-        triggers["triggerType"] = 1
-        triggers["triggerConditions"] = None
-        triggers["artifactAlias"] = artifact_name
+        trigger = {}
+        trigger["triggerType"] = "artifactSource"
+        trigger["triggerConditions"] = []
+        trigger["artifactAlias"] = artifact_name
+        triggers = [trigger]
         return triggers
 
     def _get_deployment_input(self, pool_id):

@@ -92,15 +92,28 @@ class BuilderManager(BaseManager):
             )
         return team_project_reference
 
+    def _get_triggers(self):
+        trigger = {}
+        trigger["branchFilters"] = []
+        trigger["pathFilters"] = []
+        trigger["settingsSourceType"] = 2
+        trigger["batchChanges"] = False
+        trigger["maxConcurrentBuildsPerBranch"] = 1
+        trigger["triggerType"] = "continuousIntegration"
+        triggers = [trigger]
+        return triggers
+
     def _get_build_definition(self, team_project_reference, build_repository, build_definition_name, pool_queue):
         """Helper function to create build definition"""
         process = self._get_process()
+        triggers = self._get_triggers()
         build_definition = build_models.build_definition.BuildDefinition(
             project=team_project_reference,
             type=2,
             name=build_definition_name,
             process=process,
             repository=build_repository,
+            triggers=triggers,
             queue=pool_queue
         )
         return build_definition

@@ -1,4 +1,7 @@
 # Starter template for Azure functions build
+trigger:
+- master
+
 pool:
   vmImage: 'VS2017-Win2016'
 
@@ -14,7 +17,7 @@ steps:
   inputs:
     rootFolderOrFile: "$(System.DefaultWorkingDirectory)"
     includeRootFolder: false
-    archiveFile: "$(System.DefaultWorkingDirectory)/$(Build.BuildId).zip"
+    archiveFile: "$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip"
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'

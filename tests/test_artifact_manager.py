@@ -2,6 +2,7 @@ import unittest
 from azure.cli.core import get_default_cli
 from azure.cli.core._profile import Profile
 from azure_devops_build_manager.artifact.artifact_manager import ArtifactManager
+from ._config import ORGANIZATION_NAME, PROJECT_NAME
 
 class TestArtifactManager(unittest.TestCase):
 
@@ -12,7 +13,7 @@ class TestArtifactManager(unittest.TestCase):
         organization_name = "function-deployments-releases"
         project_name = "blah"
         artifact_manager = ArtifactManager(organization_name=organization_name, project_name=project_name, creds=creds)
-        print(artifact_manager.list_artifacts("1")[0])
+        self.assertTrue(type(artifact_manager.list_artifacts("1")) == list)
         
 if __name__ == '__main__':
     unittest.main()
