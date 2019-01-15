@@ -1,5 +1,6 @@
 # the test config file
 tests/_config.py
+python_test_application/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
