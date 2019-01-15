@@ -14,11 +14,9 @@ from ._config import FUNCTIONAPP_NAME, SUBSCRIPTION_NAME, STORAGE_NAME
 class TestYamlManager(unittest.TestCase):
 
     def test_create_yaml(self):
-
-        yaml_manager = YamlManager(JAVA, WINDOWS)
-
-        print(yaml_manager.create_yaml("{functionapp_name}", "{subscription_name}", "{storage_name}", True))
-        
+        yaml_manager = YamlManager(PYTHON, LINUX_DEDICATED)
+        # We don't usually use the file path but for testing we need to make sure we create the azure pipelines file in the right file
+        yaml_manager.create_yaml(file_path="python_test_application/azure-pipelines.yml")
     
 if __name__ == '__main__':
     unittest.main()

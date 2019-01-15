@@ -8,25 +8,30 @@
 # You need to fill in the variables with names of the resources you already have
 # When you are finished setting the configs then you can run test.cmd
 
-# The create devops objects setting sets whether the test will run create commands. The default is false
+# The create devops objects setting sets whether the test will run create commands. The default is false. 
+# You need to be careful as
 CREATE_DEVOPS_OBJECTS = False
 
-# Specify the name of your already created devops objects
-ORGANIZATION_NAME = 'colbys-donut-pizza'
-PROJECT_NAME = 'donut-pizza-2'
-REPOSITORY_NAME = 'donut-pizza-2'
-SERVICE_ENDPOINT_NAME = ORGANIZATION_NAME + PROJECT_NAME
-GITHUB_REPOSITORY_NAME = 'python_simple_functionapp_tester'
+# If the create devops is false you only need to specify the following:
 
-BUILD_DEFINITION_NAME_GIT = 'github-test-3'
-BUILD_DEFINITION_NAME = 'normal-test-1'
-RELEASE_DEFINITION_NAME = 'release blah'
+
+
+# Specify the name of your already created devops objects
+ORGANIZATION_NAME = '{organization name}'
+PROJECT_NAME = '{project name}'
+REPOSITORY_NAME = '{repository name within the project}'
+SERVICE_ENDPOINT_NAME = ORGANIZATION_NAME + PROJECT_NAME
+GITHUB_REPOSITORY_NAME = '{github repository name }' # leave this as if if not running the github tests
+
+BUILD_DEFINITION_NAME_GIT = '{build definition name for github test}'
+BUILD_DEFINITION_NAME = '{build definition name}'
+RELEASE_DEFINITION_NAME = '{release definition name}'
 
 # Do not change this from default.
 POOL_NAME = 'Default'
 
 # Specify the details of your azure functions resource
-FUNCTIONAPP_NAME = 'dolk-devops-python'
-SUBSCRIPTION_NAME = 'dolk-devops-python'
-STORAGE_NAME = 'dolkdevops-9283'
-RESOURCE_GROUP_NAME = 'dolk-devops-python'
+FUNCTIONAPP_NAME = '{functionapp name}'
+SUBSCRIPTION_NAME = '{subscription name'
+STORAGE_NAME = '{storage name}'
+RESOURCE_GROUP_NAME = '{resource group name}'

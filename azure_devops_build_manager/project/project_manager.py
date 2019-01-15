@@ -25,6 +25,7 @@ class ProjectManager(BaseManager):
         dserialize: deserializer to process http responses into python classes
         Otherwise see BaseManager
     """
+
     def __init__(self, base_url='https://{}.visualstudio.com', organization_name="", creds=None, create_project_url='https://dev.azure.com'):
         """Inits Project as per BaseManager and adds relevant other needed fields"""
         super(ProjectManager, self).__init__(creds, organization_name=organization_name)

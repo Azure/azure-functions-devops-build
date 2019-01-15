@@ -11,19 +11,29 @@ from azure.cli.core._profile import Profile
 from azure_devops_build_manager.release.release_manager import ReleaseManager
 from azure_devops_build_manager.pool.pool_manager import PoolManager
 from azure_devops_build_manager.constants import LINUX_CONSUMPTION, LINUX_DEDICATED, WINDOWS
+from ._config import CREATE_DEVOPS_OBJECTS, ORGANIZATION_NAME, PROJECT_NAME, REPOSITORY_NAME, SERVICE_ENDPOINT_NAME, BUILD_DEFINITION_NAME, RELEASE_DEFINITION_NAME, POOL_NAME, FUNCTIONAPP_NAME, STORAGE_NAME, RESOURCE_GROUP_NAME
 from ._helpers import get_credentials
 
 
 class TestReleaseManager(unittest.TestCase):
 
+    def test_list_release_definitions(self):
+        creds = get_credentials()
+        release_manager = ReleaseManager(organization_name=ORGANIZATION_NAME, project_name=PROJECT_NAME, creds=creds)
+        release_manager.list_release_definitions()
+
+    def test_list_releases(self):
+        creds = get_credentials()
+        release_manager = ReleaseManager(organization_name=ORGANIZATION_NAME, project_name=PROJECT_NAME, creds=creds)
+        release_manager.list_releases()
+
+    @unittest.skipIf(CREATE_DEVOPS_OBJECTS == False,
+                    "skipping - set CREATE_DEVOPS_OBJECTS to True if you don't want to skip creates")
     def test_basic_release(self):
         creds = get_credentials()
-        organization_name = "function-deployments-releases"
-        project_name = "py-consump"
-        release_definition_name = "test-4"
-        release_manager = ReleaseManager(organization_name=organization_name, project_name=project_name, creds=creds)
-        release_manager.create_release_definition(project_name, 'drop', "Hosted VS2017", organization_name+project_name, release_definition_name,
-                                                LINUX_CONSUMPTION, 'dolk-python-consumption-2', 'dolkpythonconsuacfd', 'dolk-python-consumption-2')
+        release_manager = ReleaseManager(organization_name=ORGANIZATION_NAME, project_name=PROJECT_NAME, creds=creds)
+        release_manager.create_release_definition(PROJECT_NAME, 'drop', "Hosted VS2017", SERVICE_ENDPOINT_NAME, RELEASE_DEFINITION_NAME,
+                                                LINUX_CONSUMPTION, FUNCTIONAPP_NAME, STORAGE_NAME, RESOURCE_GROUP_NAME)
 
         release_manager.create_release(release_definition_name)
 

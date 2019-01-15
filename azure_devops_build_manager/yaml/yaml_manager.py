@@ -21,7 +21,7 @@ class YamlManager(object):
         self._language = language
         self._app_type = app_type
 
-    def create_yaml(self, functionapp_name, subscription_name, storage_name, include_release=False):
+    def create_yaml(self, functionapp_name=None, subscription_name=None, storage_name=None, include_release=False, file_path=""):
         """Create the yaml to be able to create build in the azure-pipelines.yml file"""
         if self._language == PYTHON:
             dependencies = self._python_dependencies()
@@ -48,10 +48,14 @@ class YamlManager(object):
         else:
             logging.warning("valid app type not found")
             yaml = ""
-        with open('azure-pipelines.yml', 'w') as f:
-            f.write(yaml)
 
-
+        # User can specify the file path
+        if file_path != "":
+            with open(file_path, 'w') as f:
+                f.write(yaml)
+        else:
+            with open('azure-pipelines.yml', 'w') as f:
+                f.write(yaml)
 
     def _linux_consumption_yaml(self, dependencies, functionapp_name, storage_name, subscription_name, include_release):
         """Helper to create the yaml for linux consumption"""
