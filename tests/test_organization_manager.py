@@ -1,3 +1,8 @@
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+# --------------------------------------------------------------------------------------------
+
 from __future__ import print_function
 
 import unittest, string, random
@@ -5,6 +10,8 @@ from azure.cli.core import get_default_cli
 from azure.cli.core._profile import Profile
 from azure_devops_build_manager.organization.organization_manager import OrganizationManager
 from azure_devops_build_manager.user.user_manager import UserManager
+from ._config import CREATE_DEVOPS_OBJECTS, ORGANIZATION_NAME
+from ._helpers import get_credentials
 
 class TestOrganizationManager(unittest.TestCase):
 
@@ -12,88 +19,57 @@ class TestOrganizationManager(unittest.TestCase):
         return ''.join(random.choice(chars) for _ in range(size))
 
     def test_invalid_organization_name_characters(self):
-        cli_ctx = get_default_cli()
-        profile = Profile(cli_ctx=cli_ctx)
-        creds, _, _ = profile.get_login_credentials(subscription_id=None)
+        creds = get_credentials()
         organization_manager = OrganizationManager(base_url='https://app.vssps.visualstudio.com', creds=creds)
         validation = organization_manager.validate_organization_name('hello_123##')
         self.assertFalse(validation.valid)
-
         organization_manager.close_connection()
 
 
     def test_invalid_organization_name_already_exists(self):
-        cli_ctx = get_default_cli()
-        profile = Profile(cli_ctx=cli_ctx)
-        creds, _, _ = profile.get_login_credentials(subscription_id=None)
-
+        creds = get_credentials()
         organization_manager = OrganizationManager(base_url='https://app.vssps.visualstudio.com', creds=creds)
         validation = organization_manager.validate_organization_name('hello')
         self.assertFalse(validation.valid)
-
         organization_manager.close_connection()
 
 
     def test_valid_organization_name(self):
-        #construct the cli_ctx to auth
-        cli_ctx = get_default_cli()
-        profile = Profile(cli_ctx=cli_ctx)
-        creds, _, _ = profile.get_login_credentials(subscription_id=None)
-
+        creds = get_credentials()
         organization_manager = OrganizationManager(base_url='https://app.vssps.visualstudio.com', creds=creds)
         validation = organization_manager.validate_organization_name('iamatruelykeenbeans')
         self.assertTrue(validation.valid)
-
         organization_manager.close_connection()
 
     def test_regions(self):
-        #construct the cli_ctx to auth
-        cli_ctx = get_default_cli()
-        profile = Profile(cli_ctx=cli_ctx)
-        creds, _, _ = profile.get_login_credentials(subscription_id=None)
-
+        creds = get_credentials()
         organization_manager = OrganizationManager(base_url='https://app.vssps.visualstudio.com', creds=creds)
         regions = organization_manager.list_regions()
-        
-        self.assertEqual(regions.count, 7)
-
+        self.assertEqual(regions.count, len(regions.value))
         organization_manager.close_connection()
 
-    @unittest.skip("skipping - remove this if you want to create organizations")
+    @unittest.skipIf(CREATE_DEVOPS_OBJECTS == False,
+                    "skipping - set CREATE_DEVOPS_OBJECTS to True if you don't want to skip creates")
     def test_create_organization(self):
-        #construct the cli_ctx to auth
-        cli_ctx = get_default_cli()
-        profile = Profile(cli_ctx=cli_ctx)
-        creds, _, _ = profile.get_login_credentials(subscription_id=None)
-
-        name = self.id_generator()
-
+        creds = get_credentials()
         organization_manager = OrganizationManager(base_url='https://app.vssps.visualstudio.com', creds=creds, create_organization_url='https://app.vsaex.visualstudio.com')
         regions = organization_manager.get_regions()
-        
-        organization_manager.create_organization(regions.value[0].regionCode, name)
-
+        organization_manager.create_organization(regions.value[0].regionCode, ORGANIZATION_NAME)
         #since we have created the organization the name is taken
-        validation = organization_manager.validate_organization_name(name)
+        validation = organization_manager.validate_organization_name(ORGANIZATION_NAME)
         self.assertFalse(validation.valid)
-
         organization_manager.close_connection()
 
-    def test_get_organization(self):
-        cli_ctx = get_default_cli()
-        profile = Profile(cli_ctx=cli_ctx)
-        creds, _, _ = profile.get_login_credentials(subscription_id=None)
-
+    def test_list_organizations(self):
+        creds = get_credentials()
         organization_manager = OrganizationManager(creds=creds)
         user_manager = UserManager(creds=creds)
-
         userid = user_manager.get_user_id()
-
         self.assertRegex(userid.id, r"^[0-9A-Za-z-]+$")
-
         organizations = organization_manager.list_organizations(userid.id)
-        print(organizations.value[0])
         self.assertTrue(len(organizations.value), organizations.count)
+        found_organization = next((organization for organization in organizations.value if organization.accountName == ORGANIZATION_NAME), None)
+        self.assertTrue(found_organization != None)
     
 if __name__ == '__main__':
     unittest.main()

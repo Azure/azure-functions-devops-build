@@ -1,19 +1,27 @@
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+# --------------------------------------------------------------------------------------------
+
 import unittest
-from azure.cli.core import get_default_cli
-from azure.cli.core._profile import Profile
+
+import vsts
+from vsts.build.v4_1.models.build_artifact import BuildArtifact
+import azure_devops_build_manager
 from azure_devops_build_manager.artifact.artifact_manager import ArtifactManager
 from ._config import ORGANIZATION_NAME, PROJECT_NAME
+from ._helpers import get_credentials
 
 class TestArtifactManager(unittest.TestCase):
 
-    def test_list_extensions(self):
-        cli_ctx = get_default_cli()
-        profile = Profile(cli_ctx=cli_ctx)
-        creds, _, _ = profile.get_login_credentials(subscription_id=None)
-        organization_name = "function-deployments-releases"
-        project_name = "blah"
+    def test_list_artifacts(self):
+        """This test tests the functionality of listing artifacts. It requires there to be artifacts to list in the project"""
+        creds = get_credentials()
+        organization_name = ORGANIZATION_NAME
+        project_name = PROJECT_NAME
         artifact_manager = ArtifactManager(organization_name=organization_name, project_name=project_name, creds=creds)
-        self.assertTrue(type(artifact_manager.list_artifacts("1")) == list)
-        
-if __name__ == '__main__':
-    unittest.main()
+        artifacts = artifact_manager.list_artifacts("1")
+        if artifacts:
+            # If the user is using the devops build manager to make builds there should only be one artifact 
+            # called drop as a result of running the builder commands.
+            self.assertEqual(artifacts[0].name, 'drop')
