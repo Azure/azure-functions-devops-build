@@ -8,24 +8,21 @@
 # You need to fill in the variables with names of the resources you already have
 # When you are finished setting the configs then you can run test.cmd
 
-# The create devops objects setting sets whether the test will run create commands. The default is false. 
-# You need to be careful as
-CREATE_DEVOPS_OBJECTS = False
+# The create devops objects setting sets whether the test will run create commands. The default is true as false requires that you
+# have already created the devops objects
+CREATE_DEVOPS_OBJECTS = True
 
-# If the create devops is false you only need to specify the following:
-
-
-
-# Specify the name of your already created devops objects
+# Specify the name of the devops objects you want to create/have already created (in the case of create devops objects being false)
 ORGANIZATION_NAME = '{organization name}'
-PROJECT_NAME = '{project name}'
-REPOSITORY_NAME = '{repository name within the project}'
+PROJECT_NAME = 'project'
 SERVICE_ENDPOINT_NAME = ORGANIZATION_NAME + PROJECT_NAME
-GITHUB_REPOSITORY_NAME = '{github repository name }' # leave this as if if not running the github tests
+REPOSITORY_NAME = PROJECT_NAME
+BUILD_DEFINITION_NAME = PROJECT_NAME
+RELEASE_DEFINITION_NAME = 'release'
 
-BUILD_DEFINITION_NAME_GIT = '{build definition name for github test}'
-BUILD_DEFINITION_NAME = '{build definition name}'
-RELEASE_DEFINITION_NAME = '{release definition name}'
+# These parameters are currently not used in tests
+GITHUB_REPOSITORY_NAME = None
+BUILD_DEFINITION_NAME_GIT = None
 
 # Do not change this from default.
 POOL_NAME = 'Default'

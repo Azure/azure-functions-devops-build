@@ -3,11 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 # --------------------------------------------------------------------------------------------
 
-from __future__ import print_function
-
-import unittest, string, random
-from azure.cli.core import get_default_cli
-from azure.cli.core._profile import Profile
+import unittest
 from azure_devops_build_manager.extension.extension_manager import ExtensionManager
 from ._config import CREATE_DEVOPS_OBJECTS, ORGANIZATION_NAME, PROJECT_NAME
 from ._helpers import get_credentials

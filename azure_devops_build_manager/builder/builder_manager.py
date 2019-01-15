@@ -4,6 +4,7 @@
 # --------------------------------------------------------------------------------------------
 
 import vsts.build.v4_1.models as build_models
+import time
 
 from azure_devops_build_manager.base.base_manager import BaseManager
 from azure_devops_build_manager.pool.pool_manager import PoolManager
@@ -69,6 +70,18 @@ class BuilderManager(BaseManager):
         """List the builds that exist in Azure DevOps"""
         project = self._get_project_by_name(self._project_name)
         return self._build_client.get_builds(project=project.id)
+
+    def _get_build_by_id(self, build_id):
+        builds = self.list_builds()
+        return next((build for build in builds if build.id == build_id))
+
+    def poll_build(self, build_name):
+        project = self._get_project_by_name(self._project_name)
+        build = self._get_build_by_name(project, build_name)
+        while build.status != 'completed':
+            time.sleep(1)
+            build = self._get_build_by_id(build.id)
+        return build
 
     def _get_pool_by_name(self, pool_name):
         """Helper function to get the pool object from its name"""

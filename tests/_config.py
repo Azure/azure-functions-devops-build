@@ -2,31 +2,34 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 # --------------------------------------------------------------------------------------------
-
-"""This file contains the configs needed for the tests"""
+from azure_devops_build_manager.constants import LINUX_CONSUMPTION, LINUX_DEDICATED, WINDOWS, NODE, PYTHON, JAVA, NET
 
 # You need to fill in the variables with names of the resources you already have
 # When you are finished setting the configs then you can run test.cmd
 
 # The create devops objects setting sets whether the test will run create commands. The default is false
-CREATE_DEVOPS_OBJECTS = False
+CREATE_DEVOPS_OBJECTS = True
 
 # Specify the name of your already created devops objects
-ORGANIZATION_NAME = 'colbys-donut-pizza'
-PROJECT_NAME = 'donut-pizza-2'
-REPOSITORY_NAME = 'donut-pizza-2'
+ORGANIZATION_NAME = 'dolk-automated-10'
+PROJECT_NAME = 'auto-python'
 SERVICE_ENDPOINT_NAME = ORGANIZATION_NAME + PROJECT_NAME
-GITHUB_REPOSITORY_NAME = 'python_simple_functionapp_tester'
 
+REPOSITORY_NAME = PROJECT_NAME
+BUILD_DEFINITION_NAME = PROJECT_NAME
+
+GITHUB_REPOSITORY_NAME = 'python_simple_functionapp_tester'
 BUILD_DEFINITION_NAME_GIT = 'github-test-3'
-BUILD_DEFINITION_NAME = 'normal-test-1'
+
 RELEASE_DEFINITION_NAME = 'release blah'
 
 # Do not change this from default.
 POOL_NAME = 'Default'
 
 # Specify the details of your azure functions resource
-FUNCTIONAPP_NAME = 'dolk-devops-python'
-SUBSCRIPTION_NAME = 'dolk-devops-python'
-STORAGE_NAME = 'dolkdevops-9283'
-RESOURCE_GROUP_NAME = 'dolk-devops-python'
+FUNCTIONAPP_NAME = 'dolk-demo-py-c'
+FUNCTIONAPP_TYPE = LINUX_CONSUMPTION
+FUNCTIONAPP_LANGUAGE = PYTHON
+SUBSCRIPTION_NAME = 'dolk-demos'
+STORAGE_NAME = 'dolkdemopyc8827'
+RESOURCE_GROUP_NAME = 'dolk-demos'

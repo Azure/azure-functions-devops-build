@@ -4,8 +4,6 @@
 # --------------------------------------------------------------------------------------------
 
 import unittest
-from azure.cli.core import get_default_cli
-from azure.cli.core._profile import Profile
 from azure_devops_build_manager.pool.pool_manager import PoolManager
 from ._config import CREATE_DEVOPS_OBJECTS, ORGANIZATION_NAME, PROJECT_NAME
 from ._helpers import get_credentials

@@ -3,11 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 # --------------------------------------------------------------------------------------------
 
-from __future__ import print_function
-
 import unittest, string, random
-from azure.cli.core import get_default_cli
-from azure.cli.core._profile import Profile
 from azure_devops_build_manager.organization.organization_manager import OrganizationManager
 from azure_devops_build_manager.user.user_manager import UserManager
 from ._config import CREATE_DEVOPS_OBJECTS, ORGANIZATION_NAME
@@ -52,12 +48,9 @@ class TestOrganizationManager(unittest.TestCase):
                     "skipping - set CREATE_DEVOPS_OBJECTS to True if you don't want to skip creates")
     def test_create_organization(self):
         creds = get_credentials()
-        organization_manager = OrganizationManager(base_url='https://app.vssps.visualstudio.com', creds=creds, create_organization_url='https://app.vsaex.visualstudio.com')
-        regions = organization_manager.get_regions()
-        organization_manager.create_organization(regions.value[0].regionCode, ORGANIZATION_NAME)
-        #since we have created the organization the name is taken
-        validation = organization_manager.validate_organization_name(ORGANIZATION_NAME)
-        self.assertFalse(validation.valid)
+        organization_manager = OrganizationManager(creds=creds)
+        regions = organization_manager.list_regions()
+        org = organization_manager.create_organization('CUS', ORGANIZATION_NAME)
         organization_manager.close_connection()
 
     def test_list_organizations(self):
