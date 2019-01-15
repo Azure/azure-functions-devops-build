@@ -4,10 +4,6 @@
 # --------------------------------------------------------------------------------------------
 
 import unittest
-
-import vsts
-from vsts.build.v4_1.models.build_artifact import BuildArtifact
-import azure_devops_build_manager
 from azure_devops_build_manager.artifact.artifact_manager import ArtifactManager
 from ._config import ORGANIZATION_NAME, PROJECT_NAME
 from ._helpers import get_credentials

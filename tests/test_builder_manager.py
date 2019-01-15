@@ -22,6 +22,13 @@ class TestBuilderManager(unittest.TestCase):
 
     @unittest.skipIf(CREATE_DEVOPS_OBJECTS == False,
                      "skipping - set CREATE_DEVOPS_OBJECTS to True if you don't want to skip creates")
+    def test_poll_builds(self):
+        creds = get_credentials()
+        builder_manager = BuilderManager(organization_name=ORGANIZATION_NAME, project_name=PROJECT_NAME, repository_name=REPOSITORY_NAME, creds=creds)
+        build = builder_manager.poll_build(BUILD_DEFINITION_NAME)
+
+    @unittest.skipIf(CREATE_DEVOPS_OBJECTS == False,
+                     "skipping - set CREATE_DEVOPS_OBJECTS to True if you don't want to skip creates")
     def test_create_definition_and_build(self):
         creds = get_credentials()
         builder_manager = BuilderManager(organization_name=ORGANIZATION_NAME, project_name=PROJECT_NAME, repository_name=REPOSITORY_NAME, creds=creds)

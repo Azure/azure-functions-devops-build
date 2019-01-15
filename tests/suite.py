@@ -1,3 +1,9 @@
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+# --------------------------------------------------------------------------------------------
+
+import os
 import unittest
 from .test_artifact_manager import TestArtifactManager
 from .test_builder_manager import TestBuilderManager
@@ -10,10 +16,13 @@ from .test_repository_manager import TestRepositoryManager
 from .test_service_endpoint_manager import TestServiceEndpointManager
 from .test_yaml_manager import TestYamlManager
 
-# TODO : Github integration test suite
-
 def suite():
     suite = unittest.TestSuite()
+    
+    # We need to make sure we are in the test application's folder that we created to try do these end to end tests
+    test_folder = (os.getcwd() + '\python_test_application')
+    os.chdir(test_folder)
+
     # Test the relevant elements of the organization manager
     suite.addTest(TestOrganizationManager('test_invalid_organization_name_characters'))
     suite.addTest(TestOrganizationManager('test_invalid_organization_name_already_exists'))
@@ -21,7 +30,7 @@ def suite():
     suite.addTest(TestOrganizationManager('test_regions'))
     suite.addTest(TestOrganizationManager('test_create_organization'))
     suite.addTest(TestOrganizationManager('test_list_organizations'))
-
+    
     # Test the relevant elements of the project manager
     suite.addTest(TestProjectManager('test_list_projects'))
     suite.addTest(TestProjectManager('test_create_project'))
@@ -32,6 +41,7 @@ def suite():
     # Test the repository manager
     suite.addTest(TestRepositoryManager('test_list_commits'))
     suite.addTest(TestRepositoryManager('test_list_repositories'))
+    suite.addTest(TestRepositoryManager('test_initial_setup'))
 
     # Test the service endpoint
     suite.addTest(TestServiceEndpointManager('test_create_service_endpoint'))
@@ -45,6 +55,7 @@ def suite():
     suite.addTest(TestBuilderManager('test_list_definitions'))
     suite.addTest(TestBuilderManager('test_list_builds'))
     suite.addTest(TestBuilderManager('test_create_definition_and_build'))
+    suite.addTest(TestBuilderManager('test_poll_builds'))
 
     # Test the releaser
     suite.addTest(TestReleaseManager('test_list_release_definitions'))

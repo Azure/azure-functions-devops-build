@@ -38,21 +38,20 @@ for organization in organizations:
 
 ## API documentation
 
-This Python library extensively uses the Azure DevOps REST APIs and Azure Devops Python API. See the [Azure DevOps REST API reference](https://docs.microsoft.com/en-us/rest/api/vsts/?view=vsts-rest-5.0) for details on calling different APIs and https://github.com/Microsoft/azure-devops-python-api for details on the azure-devops-python-api.
+This Python library extensively uses the Azure DevOps REST APIs and Azure Devops Python API. See the [Azure DevOps REST API reference](https://docs.microsoft.com/en-us/rest/api/vsts/?view=vsts-rest-5.0) for details on calling different APIs and [Azure DevOps Python SDK] (https://github.com/Microsoft/azure-devops-python-api) for details on the azure-devops-python-api.
 
 ## Samples
 
-See samples by looking at tests or viewing the az-cli functionapp devops-build module.
+See samples by looking at tests or viewing the [az-cli functionapp devops-build module](https://github.com/Azure/azure-cli/tree/dev/src/command_modules/azure-cli-appservice/azure/cli/command_modules/appservice).
 
 ## Testing
 
 Several things need to be setup before you can run the tests:
-1. You need to be signed into the az cli. You can do this by using `az login`.
-2. Since this directly deploys to azure functions you need to create an azure functions functionapp using the azure portal. Make sure you record the details of the subscription name, project name, application type and storage name
-3. 
-
-
-To run the tests you need to first setup the config file in the tests file. Follow the instructions in there and then run `python -m unittest discover`
+1. Signed into the az cli. You can do this by using `az login`.
+2. Since this directly deploys to azure functions, [create an azure functions functionapp using the azure portal](https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function). You need to make a functionapp for these tests to successfully run and make sure you record the details of the subscription name, project name, application type and storage name.
+3. Create a _config.py file with all the needed details in the tests folder. You can follow the tests/_config_example.py file in the tests folder to see what information you need.
+4. Run the tests using end to end tests using end_to_end_test.cmd
+5. To run specific manager tests run `python -m tests.{NAME_OF_MANAGER}` eg. `python -m tests.test_builder_manager`
 
 ## Contributing
 
