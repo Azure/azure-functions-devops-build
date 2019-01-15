@@ -42,7 +42,7 @@ This Python library extensively uses the Azure DevOps REST APIs and Azure Devops
 
 ## Samples
 
-See samples by looking at tests or viewing the az-cli functionapp devops-build module.
+See samples by looking at tests or viewing the [az-cli functionapp devops-build module] (https://github.com/Azure/azure-cli/tree/dev/src/command_modules/azure-cli-appservice/azure/cli/command_modules/appservice).
 
 ## Testing
 
