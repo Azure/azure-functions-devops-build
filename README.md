@@ -48,9 +48,9 @@ See samples by looking at tests or viewing the [az-cli functionapp devops-build 
 
 Several things need to be setup before you can run the tests:
 1. Signed into the az cli. You can do this by using `az login`.
-2. Since this directly deploys to azure functions, [create an azure functions functionapp using the azure portal](https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function). You need to make a python functionapp for these tests to successfully run and make sure you record the details of the subscription name, project name, application type and storage name.
+2. Since this directly deploys to azure functions, [create an azure functions functionapp using the azure portal](https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function). You need to make a functionapp for these tests to successfully run and make sure you record the details of the subscription name, project name, application type and storage name.
 3. Create a _config.py file with all the needed details in the tests folder. You can follow the tests/_config_example.py file in the tests folder to see what information you need.
-4. Run the tests using end to end tests using test.cmd
+4. Run the tests using end to end tests using end_to_end_test.cmd
 5. To run specific manager tests run `python -m tests.{NAME_OF_MANAGER}` eg. `python -m tests.test_builder_manager`
 
 ## Contributing

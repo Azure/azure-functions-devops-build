@@ -2,6 +2,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 # --------------------------------------------------------------------------------------------
+from azure_devops_build_manager.constants import LINUX_CONSUMPTION, LINUX_DEDICATED, WINDOWS, NODE, PYTHON, JAVA, NET
 
 """This file contains the configs needed for the tests"""
 
@@ -20,15 +21,12 @@ REPOSITORY_NAME = PROJECT_NAME
 BUILD_DEFINITION_NAME = PROJECT_NAME
 RELEASE_DEFINITION_NAME = 'release'
 
-# These parameters are currently not used in tests
-GITHUB_REPOSITORY_NAME = None
-BUILD_DEFINITION_NAME_GIT = None
-
 # Do not change this from default.
 POOL_NAME = 'Default'
 
 # Specify the details of your azure functions resource
 FUNCTIONAPP_NAME = '{functionapp name}'
-SUBSCRIPTION_NAME = '{subscription name'
 STORAGE_NAME = '{storage name}'
 RESOURCE_GROUP_NAME = '{resource group name}'
+FUNCTIONAPP_TYPE = '{Functionapp type}' # choose from LINUX_CONSUMPTION, LINUX_DEDICATED, WINDOWS
+FUNCTIONAPP_LANGUAGE = '{Functionapp language}' # choose from NODE, PYTHON, JAVA, NET

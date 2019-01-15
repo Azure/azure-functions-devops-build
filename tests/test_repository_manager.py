@@ -27,16 +27,5 @@ class TestRepositoryManager(unittest.TestCase):
         repository_manager = RepositoryManager(organization_name=ORGANIZATION_NAME, project_name=PROJECT_NAME, creds=creds)
         setup = repository_manager.setup_repository(REPOSITORY_NAME)
 
-    def test_github(self):
-        creds = get_credentials()
-        repository_manager = RepositoryManager(organization_name=ORGANIZATION_NAME, project_name=PROJECT_NAME, creds=creds)
-        print(repository_manager._github())
-
-    def test_get_github(self):
-        creds = get_credentials()
-        repository_manager = RepositoryManager(organization_name=ORGANIZATION_NAME, project_name=PROJECT_NAME, creds=creds)
-        for repo in (repository_manager._get_github_repsotories().repositories):
-            print(repo)
-
 if __name__ == '__main__':
     unittest.main()

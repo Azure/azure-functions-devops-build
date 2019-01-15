@@ -16,8 +16,6 @@ from .test_repository_manager import TestRepositoryManager
 from .test_service_endpoint_manager import TestServiceEndpointManager
 from .test_yaml_manager import TestYamlManager
 
-# TODO : Github integration test suite
-
 def suite():
     suite = unittest.TestSuite()
     
@@ -63,8 +61,6 @@ def suite():
     suite.addTest(TestReleaseManager('test_list_release_definitions'))
     suite.addTest(TestReleaseManager('test_list_releases'))
     suite.addTest(TestReleaseManager('test_basic_release'))
-
-
 
     suite.addTest(TestArtifactManager('test_list_artifacts'))
     suite.addTest(TestPoolManager('test_list_pools'))
