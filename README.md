@@ -42,15 +42,15 @@ This Python library extensively uses the Azure DevOps REST APIs and Azure Devops
 
 ## Samples
 
-See samples by looking at tests or viewing the az-cli functionapp devops-build module.
+See samples by looking at tests or viewing the [az-cli functionapp devops-build module](https://github.com/Azure/azure-cli/tree/dev/src/command_modules/azure-cli-appservice/azure/cli/command_modules/appservice).
 
 ## Testing
 
 Several things need to be setup before you can run the tests:
-
-
-
-To run the tests you need to first setup the config file in the tests file. Follow the instructions in there and then run `python -m unittest discover`
+1. Signed into the az cli. You can do this by using `az login`.
+2. Since this directly deploys to azure functions, [create an azure functions functionapp using the azure portal](https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-azure-function). Make sure you record the details of the subscription name, project name, application type and storage name.
+3. Create a _config.py file with all the needed details in the tests folder. You can follow the tests/_config_example.py file in the tests folder to see what information you need.
+4. Run the tests using test.cmd
 
 ## Contributing
 
