@@ -1,10 +1,8 @@
-# Starter template for Azure functions build for {{language}} {{appType}}
+# Starter template for Azure functions build for
 trigger:
 - master
-
 pool:
-  vmImage: ubuntu-16.04
-
+  vmImage: 'ubuntu-16.04'
 steps:
 {%- for dependency in dependencies %}
 {{ dependency|safe }}
@@ -14,7 +12,6 @@ steps:
   inputs:
     rootFolderOrFile: "$(System.DefaultWorkingDirectory)"
     includeRootFolder: false
-    tarCompression: none
     archiveFile: "$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip"
 - task: PublishBuildArtifacts@1
   inputs:
