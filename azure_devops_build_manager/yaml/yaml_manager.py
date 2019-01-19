@@ -7,7 +7,7 @@ import os.path as path
 import logging
 import json
 from jinja2 import Environment, PackageLoader, select_autoescape
-from azure_devops_build_manager.constants import (LINUX_CONSUMPTION, LINUX_DEDICATED, WINDOWS, PYTHON, NODE, NET, JAVA)
+from azure_devops_build_manager.constants import (LINUX_CONSUMPTION, LINUX_DEDICATED, WINDOWS, PYTHON, NODE, DOTNET, JAVA)
 
 class YamlManager(object):
     """ Generate yaml files for devops
@@ -30,9 +30,9 @@ class YamlManager(object):
         elif self._language == NODE:
             language_str = 'node'
             dependencies = self._node_dependencies()
-        elif self._language == NET:
-            language_str = 'net'
-            dependencies = self._net_dependencies()
+        elif self._language == DOTNET:
+            language_str = 'dotnet'
+            dependencies = self._dotnet_dependencies()
         elif self._language == JAVA:
             language_str = 'java'
             dependencies = self._java_dependencies()
@@ -93,8 +93,8 @@ class YamlManager(object):
         dependencies.append('    npm run build')
         return dependencies
 
-    def _net_dependencies(self):
-        """Helper to create the standard net dependencies"""
+    def _dotnet_dependencies(self):
+        """Helper to create the standard dotnet dependencies"""
         dependencies = []
         dependencies.append('- script: |')
         dependencies.append('    dotnet restore')

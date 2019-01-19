@@ -63,6 +63,9 @@ class RepositoryManager(BaseManager):
             succeeded = True
         return models.repository_response.RepositoryResponse(message, succeeded)
 
+    def setup_remote(self, repository_name):
+        #TODO setup remote command
+        print("unimplemented")
 
     def _repository_exists(self):
         """Helper to see if gitfile exists"""

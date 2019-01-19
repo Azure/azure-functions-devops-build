@@ -9,5 +9,5 @@ WINDOWS = 2
 
 PYTHON = 0
 NODE = 1
-NET = 2
+DOTNET = 2
 JAVA = 3
