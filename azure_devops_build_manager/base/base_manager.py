@@ -49,7 +49,8 @@ class BaseManager(object):
 
     def _get_build_by_name(self, project, name):
         """Helper function to get build object from its name"""
-        builds = sorted(self._build_client.get_builds(project=project.id), key=lambda x: x.finish_time, reverse=True)
+        builds_unsorted = self._build_client.get_builds(project=project.id)
+        builds = sorted(builds_unsorted, key=lambda x: x.start_time, reverse=True)
         return next((build for build in builds if build.definition.name == name), None)
 
     def _get_github_repository_by_name(self, project, name):

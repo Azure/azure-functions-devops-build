@@ -3,14 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 # --------------------------------------------------------------------------------------------
 
-from .project_details import ProjectDetails
-from .projects import Projects
-from .project_poll import ProjectPoll
-from .project_failed import ProjectFailed
+class ProjectFailed(object):
 
-__all__ = [
-    'ProjectDetails',
-    'ProjectPoll',
-    'Projects',
-    'ProjectFailed'
-]
+    def __init__(self, message):
+        self.valid = False
+        self.message = message

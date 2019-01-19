@@ -8,7 +8,7 @@ import logging
 from msrest.service_client import ServiceClient
 from msrest import Configuration, Deserializer
 from msrest.exceptions import HttpOperationError
-
+from vsts.exceptions import VstsServiceError
 import vsts.core.v4_1.models.team_project as team_project
 from azure_devops_build_manager.base.base_manager import BaseManager
 from . import models
@@ -53,10 +53,10 @@ class ProjectManager(BaseManager):
             # Sleep as there is normally a gap between project finishing being made and when we can retrieve it
             time.sleep(1)
             project = self._get_project_by_name(projectName)
+            project.valid = True
             return project
-        except Exception as e:
-            logging.error(e)
-            return e
+        except VstsServiceError as e:
+            return models.ProjectFailed(e)
 
     def list_projects(self):
         """Lists the current projects within an organization"""

@@ -18,3 +18,14 @@ steps:
   inputs:
     PathtoPublish: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'
     name: 'drop'
+{%- if settings %}
+- task: AzureAppServiceSetAppSettings@2
+  inputs:
+    ConnectedServiceName: {{ subscription_name }}
+    WebAppName: {{ functionapp_name }}
+    ResourceGroupName: {{ resource_group_name }}
+    AppSettings: "
+    {%- for setting in settings -%}
+        {{ setting[0]|safe }}='{{ setting[1]|safe }}'
+    {%- endfor -%}"
+{%- endif %}
