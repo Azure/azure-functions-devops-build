@@ -11,7 +11,7 @@ from azure_devops_build_manager.constants import LINUX_CONSUMPTION, LINUX_DEDICA
 CREATE_DEVOPS_OBJECTS = True
 
 # Specify the name of your already created devops objects
-ORGANIZATION_NAME = 'dolk-automated-10'
+ORGANIZATION_NAME = 'dolk-automated-11'
 PROJECT_NAME = 'auto-python'
 SERVICE_ENDPOINT_NAME = ORGANIZATION_NAME + PROJECT_NAME
 REPOSITORY_NAME = PROJECT_NAME
