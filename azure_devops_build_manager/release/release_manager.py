@@ -21,9 +21,12 @@ class ReleaseManager(BaseManager):
         super(ReleaseManager, self).__init__(creds, organization_name=organization_name, project_name=project_name)
 
     def create_release_definition(self, build_name, artifact_name, pool_name, service_endpoint_name,
-                                  release_definition_name, app_type, functionapp_name, storage_name, resource_name):
+                                  release_definition_name, app_type, functionapp_name, storage_name, resource_name, settings=[]):
         pool = self._get_pool_by_name(pool_name)
         project = self._get_project_by_name(self._project_name)
+        print(build_name, artifact_name, pool_name, service_endpoint_name,
+                                  release_definition_name, app_type, functionapp_name, storage_name, resource_name)
+        print(project)
         build = self._get_build_by_name(project, build_name)
         retention_policy_environment = self._get_retention_policy()
         artifact = self._get_artifact(build, project, artifact_name)
@@ -48,6 +51,12 @@ class ReleaseManager(BaseManager):
         else:
             logging.error("Invalid app type provided. Correct types are: Linux Consumption: %s, Linux Dedicated: %s, Windows: %s",
                           LINUX_CONSUMPTION, LINUX_DEDICATED, WINDOWS)
+
+        if settings:
+            settings_str = ""
+            for setting in settings:
+                settings_str += (setting[0] + "='" + setting[1] + "'")
+            workflowtasks.append(self._app_settings_task_customized(service_endpoint.id, functionapp_name, resource_name, settings_str))
 
         deploy_phases = self._get_deploy_phases(deployment_input, workflowtasks, phase_inputs)
 
@@ -260,6 +269,20 @@ class ReleaseManager(BaseManager):
         appsetttingstask["inputs"] = appsetttingstask_inputs
         return appsetttingstask
 
+    def _app_settings_task_customized(self, connectedServiceNameARM, functionapp_name, resource_name, settings):
+        appsetttingstask = {}
+        appsetttingstask["name"] = "Set App Settings: "
+        appsetttingstask["enabled"] = True
+        appsetttingstask["taskId"] = "9d2e4cf0-f3bb-11e6-978b-770d284f4f2d"
+        appsetttingstask["version"] = "2.*"
+        appsetttingstask["definitionType"] = "task"
+        appsetttingstask_inputs = {}
+        appsetttingstask_inputs["ConnectedServiceName"] = connectedServiceNameARM
+        appsetttingstask_inputs["WebAppName"] = functionapp_name
+        appsetttingstask_inputs["ResourceGroupName"] = resource_name
+        appsetttingstask_inputs["AppSettings"] = settings
+        appsetttingstask["inputs"] = appsetttingstask_inputs
+        return appsetttingstask
 
     def _app_service_deploy_task_linux(self, connectedServiceNameARM, functionapp_name):
         appservicetask = {}

@@ -63,7 +63,6 @@ class RepositoryManager(BaseManager):
             succeeded = True
         return models.repository_response.RepositoryResponse(message, succeeded)
 
-
     def _repository_exists(self):
         """Helper to see if gitfile exists"""
         return bool(os.path.exists('.git'))
@@ -73,7 +72,10 @@ class RepositoryManager(BaseManager):
         project = self._get_project_by_name(self._project_name)
         service_endpoints = self._service_endpoint_client.get_service_endpoints(project.id)
         github_endpoint = next((endpoint for endpoint in service_endpoints if endpoint.type == "github"), None)
-        return self._build_client.list_repositories(project.id, 'github', github_endpoint.id)
+        if github_endpoint is None:
+            return []
+        else:
+            return self._build_client.list_repositories(project.id, 'github', github_endpoint.id)
 
     def create_github_connection(self):
         """Create a github connection endpoint that the user must go authenticate with"""

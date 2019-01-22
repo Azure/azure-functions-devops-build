@@ -1,8 +1,8 @@
-# Starter template for Azure functions build for
+# Starter template for Azure functions build -- {{language}} on {{platform}}
 trigger:
 - master
 pool:
-  vmImage: 'ubuntu-16.04'
+  vmImage: {{ vmImage }}
 steps:
 {%- for dependency in dependencies %}
 {{ dependency|safe }}

@@ -2,7 +2,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 # --------------------------------------------------------------------------------------------
-from azure_devops_build_manager.constants import LINUX_CONSUMPTION, LINUX_DEDICATED, WINDOWS, NODE, PYTHON, JAVA, NET
+from azure_devops_build_manager.constants import LINUX_CONSUMPTION, LINUX_DEDICATED, WINDOWS, NODE, PYTHON, JAVA, DOTNET
 
 """This file contains the configs needed for the tests"""
 
@@ -29,4 +29,4 @@ FUNCTIONAPP_NAME = '{functionapp name}'
 STORAGE_NAME = '{storage name}'
 RESOURCE_GROUP_NAME = '{resource group name}'
 FUNCTIONAPP_TYPE = '{Functionapp type}' # choose from LINUX_CONSUMPTION, LINUX_DEDICATED, WINDOWS
-FUNCTIONAPP_LANGUAGE = '{Functionapp language}' # choose from NODE, PYTHON, JAVA, NET
+FUNCTIONAPP_LANGUAGE = '{Functionapp language}' # choose from NODE, PYTHON, JAVA, DOTNET

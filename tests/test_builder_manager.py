@@ -5,8 +5,10 @@
 
 import unittest
 from azure_devops_build_manager.builder.builder_manager import BuilderManager
-from ._config import CREATE_DEVOPS_OBJECTS, ORGANIZATION_NAME, PROJECT_NAME, REPOSITORY_NAME, BUILD_DEFINITION_NAME, BUILD_DEFINITION_NAME_GIT, POOL_NAME
+from ._config import CREATE_DEVOPS_OBJECTS, ORGANIZATION_NAME, PROJECT_NAME, REPOSITORY_NAME, BUILD_DEFINITION_NAME, POOL_NAME
 from ._helpers import get_credentials
+
+BUILD_DEFINITION_NAME_GIT = None
 
 class TestBuilderManager(unittest.TestCase):
 

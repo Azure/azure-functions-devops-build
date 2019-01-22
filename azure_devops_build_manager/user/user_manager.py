@@ -25,9 +25,12 @@ class UserManager(object):
         client_models = {k: v for k, v in models.__dict__.items() if isinstance(v, type)}
         self._deserialize = Deserializer(client_models)
 
-    def get_user_id(self):
+    def get_user_id(self, msa=False):
         """Get the user id"""
+
         header_parameters = {}
+        if msa:
+            header_parameters['X-VSS-ForceMsaPassThrough'] = 'true'
         header_parameters['Accept'] = 'application/json'
         request = self._client.get('/_apis/AzureTfs/UserContext')
         response = self._client.send(request, header_parameters)
