@@ -9,6 +9,7 @@ from msrest.service_client import ServiceClient
 from msrest import Configuration, Deserializer
 from msrest.exceptions import HttpOperationError
 
+from azure_devops_build_manager.user.user_manager import UserManager
 from . import models
 
 
@@ -26,6 +27,7 @@ class OrganizationManager():
     def __init__(self, base_url='https://app.vssps.visualstudio.com', creds=None,
                  create_organization_url='https://app.vsaex.visualstudio.com'):
         """Inits OrganizationManager"""
+        self._creds = creds
         self._config = Configuration(base_url=base_url)
         self._client = ServiceClient(creds, self._config)
         #need to make a secondary client for the creating organization as it uses a different base url
@@ -66,8 +68,36 @@ class OrganizationManager():
 
         return deserialized
 
-    def list_organizations(self, member_id):
+    def list_organizations(self):
         """List what organizations this user is part of"""
+
+        user_manager = UserManager(creds=self._creds)
+
+        user_id_aad = user_manager.get_user_id(msa=False)
+        user_id_msa = user_manager.get_user_id(msa=True)
+
+        if (user_id_aad.id == user_id_msa.id):
+            # Only need to do the one request as ids are the same
+            organizations = self._list_organizations_request(user_id_aad.id)
+        else:
+            def uniq(lst):
+                last = object()
+                for item in lst:
+                    if item == last:
+                        continue
+                    yield item
+                    last = item
+            # Need to do a request for each of the ids and then combine them
+            organizations_aad = self._list_organizations_request(user_id_aad.id)
+            organizations_msa = self._list_organizations_request(user_id_msa.id)
+            organizations = organizations_aad
+            # Now we just want to take the set of these two lists!
+            organizations.value = list(uniq(organizations_aad.value + organizations_msa.value))
+            organizations.count = len(organizations.value)
+
+        return organizations
+
+    def _list_organizations_request(self, member_id):
         url = '/_apis/Commerce/Subscription'
 
         query_paramters = {}
