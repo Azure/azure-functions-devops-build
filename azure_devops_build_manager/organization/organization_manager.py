@@ -88,8 +88,8 @@ class OrganizationManager():
                     yield item
                     last = item
             # Need to do a request for each of the ids and then combine them
-            organizations_aad = self._list_organizations_request(user_id_aad.id)
-            organizations_msa = self._list_organizations_request(user_id_msa.id)
+            organizations_aad = self._list_organizations_request(user_id_aad.id, msa=False)
+            organizations_msa = self._list_organizations_request(user_id_msa.id, msa=True)
             organizations = organizations_aad
             # Now we just want to take the set of these two lists!
             organizations.value = list(uniq(organizations_aad.value + organizations_msa.value))
@@ -97,7 +97,7 @@ class OrganizationManager():
 
         return organizations
 
-    def _list_organizations_request(self, member_id):
+    def _list_organizations_request(self, member_id, msa=False):
         url = '/_apis/Commerce/Subscription'
 
         query_paramters = {}
@@ -108,11 +108,13 @@ class OrganizationManager():
         query_paramters['providerNamespaceId'] = 'VisualStudioOnline'
 
         #construct header parameters
-        header_paramters = {}
-        header_paramters['Accept'] = 'application/json'
+        header_parameters = {}
+        if msa:
+            header_parameters['X-VSS-ForceMsaPassThrough'] = 'true'
+        header_parameters['Accept'] = 'application/json'
 
         request = self._client.get(url, params=query_paramters)
-        response = self._client.send(request, headers=header_paramters)
+        response = self._client.send(request, headers=header_parameters)
 
         # Handle Response
         deserialized = None
