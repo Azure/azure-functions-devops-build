@@ -21,15 +21,11 @@ cli_ctx = get_default_cli()
 profile = Profile(cli_ctx=cli_ctx)
 creds, _, _ = profile.get_login_credentials(subscription_id=None)
 
-# Create an organization manager and user manager using your credentials
+# Create an organization manager using your credentials
 organization_manager = OrganizationManager(creds=creds)
-user_manager = UserManager(creds=creds)
-
-# Get your user id
-userid = user_manager.get_user_id()
 
 # Get the list of organizations for your user
-organizations = organization_manager.get_organizations(userid.id)
+organizations = organization_manager.list_organizations()
 
 # Show details about each organization in the console
 for organization in organizations:
