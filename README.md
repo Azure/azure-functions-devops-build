@@ -1,7 +1,7 @@
-# Azure Devops Build Manager For Azure Functions (Under Development)
+# Azure Devops Build Manager For Azure Functions
 
 This project provides the class AzureDevopsBuildManager and supporting classes. This manager class allows
-the caller to manage Azure Devops pipelines that are maintained within an Azure Devops account.
+the caller to manage Azure Devops pipelines that are maintained within an Azure Devops account. This project was created to be able to support command line tooling for the AZ Cli.
 
 ## Install
 ```
