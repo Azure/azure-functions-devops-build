@@ -1,7 +1,7 @@
-# Azure Devops Build Manager For Azure Functions (Under Development)
+# Azure Devops Build Manager For Azure Functions
 
 This project provides the class AzureDevopsBuildManager and supporting classes. This manager class allows
-the caller to manage Azure Devops pipelines that are maintained within an Azure Devops account.
+the caller to manage Azure Devops pipelines that are maintained within an Azure Devops account. This project was created to be able to support command line tooling for the AZ Cli.
 
 ## Install
 ```
@@ -13,7 +13,7 @@ To use the API, you need to first establish a connection to azure by loging into
 ```python
 from azure.cli.core import get_default_cli
 from azure.cli.core._profile import Profile
-from azure_functions_devops_build.organization.organization_manager import OrganizationManager
+from azure_devops_build_manager.organization.organization_manager import OrganizationManager
 import pprint
 
 # Get your token from the az login cache
@@ -21,15 +21,11 @@ cli_ctx = get_default_cli()
 profile = Profile(cli_ctx=cli_ctx)
 creds, _, _ = profile.get_login_credentials(subscription_id=None)
 
-# Create an organization manager and user manager using your credentials
+# Create an organization manager using your credentials
 organization_manager = OrganizationManager(creds=creds)
-user_manager = UserManager(creds=creds)
-
-# Get your user id
-userid = user_manager.get_user_id()
 
 # Get the list of organizations for your user
-organizations = organization_manager.get_organizations(userid.id)
+organizations = organization_manager.list_organizations()
 
 # Show details about each organization in the console
 for organization in organizations:
