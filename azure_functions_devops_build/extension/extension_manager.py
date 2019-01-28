@@ -3,7 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 # --------------------------------------------------------------------------------------------
 
-from azure_devops_build_manager.base.base_manager import BaseManager
+from ..base.base_manager import BaseManager
 
 class ExtensionManager(BaseManager):
     """ Manage DevOps Extensions

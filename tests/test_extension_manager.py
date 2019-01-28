@@ -4,7 +4,7 @@
 # --------------------------------------------------------------------------------------------
 
 import unittest
-from azure_devops_build_manager.extension.extension_manager import ExtensionManager
+from azure_functions_devops_build.extension.extension_manager import ExtensionManager
 from ._config import CREATE_DEVOPS_OBJECTS, ORGANIZATION_NAME, PROJECT_NAME
 from ._helpers import get_credentials
 

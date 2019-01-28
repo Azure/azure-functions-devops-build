@@ -4,7 +4,7 @@
 # --------------------------------------------------------------------------------------------
 
 import unittest
-from azure_devops_build_manager.respository.repository_manager import RepositoryManager
+from azure_functions_devops_build.respository.repository_manager import RepositoryManager
 from ._config import ORGANIZATION_NAME, PROJECT_NAME, REPOSITORY_NAME, CREATE_DEVOPS_OBJECTS
 from ._helpers import get_credentials
 

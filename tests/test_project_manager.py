@@ -4,7 +4,7 @@
 # --------------------------------------------------------------------------------------------
 
 import unittest
-from azure_devops_build_manager.project.project_manager import ProjectManager
+from azure_functions_devops_build.project.project_manager import ProjectManager
 from ._config import CREATE_DEVOPS_OBJECTS, ORGANIZATION_NAME, PROJECT_NAME
 from ._helpers import get_credentials
 

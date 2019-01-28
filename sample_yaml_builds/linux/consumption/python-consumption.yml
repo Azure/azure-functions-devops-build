@@ -1,0 +1,70 @@
+# Configure the details of the functionapp
+variables:
+  azureSubscription: '{ARM ACCESS TOKEN NAME}'
+  storageName: '{STORAGE NAME OF FUNCTIONAPP}'
+  functionappName: '{NAME OF FUNCTIONAPP}'
+  resourceGroupName: '{RESOURCE GROUP NAME OF FUNCTIONAPP}'
+
+jobs:
+  # Build the python packages in a virtual env
+  - job: Build
+    pool:
+      vmImage: ubuntu-16.04
+    steps:
+    - task: UsePythonVersion@0
+      displayName: "Setting python version to 3.6 as required by functions"
+      inputs:
+        versionSpec: '3.6'
+        architecture: 'x64'
+    - script: |
+        dotnet restore # COMMENT OUT IF NOT USING FUNCTION EXTENSIONS
+        dotnet build --runtime ubuntu.16.04-x64 --output './bin/' # COMMENT OUT IF NOT USING FUNCTION EXTENSIONS
+        python3.6 -m venv worker_venv
+        source worker_venv/bin/activate
+        pip3.6 install setuptools
+        pip3.6 install -r requirements.txt
+    - task: ArchiveFiles@2
+      displayName: "Archive files"
+      inputs:
+        rootFolderOrFile: "$(System.DefaultWorkingDirectory)"
+        includeRootFolder: false
+        archiveFile: "$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip"
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'
+        name: 'drop'
+  # Download the build artifacts from 
+  - job: Deploy
+    pool:
+      vmImage: 'VS2017-Win2016'
+    steps:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'drop'
+        downloadPath: '$(System.DefaultWorkingDirectory)'
+    - task: AzureFileCopy@2
+      inputs:
+        sourcePath: "drop/build$(Build.BuildId).zip"
+        azureConnectionType: 'ConnectedServiceNameARM'
+        azureSubscription: "$(azureSubscription)"
+        destination: azureBlob
+        storage: "$(storageName)"
+        containerName: 'azure-build'
+    - task: createsastoken@1
+      inputs:
+        ConnectedServiceName: "$(azureSubscription)"
+        StorageAccountRM: "$(storageName)"
+        SasTokenTimeOutInHours: 10000
+        Permission: 'r'
+        StorageContainerName: 'azure-build'
+    - task: AzureAppServiceSetAppSettings@2
+      inputs:
+        ConnectedServiceName: "$(azureSubscription)"
+        WebAppName: "$(functionappName)"
+        ResourceGroupName: "$(resourceGroupName)"
+        AppSettings: "WEBSITE_RUN_FROM_PACKAGE='$(storageUri)/build$(Build.BuildId).zip$(storageToken)'"
+
+    dependsOn: Build
+    condition: succeeded()

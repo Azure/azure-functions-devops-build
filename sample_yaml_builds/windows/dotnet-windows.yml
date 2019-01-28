@@ -1,0 +1,28 @@
+# Starter template for Azure functions build for {{language}} {{appType}}
+variables:
+  azureSubscription: '{ARM ACCESS TOKEN NAME}'
+  functionappName: '{NAME OF FUNCTIONAPP}'
+
+pool:
+  vmImage: 'VS2017-Win2016'
+
+steps:
+- script: |
+    dotnet restore
+    dotnet build --output \'./bin/\'
+- task: ArchiveFiles@2
+  displayName: "Archive files"
+  inputs:
+    rootFolderOrFile: "$(System.DefaultWorkingDirectory)"
+    includeRootFolder: false
+    archiveFile: "$(System.DefaultWorkingDirectory)/$(Build.BuildId).zip"
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(System.DefaultWorkingDirectory)/$(Build.BuildId).zip'
+    name: 'drop'
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    connectionType: 'AzureRM'
+    azureSubscription: "$(azureSubscription)"
+    appType: 'functionApp'
+    webAppName: "$(functionappName)"

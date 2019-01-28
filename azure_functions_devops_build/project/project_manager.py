@@ -10,7 +10,7 @@ from msrest import Configuration, Deserializer
 from msrest.exceptions import HttpOperationError
 from vsts.exceptions import VstsServiceError
 import vsts.core.v4_1.models.team_project as team_project
-from azure_devops_build_manager.base.base_manager import BaseManager
+from ..base.base_manager import BaseManager
 from . import models
 
 
@@ -26,7 +26,8 @@ class ProjectManager(BaseManager):
         Otherwise see BaseManager
     """
 
-    def __init__(self, base_url='https://{}.visualstudio.com', organization_name="", creds=None, create_project_url='https://dev.azure.com'):
+    def __init__(self, base_url='https://{}.visualstudio.com', organization_name="", creds=None,
+                 create_project_url='https://dev.azure.com'):
         """Inits Project as per BaseManager and adds relevant other needed fields"""
         super(ProjectManager, self).__init__(creds, organization_name=organization_name)
         base_url = base_url.format(organization_name)
@@ -87,7 +88,7 @@ class ProjectManager(BaseManager):
     def _poll_project(self, project_id):
         """Helper function to poll the project"""
         project_created = False
-        while (not project_created):
+        while not project_created:
             time.sleep(1)
             res = self._is_project_created(project_id)
             logging.info('project creation is: %s', res.status)
@@ -101,7 +102,7 @@ class ProjectManager(BaseManager):
 
         header_paramters = {}
         header_paramters['Accept'] = 'application/json'
-        
+
         request = self._create_project_client.get(url, params=query_paramters)
         response = self._create_project_client.send(request, headers=header_paramters)
 

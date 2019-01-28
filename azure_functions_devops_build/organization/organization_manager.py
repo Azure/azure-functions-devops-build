@@ -9,7 +9,7 @@ from msrest.service_client import ServiceClient
 from msrest import Configuration, Deserializer
 from msrest.exceptions import HttpOperationError
 
-from azure_devops_build_manager.user.user_manager import UserManager
+from ..user.user_manager import UserManager
 from . import models
 
 

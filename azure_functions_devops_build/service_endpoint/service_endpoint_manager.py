@@ -6,7 +6,7 @@
 import json
 import subprocess
 import vsts.service_endpoint.v4_1.models as models
-from azure_devops_build_manager.base.base_manager import BaseManager
+from ..base.base_manager import BaseManager
 
 class ServiceEndpointManager(BaseManager):
     """ Manage DevOps service endpoints within projects
@@ -14,11 +14,35 @@ class ServiceEndpointManager(BaseManager):
     Attributes:
         See BaseManager
     """
-    
+
     def __init__(self, organization_name="", project_name="", creds=None):
         """Inits ServiceEndpointManager as per BaseManager"""
         super(ServiceEndpointManager, self).__init__(creds, organization_name=organization_name,
                                                      project_name=project_name)
+
+    def create_github_service_endpoint(self, githubname, access_token):
+        """ Create a github access token connection """
+        project = self._get_project_by_name(self._project_name)
+
+        data = {}
+
+        auth = models.endpoint_authorization.EndpointAuthorization(
+            parameters={
+                "AccessToken": access_token
+            },
+            scheme="OAuth"
+        )
+
+        service_endpoint = models.service_endpoint.ServiceEndpoint(
+            administrators_group=None,
+            authorization=auth,
+            data=data,
+            name=githubname,
+            type="github",
+            url="http://github.com"
+        )
+
+        return self._service_endpoint_client.create_service_endpoint(service_endpoint, project.id)
 
     def create_service_endpoint(self, servicePrincipalName):
         """Create a new service endpoint within a project with an associated service principal"""

@@ -4,7 +4,7 @@
 # --------------------------------------------------------------------------------------------
 
 import unittest
-from azure_devops_build_manager.service_endpoint.service_endpoint_manager import ServiceEndpointManager
+from azure_functions_devops_build.service_endpoint.service_endpoint_manager import ServiceEndpointManager
 from ._config import ORGANIZATION_NAME, PROJECT_NAME, SERVICE_ENDPOINT_NAME, CREATE_DEVOPS_OBJECTS
 from ._helpers import get_credentials
 
@@ -24,7 +24,7 @@ class TestServiceEndpointManager(unittest.TestCase):
         creds = get_credentials()
         service_endpoint_manager = ServiceEndpointManager(organization_name=ORGANIZATION_NAME, project_name=PROJECT_NAME, creds=creds)
         endpoint = service_endpoint_manager.create_service_endpoint(SERVICE_ENDPOINT_NAME)
-        
-    
+
+
 if __name__ == '__main__':
     unittest.main()
