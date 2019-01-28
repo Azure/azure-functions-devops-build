@@ -3,7 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 # --------------------------------------------------------------------------------------------
 
-from subprocess import DEVNULL, STDOUT, check_call
+from subprocess import DEVNULL, STDOUT, check_call, check_output, CalledProcessError
 import os
 
 from msrest.service_client import ServiceClient
@@ -11,7 +11,7 @@ from msrest import Configuration, Deserializer
 from msrest.exceptions import HttpOperationError
 import vsts.git.v4_1.models.git_repository_create_options as git_repository_create_options
 
-from azure_devops_build_manager.base.base_manager import BaseManager
+from ..base.base_manager import BaseManager
 from . import models
 
 
@@ -46,6 +46,25 @@ class RepositoryManager(BaseManager):
         repository = self._get_repository_by_name(project, repository_name)
         return self._git_client.get_commits(repository.id, None, project=project.id)
 
+    def setup_remote(self, repository_name, remote_name):
+        """This command sets up a remote. It is normally used if a user already has a repository locally that they don't wish to get rid of"""
+        if self._remote_exists(remote_name):
+            message = """There is already an remote with this name."""
+            succeeded = False
+        else:
+            origin_command = ["git", "remote", "add", remote_name, "https://" + self._organization_name + \
+                                        ".visualstudio.com/" + self._project_name + "/_git/" + repository_name]
+            check_call(origin_command, stdout=DEVNULL, stderr=STDOUT)
+            check_call('git add -A'.split(), stdout=DEVNULL, stderr=STDOUT)
+            try:
+                check_call(["git", "commit", "-a", "-m", "\"creating functions app\""], stdout=DEVNULL, stderr=STDOUT)
+            except CalledProcessError:
+                print("no need to commit anything")
+            check_call(('git push ' + remote_name + ' --all').split(), stdout=DEVNULL, stderr=STDOUT)
+            message = "succeeded"
+            succeeded = True
+        return models.repository_response.RepositoryResponse(message, succeeded)
+
     def setup_repository(self, repository_name):
         """This command sets up the repository locally - it initialises the git file and creates the initial push ect"""
         if self._repository_exists():
@@ -67,6 +86,13 @@ class RepositoryManager(BaseManager):
         """Helper to see if gitfile exists"""
         return bool(os.path.exists('.git'))
 
+    def _remote_exists(self, remote_name):
+        lines = (check_output('git remote show'.split())).decode('utf-8').split('\n')
+        for line in lines:
+            if line == remote_name:
+                return True
+        return False
+
     def list_github_repositories(self):
         """List github repositories if there are any from the current connection"""
         project = self._get_project_by_name(self._project_name)
@@ -76,34 +102,3 @@ class RepositoryManager(BaseManager):
             return []
         else:
             return self._build_client.list_repositories(project.id, 'github', github_endpoint.id)
-
-    def create_github_connection(self):
-        """Create a github connection endpoint that the user must go authenticate with"""
-        project = self._get_project_by_name(self._project_name)
-
-        url = '/' + self._organization_name + '/' + str(project.id) + \
-              '/_apis/connectedService/providers/github/authRequests'
-
-        query_paramters = {}
-        query_paramters['configurationId'] = '00000000-0000-0000-0000-000000000000'
-        query_paramters['scope'] = 'repo,read:user,user:email,admin:repo_hook'
-
-        #construct header parameters
-        header_paramters = {}
-        header_paramters['Accept'] = 'application/json;api-version=5.0;excludeUrls=true;' + \
-                                     'enumsAsNumbers=true;msDateFormat=true;noArrayWrap=true'
-
-        request = self._client.post(url, params=query_paramters)
-        response = self._client.send(request, headers=header_paramters)
-
-        # Handle Response
-        deserialized = None
-        if response.status_code not in [200]:
-            print("GET %s", request.url)
-            print("response: %s", response.status_code)
-            print(response.text)
-            raise HttpOperationError(self._deserialize, response)
-        else:
-            deserialized = self._deserialize('GithubConnection', response)
-
-        return deserialized

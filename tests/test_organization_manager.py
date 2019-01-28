@@ -4,8 +4,8 @@
 # --------------------------------------------------------------------------------------------
 
 import unittest, string, random
-from azure_devops_build_manager.organization.organization_manager import OrganizationManager
-from azure_devops_build_manager.user.user_manager import UserManager
+from azure_functions_devops_build.organization.organization_manager import OrganizationManager
+from azure_functions_devops_build.user.user_manager import UserManager
 from ._config import CREATE_DEVOPS_OBJECTS, ORGANIZATION_NAME
 from ._helpers import get_credentials
 

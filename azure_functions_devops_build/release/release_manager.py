@@ -6,9 +6,9 @@
 import logging
 
 import vsts.release.v4_1.models as models
-from azure_devops_build_manager.base.base_manager import BaseManager
-from azure_devops_build_manager.pool.pool_manager import PoolManager
-from azure_devops_build_manager.constants import (LINUX_CONSUMPTION, LINUX_DEDICATED, WINDOWS)
+from ..base.base_manager import BaseManager
+from ..pool.pool_manager import PoolManager
+from ..constants import (LINUX_CONSUMPTION, LINUX_DEDICATED, WINDOWS)
 
 
 class ReleaseManager(BaseManager):
@@ -21,7 +21,8 @@ class ReleaseManager(BaseManager):
         super(ReleaseManager, self).__init__(creds, organization_name=organization_name, project_name=project_name)
 
     def create_release_definition(self, build_name, artifact_name, pool_name, service_endpoint_name,
-                                  release_definition_name, app_type, functionapp_name, storage_name, resource_name, settings=[]):
+                                  release_definition_name, app_type, functionapp_name, storage_name,
+                                  resource_name, settings=None):
         pool = self._get_pool_by_name(pool_name)
         project = self._get_project_by_name(self._project_name)
         print(build_name, artifact_name, pool_name, service_endpoint_name,
@@ -52,7 +53,7 @@ class ReleaseManager(BaseManager):
             logging.error("Invalid app type provided. Correct types are: Linux Consumption: %s, Linux Dedicated: %s, Windows: %s",
                           LINUX_CONSUMPTION, LINUX_DEDICATED, WINDOWS)
 
-        if settings:
+        if settings is not None:
             settings_str = ""
             for setting in settings:
                 settings_str += (setting[0] + "='" + setting[1] + "'")

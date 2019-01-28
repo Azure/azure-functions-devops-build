@@ -5,9 +5,8 @@
 
 import os.path as path
 import logging
-import json
 from jinja2 import Environment, PackageLoader, select_autoescape
-from azure_devops_build_manager.constants import (LINUX_CONSUMPTION, LINUX_DEDICATED, WINDOWS, PYTHON, NODE, DOTNET, JAVA)
+from ..constants import (WINDOWS, PYTHON, NODE, DOTNET, JAVA)
 
 class YamlManager(object):
     """ Generate yaml files for devops
@@ -53,11 +52,12 @@ class YamlManager(object):
 
     def _generate_yaml(self, dependencies, vmImage, language_str, platform_str):
         env = Environment(
-            loader=PackageLoader('azure_devops_build_manager.yaml', 'templates'),
+            loader=PackageLoader('azure_functions_devops_build.yaml', 'templates'),
             autoescape=select_autoescape(['html', 'xml', 'jinja'])
         )
         template = env.get_template('build.jinja')
-        outputText = template.render(dependencies=dependencies, vmImage=vmImage, language=language_str, platform=platform_str)
+        outputText = template.render(dependencies=dependencies, vmImage=vmImage,
+                                     language=language_str, platform=platform_str)
         return outputText
 
     def _requires_extensions(self):

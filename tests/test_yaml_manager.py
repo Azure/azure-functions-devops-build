@@ -4,7 +4,7 @@
 # --------------------------------------------------------------------------------------------
 
 import unittest
-from azure_devops_build_manager.yaml.yaml_manager import YamlManager
+from azure_functions_devops_build.yaml.yaml_manager import YamlManager
 from ._config import FUNCTIONAPP_LANGUAGE, FUNCTIONAPP_TYPE
 
 class TestYamlManager(unittest.TestCase):

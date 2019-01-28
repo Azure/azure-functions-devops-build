@@ -4,10 +4,8 @@
 # --------------------------------------------------------------------------------------------
 
 import vsts.build.v4_1.models as build_models
-import time
-
-from azure_devops_build_manager.base.base_manager import BaseManager
-from azure_devops_build_manager.pool.pool_manager import PoolManager
+from ..base.base_manager import BaseManager
+from ..pool.pool_manager import PoolManager
 
 
 class BuilderManager(BaseManager):

@@ -4,7 +4,7 @@
 # --------------------------------------------------------------------------------------------
 
 import unittest
-from azure_devops_build_manager.release.release_manager import ReleaseManager
+from azure_functions_devops_build.release.release_manager import ReleaseManager
 from ._config import CREATE_DEVOPS_OBJECTS, ORGANIZATION_NAME, PROJECT_NAME, REPOSITORY_NAME, SERVICE_ENDPOINT_NAME, BUILD_DEFINITION_NAME, RELEASE_DEFINITION_NAME, POOL_NAME, FUNCTIONAPP_TYPE, FUNCTIONAPP_NAME, STORAGE_NAME, RESOURCE_GROUP_NAME
 from ._helpers import get_credentials
 
