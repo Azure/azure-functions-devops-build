@@ -14,7 +14,7 @@ To use the API, you need to first establish a connection to azure by loging into
 ```python
 from azure.cli.core import get_default_cli
 from azure.cli.core._profile import Profile
-from azure_devops_build_manager.organization.organization_manager import OrganizationManager
+from azure_functions_devops_build.organization.organization_manager import OrganizationManager
 import pprint
 
 # Get your token from the az login cache
@@ -29,7 +29,7 @@ organization_manager = OrganizationManager(creds=creds)
 organizations = organization_manager.list_organizations()
 
 # Show details about each organization in the console
-for organization in organizations:
+for organization in organizations.value:
     pprint.pprint(organization.__dict__)
 ```
 
