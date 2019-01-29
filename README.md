@@ -4,8 +4,9 @@ This project provides the class AzureDevopsBuildManager and supporting classes. 
 the caller to manage Azure Devops pipelines that are maintained within an Azure Devops account. This project was created to be able to support command line tooling for the AZ Cli.
 
 ## Install
+To install the package from pip:
 ```
-pip install adbm
+pip install azure-devops-build-manager
 ```
 ## Get started
 To use the API, you need to first establish a connection to azure by loging into your azure account using `az login`. You can then follow the example as below. Firstly we get the token from login and use this to authenticate the different python function calls.
