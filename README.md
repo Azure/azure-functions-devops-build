@@ -6,7 +6,7 @@ the caller to manage Azure Devops pipelines that are maintained within an Azure 
 ## Install
 To install the package from pip:
 ```
-pip install azure-devops-build-manager
+pip install azure-functions-devops-build
 ```
 ## Get started
 To use the API, you need to first establish a connection to azure by loging into your azure account using `az login`. You can then follow the example as below. Firstly we get the token from login and use this to authenticate the different python function calls.
