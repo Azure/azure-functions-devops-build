@@ -1,11 +1,8 @@
-# Starter template for Azure functions build for {{language}} {{appType}}
-variables:
-  azureSubscription: '{ARM ACCESS TOKEN NAME}'
-  functionappName: '{NAME OF FUNCTIONAPP}'
-
+# Starter template for Azure functions build -- dotnet on linux
+trigger:
+- master
 pool:
-  vmImage: 'VS2017-Win2016'
-
+  vmImage: ubuntu-16.04
 steps:
 - script: |
     dotnet restore
@@ -26,11 +23,5 @@ steps:
     archiveFile: "$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip"
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(System.DefaultWorkingDirectory)/$(Build.BuildId).zip'
+    PathtoPublish: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'
     name: 'drop'
-- task: AzureRmWebAppDeployment@4
-  inputs:
-    connectionType: 'AzureRM'
-    azureSubscription: "$(azureSubscription)"
-    appType: 'functionApp'
-    webAppName: "$(functionappName)"

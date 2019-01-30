@@ -24,6 +24,6 @@ POOL_NAME = 'Default'
 # Specify the details of your azure functions resource
 FUNCTIONAPP_NAME = 'dolk-demo-py-c'
 FUNCTIONAPP_TYPE = LINUX_CONSUMPTION
-FUNCTIONAPP_LANGUAGE = PYTHON
+FUNCTIONAPP_LANGUAGE = WINDOWS
 STORAGE_NAME = 'dolkdemopyc8827'
 RESOURCE_GROUP_NAME = 'dolk-demos'
