@@ -25,9 +25,6 @@ class ReleaseManager(BaseManager):
                                   resource_name, settings=None):
         pool = self._get_pool_by_name(pool_name)
         project = self._get_project_by_name(self._project_name)
-        print(build_name, artifact_name, pool_name, service_endpoint_name,
-                                  release_definition_name, app_type, functionapp_name, storage_name, resource_name)
-        print(project)
         build = self._get_build_by_name(project, build_name)
         retention_policy_environment = self._get_retention_policy()
         artifact = self._get_artifact(build, project, artifact_name)

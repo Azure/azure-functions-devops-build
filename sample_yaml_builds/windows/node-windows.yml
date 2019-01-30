@@ -1,4 +1,3 @@
-# Starter template for Azure functions build for {{language}} {{appType}}
 variables:
   azureSubscription: '{ARM ACCESS TOKEN NAME}'
   functionappName: '{NAME OF FUNCTIONAPP}'

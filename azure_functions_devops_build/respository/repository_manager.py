@@ -2,10 +2,15 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 # --------------------------------------------------------------------------------------------
-
-from subprocess import DEVNULL, STDOUT, check_call, check_output, CalledProcessError
 import os
 
+# In python2.7 devnull is not defined in subprocess
+try:
+    from subprocess import DEVNULL
+except ImportError:
+    DEVNULL = open(os.devnull, 'w')
+
+from subprocess import STDOUT, check_call, check_output, CalledProcessError
 from msrest.service_client import ServiceClient
 from msrest import Configuration, Deserializer
 from msrest.exceptions import HttpOperationError
