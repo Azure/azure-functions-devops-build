@@ -7,7 +7,7 @@
 from setuptools import setup, find_packages
 
 NAME = "azure-functions-devops-build"
-VERSION = "0.0.4"
+VERSION = "0.0.5"
 
 # To install the library, run the following
 #
