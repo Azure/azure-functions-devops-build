@@ -25,15 +25,19 @@ class YamlManager(object):
         """Create the yaml to be able to create build in the azure-pipelines.yml file"""
         if self._language == PYTHON:
             language_str = 'python'
+            package_route = '$(System.DefaultWorkingDirectory)'
             dependencies = self._python_dependencies()
         elif self._language == NODE:
             language_str = 'node'
+            package_route = '$(System.DefaultWorkingDirectory)'
             dependencies = self._node_dependencies()
         elif self._language == DOTNET:
             language_str = 'dotnet'
+            package_route = '$(System.DefaultWorkingDirectory)/publish_output/s'
             dependencies = self._dotnet_dependencies()
         elif self._language == JAVA:
             language_str = 'java'
+            package_route = '$(System.DefaultWorkingDirectory)'
             dependencies = self._java_dependencies()
             # ADD NEW DEPENDENCIES FOR LANGUAGES HERE
         else:
@@ -42,22 +46,23 @@ class YamlManager(object):
 
         if self._app_type == WINDOWS:
             platform_str = 'windows'
-            yaml = self._generate_yaml(dependencies, 'VS2017-Win2016', language_str, platform_str)
+            yaml = self._generate_yaml(dependencies, 'VS2017-Win2016', language_str, platform_str, package_route)
         else:
             platform_str = 'linux'
-            yaml = self._generate_yaml(dependencies, 'ubuntu-16.04', language_str, platform_str)
+            yaml = self._generate_yaml(dependencies, 'ubuntu-16.04', language_str, platform_str, package_route)
 
         with open('azure-pipelines.yml', 'w') as f:
             f.write(yaml)
 
-    def _generate_yaml(self, dependencies, vmImage, language_str, platform_str):
+    def _generate_yaml(self, dependencies, vmImage, language_str, platform_str, package_route):
         env = Environment(
             loader=PackageLoader('azure_functions_devops_build.yaml', 'templates'),
             autoescape=select_autoescape(['html', 'xml', 'jinja'])
         )
         template = env.get_template('build.jinja')
         outputText = template.render(dependencies=dependencies, vmImage=vmImage,
-                                     language=language_str, platform=platform_str)
+                                     language=language_str, platform=platform_str,
+                                     package_route=package_route)
         return outputText
 
     def _requires_extensions(self):
@@ -98,7 +103,15 @@ class YamlManager(object):
         dependencies = []
         dependencies.append('- script: |')
         dependencies.append('    dotnet restore')
-        dependencies.append('    dotnet build --output \'./bin/\'')
+        dependencies.append('    dotnet build --configuration Release')
+        dependencies.append("- task: DotNetCoreCLI@2")
+        dependencies.append("  inputs:")
+        dependencies.append("    command: publish")
+        dependencies.append("    arguments: '--configuration Release --output publish_output'")
+        dependencies.append("    projects: '*.csproj'")
+        dependencies.append("    publishWebProjects: false")
+        dependencies.append("    modifyOutputPath: true")
+        dependencies.append("    zipAfterPublish: false")
         return dependencies
 
     def _java_dependencies(self):
