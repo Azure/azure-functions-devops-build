@@ -25,6 +25,5 @@ class TestServiceEndpointManager(unittest.TestCase):
         service_endpoint_manager = ServiceEndpointManager(organization_name=ORGANIZATION_NAME, project_name=PROJECT_NAME, creds=creds)
         endpoint = service_endpoint_manager.create_service_endpoint(SERVICE_ENDPOINT_NAME)
 
-
 if __name__ == '__main__':
     unittest.main()

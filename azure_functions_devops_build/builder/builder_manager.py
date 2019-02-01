@@ -6,7 +6,7 @@
 import vsts.build.v4_1.models as build_models
 from ..base.base_manager import BaseManager
 from ..pool.pool_manager import PoolManager
-
+import time
 
 class BuilderManager(BaseManager):
     """ Manage DevOps Builds
@@ -34,7 +34,6 @@ class BuilderManager(BaseManager):
             github_properties = repository.properties
             build_repository = build_models.build_repository.BuildRepository(default_branch="master", id=repository.id, properties=github_properties,
                                                                              name=repository.full_name, type="GitHub", url=repository.properties['cloneUrl'])
-
         else:
             repository = self._get_repository_by_name(project, self._repository_name)
             build_repository = build_models.build_repository.BuildRepository(default_branch="master", id=repository.id,
