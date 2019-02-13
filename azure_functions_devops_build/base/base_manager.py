@@ -58,5 +58,5 @@ class BaseManager(object):
         service_endpoints = self._service_endpoint_client.get_service_endpoints(project.id)
         github_endpoint = next((endpoint for endpoint in service_endpoints if endpoint.type == "github"), None)
         repositories = self._build_client.list_repositories(project.id, 'github', github_endpoint.id)
-        repository_match = next((repository for repository in repositories.repositories if repository.name == name), None)
+        repository_match = next((repository for repository in repositories.repositories if repository.full_name == name), None)
         return repository_match

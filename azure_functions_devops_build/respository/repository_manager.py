@@ -87,6 +87,11 @@ class RepositoryManager(BaseManager):
             succeeded = True
         return models.repository_response.RepositoryResponse(message, succeeded)
 
+    def setup_github_repository(self):
+        check_call('git add -A'.split(), stdout=DEVNULL, stderr=STDOUT)
+        check_call(["git", "commit", "-a", "-m", "\"creating functions app\""], stdout=DEVNULL, stderr=STDOUT)
+        check_call('git push'.split(), stdout=DEVNULL, stderr=STDOUT)
+
     def _repository_exists(self):
         """Helper to see if gitfile exists"""
         return bool(os.path.exists('.git'))

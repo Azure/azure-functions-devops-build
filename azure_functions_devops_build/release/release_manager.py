@@ -54,7 +54,9 @@ class ReleaseManager(BaseManager):
             settings_str = ""
             for setting in settings:
                 settings_str += (setting[0] + "='" + setting[1] + "'")
-            workflowtasks.append(self._app_settings_task_customized(service_endpoint.id, functionapp_name, resource_name, settings_str))
+            # Check that settings were actually set otherwise we don't want to use the task
+            if settings_str != "":
+                workflowtasks.append(self._app_settings_task_customized(service_endpoint.id, functionapp_name, resource_name, settings_str))
 
         deploy_phases = self._get_deploy_phases(deployment_input, workflowtasks, phase_inputs)
 

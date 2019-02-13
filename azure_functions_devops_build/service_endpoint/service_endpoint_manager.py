@@ -28,9 +28,9 @@ class ServiceEndpointManager(BaseManager):
 
         auth = models.endpoint_authorization.EndpointAuthorization(
             parameters={
-                "AccessToken": access_token
+                "accessToken": access_token
             },
-            scheme="OAuth"
+            scheme="PersonalAccessToken"
         )
 
         service_endpoint = models.service_endpoint.ServiceEndpoint(
