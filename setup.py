@@ -7,7 +7,7 @@
 from setuptools import setup, find_packages
 
 NAME = "azure-functions-devops-build"
-VERSION = "0.0.10"
+VERSION = "0.0.11"
 
 # To install the library, run the following
 #
@@ -16,8 +16,8 @@ VERSION = "0.0.10"
 # prerequisite: setuptools
 # http://pypi.python.org/pypi/setuptools
 
-REQUIRES = ["msrest=>0.5.0",
-            "vsts==0.1.20",
+REQUIRES = ["msrest",
+            "vsts",
             "jinja2"]
 
 setup(

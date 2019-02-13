@@ -24,7 +24,7 @@ class ServiceEndpointManager(BaseManager):
         """ Create a github access token connection """
         project = self._get_project_by_name(self._project_name)
 
-        data = {"AvatarUrl":"https://avatars0.githubusercontent.com/u/20589286?v=4"}
+        data = {}
 
         auth = models.endpoint_authorization.EndpointAuthorization(
             parameters={
