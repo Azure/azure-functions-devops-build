@@ -33,6 +33,9 @@ class OrganizationManager():
         #need to make a secondary client for the creating organization as it uses a different base url
         self._create_organization_config = Configuration(base_url=create_organization_url)
         self._create_organization_client = ServiceClient(creds, self._create_organization_config)
+
+        self._list_region_config = Configuration(base_url='https://aex.dev.azure.com')
+        self._list_region_client = ServiceClient(creds, self._create_organization_config)
         client_models = {k: v for k, v in models.__dict__.items() if isinstance(v, type)}
         self._deserialize = Deserializer(client_models)
 
@@ -166,15 +169,15 @@ class OrganizationManager():
         """List what regions organizations can exist in"""
 
         # Construct URL
-        url = '/_apis/commerce/regions'
+        url = '/_apis/hostacquisition/regions'
 
         #construct header parameters
         header_paramters = {}
         header_paramters['Accept'] = 'application/json'
 
         # Construct and send request
-        request = self._client.get(url, headers=header_paramters)
-        response = self._client.send(request)
+        request = self._list_region_client.get(url, headers=header_paramters)
+        response = self._list_region_client.send(request)
 
         # Handle Response
         deserialized = None
