@@ -44,6 +44,8 @@ class ServiceEndpointManager(BaseManager):
 
         return self._service_endpoint_client.create_service_endpoint(service_endpoint, project.id)
 
+    # This function requires user permission of Microsoft.Authorization/roleAssignments/write
+    # i.e. only the owner of the subscription can use this function
     def create_service_endpoint(self, servicePrincipalName):
         """Create a new service endpoint within a project with an associated service principal"""
         project = self._get_project_by_name(self._project_name)
@@ -59,7 +61,7 @@ class ServiceEndpointManager(BaseManager):
         data["scopeLevel"] = "Subscription"
 
         # A service principal name has to include the http to be valid
-        servicePrincipalNameHttp = "http://" + servicePrincipalName
+        servicePrincipalNameHttp = "https://dev.azure.com/" + servicePrincipalName
         command = "az ad sp create-for-rbac --o json --name " + servicePrincipalNameHttp
         token_resp = subprocess.check_output(command, shell=True).decode()
         token_resp_dict = json.loads(token_resp)
