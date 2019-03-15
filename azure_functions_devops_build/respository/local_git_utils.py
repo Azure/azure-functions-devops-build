@@ -1,3 +1,4 @@
+import os
 import re
 
 # Backward Compatible with Python 2.7
@@ -15,9 +16,17 @@ def does_git_exist():
         return False
     return True
 
+def does_local_git_repository_exist(self):
+    return os.path.exists('.git')
+
 def does_git_remote_exist(remote_name):
     command = ["git", "remote", "show"]
-    return remote_name in check_output(command).decode('utf-8')
+    try:
+        output = check_output(command).decode('utf-8').split(os.linesep)
+    except CalledProcessError:
+        raise GitOperationException(message=" ".join(command))
+
+    return remote_name in output
 
 def git_init():
     command = ["git", "init"]
@@ -48,7 +57,7 @@ def git_commit(message):
         raise GitOperationException(message=" ".join(command))
 
 def git_push(remote_name):
-    command = ["git", "push", "--all", remote_name]
+    command = ["git", "push", "--all", "--force", remote_name]
     try:
         check_call(command, stdout=DEVNULL, stderr=STDOUT)
     except CalledProcessError:

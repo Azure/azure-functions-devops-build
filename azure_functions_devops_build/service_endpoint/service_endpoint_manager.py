@@ -61,6 +61,7 @@ class ServiceEndpointManager(BaseManager):
         data["scopeLevel"] = "Subscription"
 
         # A service principal name has to include the http to be valid
+        # The following command requires Microsoft.Authorization/roleAssignments/write permission
         servicePrincipalNameHttp = "https://dev.azure.com/" + servicePrincipalName
         command = "az ad sp create-for-rbac --o json --name " + servicePrincipalNameHttp
         token_resp = subprocess.check_output(command, shell=True).decode()
