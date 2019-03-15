@@ -28,7 +28,6 @@ class ServiceEndpointManager(BaseManager):
         service_endpoint_name = self._get_service_endpoint_name(repository_name, "pipeline")
         return self._service_endpoint_client.get_service_endpoints_by_names(self._project_name, [service_endpoint_name])
 
-
     def create_github_service_endpoint(self, githubname, access_token):
         """ Create a github access token connection """
         project = self._get_project_by_name(self._project_name)
@@ -71,7 +70,9 @@ class ServiceEndpointManager(BaseManager):
 
         # The following command requires Microsoft.Authorization/roleAssignments/write permission
         service_principle_name = self._get_service_endpoint_name(repository_name, "pipeline")
-        command = "az ad sp create-for-rbac --o json --name " + service_principle_name
+
+        # A service principal name has to include the http/https to be valid
+        command = "az ad sp create-for-rbac --o json --name http://" + service_principle_name
 
         token_resp = subprocess.check_output(command, shell=True).decode()
         token_resp_dict = json.loads(token_resp)
@@ -100,8 +101,7 @@ class ServiceEndpointManager(BaseManager):
         return self._service_endpoint_client.get_service_endpoints(project.id)
 
     def _get_service_endpoint_name(self, repository_name, service_name):
-        # A service principal name has to include the http/https to be valid
-        return "http://{domain}/{org}/{proj}/{repo}/{service}".format(
+        return "{domain}/{org}/{proj}/{repo}/{service}".format(
             domain=SERVICE_ENDPOINT_DOMAIN,
             org=self._organization_name,
             proj=self._project_name,
