@@ -1,3 +1,7 @@
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+# --------------------------------------------------------------------------------------------
 import os
 import re
 
@@ -11,18 +15,20 @@ from ..exceptions import GitOperationException
 
 def does_git_exist():
     try:
-        check_call("git", stdout=DEVNULL, stderr=STDOUT)
-    except CalledProcessError:
+        result = check_call("git", stdout=DEVNULL, stderr=STDOUT)
+    except CalledProcessError as e:
+        # Git will return exit code 1 when it exist
+        return True
+    except Exception:
         return False
-    return True
 
-def does_local_git_repository_exist(self):
-    return os.path.exists('.git')
+def does_local_git_repository_exist():
+    return os.path.exists(".git")
 
 def does_git_remote_exist(remote_name):
     command = ["git", "remote", "show"]
     try:
-        output = check_output(command).decode('utf-8').split(os.linesep)
+        output = check_output(command).decode("utf-8").split("\n")
     except CalledProcessError:
         raise GitOperationException(message=" ".join(command))
 
@@ -33,7 +39,7 @@ def git_init():
     try:
         check_call(command, stdout=DEVNULL, stderr=STDOUT)
     except CalledProcessError:
-        raise GitOperationException(message=" ".join(command));
+        raise GitOperationException(message=" ".join(command))
 
 def git_add_remote(remote_name, remote_url):
     command = ["git", "remote", "add", remote_name, remote_url]
@@ -56,8 +62,12 @@ def git_commit(message):
     except CalledProcessError:
         raise GitOperationException(message=" ".join(command))
 
-def git_push(remote_name):
-    command = ["git", "push", "--all", "--force", remote_name]
+def git_push(remote_name, force=False):
+    command = ["git", "push", remote_name, "--all"]
+
+    if force:
+        command.append("--force")
+
     try:
         check_call(command, stdout=DEVNULL, stderr=STDOUT)
     except CalledProcessError:
@@ -71,7 +81,7 @@ def _sanitize_git_remote_name(organization_name, project_name, repository_name):
 def construct_git_remote_name(organization_name, project_name, repository_name, remote_prefix):
     remote_name = "_{prefix}_{name}".format(
             prefix=remote_prefix,
-            name=_sanitized_remote_name(organization_name, project_name, repository_name))
+            name=_sanitize_git_remote_name(organization_name, project_name, repository_name))
     return remote_name
 
 def construct_git_remote_url(organization_name, project_name, repository_name, domain_name="dev.azure.com"):

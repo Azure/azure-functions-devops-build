@@ -14,6 +14,7 @@ from .local_git_utils import (
         git_add_remote,
         git_stage_all,
         git_commit,
+        git_push,
         does_git_exist,
         does_local_git_repository_exist,
         does_git_remote_exist,
@@ -52,11 +53,8 @@ class RepositoryManager(BaseManager):
         remote_name = construct_git_remote_name(self._organization_name, self._project_name, repository_name, remote_prefix)
         return does_git_remote_exist(remote_name)
 
-    def check_azure_devops_repository(self, repository_name):
-        return self._git_client.get_repository(repository_name, self._project_name)
-
-    def get_azure_devops_repository_stat(self, repository_name):
-        return self._git_client.get_stats(repository_name, self._project_name)
+    def get_azure_devops_repository_branches(self, repository_name):
+        return self._git_client.get_branches(repository_name, self._project_name)
 
     def create_repository(self, repository_name):
         """Create a new azure functions git repository"""
@@ -98,9 +96,9 @@ class RepositoryManager(BaseManager):
 
     # The function will push the current context in local git repository to Azure Devops
     # Exceptions: GitOperationException
-    def push_local_to_azure_devops_repository(self, repository_name, remote_prefix):
+    def push_local_to_azure_devops_repository(self, repository_name, remote_prefix, force):
         remote_name = construct_git_remote_name(self._organization_name, self._project_name, repository_name, remote_prefix)
-        git_push(remote_name)
+        git_push(remote_name, force)
 
     def list_github_repositories(self):
         """List github repositories if there are any from the current connection"""
