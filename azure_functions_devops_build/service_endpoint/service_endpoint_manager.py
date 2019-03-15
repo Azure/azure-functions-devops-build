@@ -6,7 +6,9 @@
 import json
 import subprocess
 import vsts.service_endpoint.v4_1.models as models
+from vsts.exceptions import VstsClientRequestError
 from ..base.base_manager import BaseManager
+from ..constants import SERVICE_ENDPOINT_DOMAIN
 
 class ServiceEndpointManager(BaseManager):
     """ Manage DevOps service endpoints within projects
@@ -19,6 +21,13 @@ class ServiceEndpointManager(BaseManager):
         """Inits ServiceEndpointManager as per BaseManager"""
         super(ServiceEndpointManager, self).__init__(creds, organization_name=organization_name,
                                                      project_name=project_name)
+
+    # Get the details of a service endpoint
+    # If endpoint does not exist, return None
+    def get_service_endpoints(self, repository_name):
+        service_endpoint_name = self._get_service_endpoint_name(repository_name, "pipeline")
+        return self._service_endpoint_client.get_service_endpoints_by_names(self._project_name, [service_endpoint_name])
+
 
     def create_github_service_endpoint(self, githubname, access_token):
         """ Create a github access token connection """
@@ -46,7 +55,7 @@ class ServiceEndpointManager(BaseManager):
 
     # This function requires user permission of Microsoft.Authorization/roleAssignments/write
     # i.e. only the owner of the subscription can use this function
-    def create_service_endpoint(self, servicePrincipalName):
+    def create_service_endpoint(self, repository_name):
         """Create a new service endpoint within a project with an associated service principal"""
         project = self._get_project_by_name(self._project_name)
 
@@ -60,13 +69,12 @@ class ServiceEndpointManager(BaseManager):
         data["environment"] = "AzureCloud"
         data["scopeLevel"] = "Subscription"
 
-        # A service principal name has to include the http to be valid
         # The following command requires Microsoft.Authorization/roleAssignments/write permission
-        servicePrincipalNameHttp = "https://dev.azure.com/" + servicePrincipalName
-        command = "az ad sp create-for-rbac --o json --name " + servicePrincipalNameHttp
+        service_principle_name = self._get_service_endpoint_name(repository_name, "pipeline")
+        command = "az ad sp create-for-rbac --o json --name " + service_principle_name
+
         token_resp = subprocess.check_output(command, shell=True).decode()
         token_resp_dict = json.loads(token_resp)
-
         auth = models.endpoint_authorization.EndpointAuthorization(
             parameters={
                 "tenantid": token_resp_dict['tenant'],
@@ -84,10 +92,19 @@ class ServiceEndpointManager(BaseManager):
             name=token_resp_dict['displayName'],
             type="azurerm"
         )
-
         return self._service_endpoint_client.create_service_endpoint(service_endpoint, project.id)
 
     def list_service_endpoints(self):
         """List exisiting service endpoints within a project"""
         project = self._get_project_by_name(self._project_name)
         return self._service_endpoint_client.get_service_endpoints(project.id)
+
+    def _get_service_endpoint_name(self, repository_name, service_name):
+        # A service principal name has to include the http/https to be valid
+        return "http://{domain}/{org}/{proj}/{repo}/{service}".format(
+            domain=SERVICE_ENDPOINT_DOMAIN,
+            org=self._organization_name,
+            proj=self._project_name,
+            repo=repository_name,
+            service=service_name
+        )
