@@ -6,6 +6,7 @@ from msrest.service_client import ServiceClient
 from msrest import Configuration, Deserializer
 from msrest.exceptions import HttpOperationError
 import vsts.git.v4_1.models.git_repository_create_options as git_repository_create_options
+from vsts.exceptions import VstsServiceError
 
 from ..base.base_manager import BaseManager
 from . import models
@@ -54,7 +55,20 @@ class RepositoryManager(BaseManager):
         return does_git_remote_exist(remote_name)
 
     def get_azure_devops_repository_branches(self, repository_name):
-        return self._git_client.get_branches(repository_name, self._project_name)
+        try:
+            result = self._git_client.get_branches(repository_name, self._project_name)
+        except VstsServiceError:
+            # If the repository does not exist, we return an empty list
+            return []
+        return result
+
+    def get_azure_devops_repository(self, repository_name):
+        try:
+            result = self._git_client.get_repository(repository_name, self._project_name)
+        except VstsServiceError:
+            # If the repository does not exist, we return None
+            return None
+        return result
 
     def create_repository(self, repository_name):
         """Create a new azure functions git repository"""
