@@ -87,7 +87,7 @@ class RepositoryManager(BaseManager):
         remote_name = construct_git_remote_name(self._organization_name, self._project_name, repository_name, remote_prefix)
         remote_url = construct_git_remote_url(self._organization_name, self._project_name, repository_name)
 
-        if does_local_git_repository_exist():
+        if not does_local_git_repository_exist():
             git_init()
 
         git_add_remote(remote_name, remote_url)
