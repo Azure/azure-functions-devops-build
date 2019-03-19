@@ -5,3 +5,7 @@ class BaseException(Exception):
 
 class GitOperationException(BaseException):
     pass
+
+
+class RoleAssignmentException(BaseException):
+    pass

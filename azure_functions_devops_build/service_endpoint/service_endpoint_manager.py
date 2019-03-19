@@ -13,6 +13,7 @@ import vsts.service_endpoint.v4_1.models as models
 from vsts.exceptions import VstsClientRequestError
 from ..base.base_manager import BaseManager
 from ..constants import SERVICE_ENDPOINT_DOMAIN
+from ..exceptions import RoleAssignmentException
 
 class ServiceEndpointManager(BaseManager):
     """ Manage DevOps service endpoints within projects
@@ -99,8 +100,11 @@ class ServiceEndpointManager(BaseManager):
 
         # A service principal name has to include the http/https to be valid
         command = "az ad sp create-for-rbac --o json --name http://" + service_principle_name
+        try:
+            token_resp = check_output(command, stderr=DEVNULL, shell=True).decode()
+        except CalledProcessError as cpe:
+            raise RoleAssignmentException()
 
-        token_resp = check_output(command, shell=True).decode()
         token_resp_dict = json.loads(token_resp)
         auth = models.endpoint_authorization.EndpointAuthorization(
             parameters={
