@@ -27,28 +27,6 @@ class ServiceEndpointManager(BaseManager):
         super(ServiceEndpointManager, self).__init__(creds, organization_name=organization_name,
                                                      project_name=project_name)
 
-    @staticmethod
-    def check_service_endpoint_assignment_permission():
-        """Try to create a service principle and perform a role assignment on it"""
-        command = "az ad sp create-for-rbac"
-        result = None
-
-        try:
-            result = check_output(command, shell=True, stderr=DEVNULL).decode()
-        except CalledProcessError:
-            return False
-
-        # Clean up service principle, even if it fails, we still consider the operator has role assignment permission
-        if result:
-            service_principle = json.loads(result)
-            command = "az ad sp delete --id {app_id}".format(app_id=service_principle["appId"])
-            try:
-                check_call(command, shell=True, stdout=DEVNULL, stderr=DEVNULL)
-            except CalledProcessError as e:
-                return True
-
-        return True
-
     # Get the details of a service endpoint
     # If endpoint does not exist, return None
     def get_service_endpoints(self, repository_name):
