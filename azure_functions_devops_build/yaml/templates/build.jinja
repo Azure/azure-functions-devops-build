@@ -2,7 +2,7 @@
 trigger:
 - master
 pool:
-  vmImage: {{ vmImage }}
+  vmImage: "{{ vmImage }}"
 steps:
 {%- for dependency in dependencies %}
 {{ dependency|safe }}
