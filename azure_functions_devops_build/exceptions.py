@@ -9,3 +9,7 @@ class GitOperationException(BaseException):
 
 class RoleAssignmentException(BaseException):
     pass
+
+
+class LanguageNotSupportException(BaseException):
+    pass
