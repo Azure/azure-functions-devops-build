@@ -4,7 +4,7 @@
 # --------------------------------------------------------------------------------------------
 
 import unittest
-from azure_functions_devops_build.respository.repository_manager import RepositoryManager
+from azure_functions_devops_build.repository.repository_manager import RepositoryManager
 from ._config import ORGANIZATION_NAME, PROJECT_NAME, REPOSITORY_NAME, CREATE_DEVOPS_OBJECTS
 from ._helpers import get_credentials
 
@@ -19,7 +19,7 @@ class TestRepositoryManager(unittest.TestCase):
         creds = get_credentials()
         repository_manager = RepositoryManager(organization_name=ORGANIZATION_NAME, project_name=PROJECT_NAME, creds=creds)
         repositories = repository_manager.list_repositories()
-        
+
     @unittest.skipIf(CREATE_DEVOPS_OBJECTS == False,
                     "skipping - set CREATE_DEVOPS_OBJECTS to True if you don't want to skip creates")
     def test_initial_setup(self):
