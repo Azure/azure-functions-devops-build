@@ -14,18 +14,16 @@ from azure_functions_devops_build.constants import LINUX_CONSUMPTION, LINUX_DEDI
 CREATE_DEVOPS_OBJECTS = True
 
 # Specify the name of the devops objects you want to create/have already created (in the case of create devops objects being false)
-ORGANIZATION_NAME = '{organization name}'
-PROJECT_NAME = 'project'
-REPOSITORY_NAME = PROJECT_NAME
-BUILD_DEFINITION_NAME = PROJECT_NAME
-RELEASE_DEFINITION_NAME = 'release'
+ORGANIZATION_NAME = '{Azure Devops Organization Name}'
+PROJECT_NAME = '{Azure Devops Project Name}'
+REPOSITORY_NAME = '{Azure Devops Repository Name}'
 
 # Do not change this from default.
 POOL_NAME = 'Default'
 
 # Specify the details of your azure functions resource
-FUNCTIONAPP_NAME = '{functionapp name}'
-STORAGE_NAME = '{storage name}'
-RESOURCE_GROUP_NAME = '{resource group name}'
-FUNCTIONAPP_TYPE = '{Functionapp type}' # choose from LINUX_CONSUMPTION, LINUX_DEDICATED, WINDOWS
-FUNCTIONAPP_LANGUAGE = '{Functionapp language}' # choose from NODE, PYTHON, JAVA, DOTNET
+FUNCTIONAPP_NAME = '{Functionapp Name}'
+STORAGE_NAME = '{Storage Account Name}'
+RESOURCE_GROUP_NAME = '{Resource Group Name}'
+FUNCTIONAPP_TYPE = '{Functionapp Type}' # choose from LINUX_CONSUMPTION, LINUX_DEDICATED, WINDOWS
+FUNCTIONAPP_LANGUAGE = '{Functionapp Language}' # choose from NODE, PYTHON, JAVA, DOTNET
