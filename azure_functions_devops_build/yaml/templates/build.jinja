@@ -2,18 +2,19 @@
 trigger:
 - master
 pool:
-  vmImage: {{ vmImage }}
+  vmImage: '{{ vmImage }}'
 steps:
 {%- for dependency in dependencies %}
 {{ dependency|safe }}
 {%- endfor %}
 - task: ArchiveFiles@2
-  displayName: "Archive files"
+  displayName: 'Archive files'
   inputs:
-    rootFolderOrFile: "{{package_route}}"
+    rootFolderOrFile: '{{package_route}}'
     includeRootFolder: false
-    archiveFile: "$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip"
+    archiveFile: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'
     name: 'drop'
+

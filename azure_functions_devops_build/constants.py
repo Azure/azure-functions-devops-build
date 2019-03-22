@@ -11,3 +11,5 @@ PYTHON = 0
 NODE = 1
 DOTNET = 2
 JAVA = 3
+
+SERVICE_ENDPOINT_DOMAIN = "dev.azure.com"

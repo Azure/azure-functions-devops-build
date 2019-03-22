@@ -20,6 +20,10 @@ class YamlManager(object):
         """Inits YamlManager as to be able generate the yaml files easily"""
         self._language = language
         self._app_type = app_type
+        self.jinja_env = Environment(
+            loader=PackageLoader('azure_functions_devops_build.yaml', 'templates'),
+            autoescape=select_autoescape(['html', 'xml', 'jinja'])
+        )
 
     def create_yaml(self):
         """Create the yaml to be able to create build in the azure-pipelines.yml file"""
@@ -55,11 +59,7 @@ class YamlManager(object):
             f.write(yaml)
 
     def _generate_yaml(self, dependencies, vmImage, language_str, platform_str, package_route):
-        env = Environment(
-            loader=PackageLoader('azure_functions_devops_build.yaml', 'templates'),
-            autoescape=select_autoescape(['html', 'xml', 'jinja'])
-        )
-        template = env.get_template('build.jinja')
+        template = self.jinja_env.get_template('build.jinja')
         outputText = template.render(dependencies=dependencies, vmImage=vmImage,
                                      language=language_str, platform=platform_str,
                                      package_route=package_route)
