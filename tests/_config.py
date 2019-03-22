@@ -11,9 +11,8 @@ from azure_functions_devops_build.constants import LINUX_CONSUMPTION, LINUX_DEDI
 CREATE_DEVOPS_OBJECTS = False
 
 # Specify the name of your already created devops objects
-ORGANIZATION_NAME = 'build-release-yamls'
-PROJECT_NAME = 'github_test'
-SERVICE_ENDPOINT_NAME = ORGANIZATION_NAME + PROJECT_NAME
+ORGANIZATION_NAME = 'hz-org'
+PROJECT_NAME = 'hz-proj-test'
 REPOSITORY_NAME = PROJECT_NAME
 BUILD_DEFINITION_NAME = PROJECT_NAME
 RELEASE_DEFINITION_NAME = 'release blah'

@@ -16,7 +16,6 @@ CREATE_DEVOPS_OBJECTS = True
 # Specify the name of the devops objects you want to create/have already created (in the case of create devops objects being false)
 ORGANIZATION_NAME = '{organization name}'
 PROJECT_NAME = 'project'
-SERVICE_ENDPOINT_NAME = ORGANIZATION_NAME + PROJECT_NAME
 REPOSITORY_NAME = PROJECT_NAME
 BUILD_DEFINITION_NAME = PROJECT_NAME
 RELEASE_DEFINITION_NAME = 'release'
