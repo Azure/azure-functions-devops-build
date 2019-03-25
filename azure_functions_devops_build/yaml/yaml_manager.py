@@ -64,7 +64,7 @@ class YamlManager(object):
     def _requires_extensions(self):
         return path.exists('extensions.csproj')
 
-    def _requires_python_requirements(self):
+    def _requires_pip(self):
         return path.exists('requirements.txt')
 
     def _requires_npm(self):
@@ -97,7 +97,7 @@ class YamlManager(object):
         dependencies.append('    python3.6 -m venv worker_venv')
         dependencies.append('    source worker_venv/bin/activate')
         dependencies.append('    pip3.6 install setuptools')
-        if self._requires_python_requirements():
+        if self._requires_pip():
             dependencies.append('    pip3.6 install -r requirements.txt')
         return dependencies
 
