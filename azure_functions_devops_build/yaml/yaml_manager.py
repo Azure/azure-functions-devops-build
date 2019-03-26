@@ -79,9 +79,6 @@ class YamlManager(object):
                 return bool(json_object.get('scripts', {}).get('build'))
         return False
 
-    def _requires_mvn(self):
-        return path.exists('pom.xml')
-
     def _python_dependencies(self):
         """Helper to create the standard python dependencies"""
         dependencies = []
