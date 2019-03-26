@@ -14,7 +14,7 @@ from azure_functions_devops_build.constants import LINUX_CONSUMPTION, LINUX_DEDI
 CREATE_DEVOPS_OBJECTS = True
 
 # Specify the name of the devops objects you want to create/have already created (in the case of create devops objects being false)
-ORGANIZATION_NAME = 'hz-org'
+ORGANIZATION_NAME = 'hz-org-test'
 PROJECT_NAME = 'hz-proj-test'
 REPOSITORY_NAME = 'hz-repo-test'
 

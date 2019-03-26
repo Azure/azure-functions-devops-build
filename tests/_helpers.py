@@ -15,5 +15,5 @@ def get_credentials():
     creds, _, _ = profile.get_login_credentials(subscription_id=None)
     return creds
 
-def id_generator(self, size=10, chars=string.ascii_uppercase + string.digits):
+def id_generator(size=10, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
