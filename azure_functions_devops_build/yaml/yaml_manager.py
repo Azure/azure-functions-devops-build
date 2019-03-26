@@ -72,6 +72,9 @@ class YamlManager(object):
     def _requires_pip(self):
         return path.exists('requirements.txt')
 
+    def _requires_npm(self):
+        return path.exists('package.json')
+
     def _requires_npm_build(self):
         if path.exists('package.json'):
             with open('package.json', 'r') as f:
