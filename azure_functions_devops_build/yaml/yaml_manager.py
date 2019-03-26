@@ -41,6 +41,11 @@ class YamlManager(object):
             language_str = 'dotnet'
             package_route = '$(System.DefaultWorkingDirectory)/publish_output/s'
             dependencies = self._dotnet_dependencies()
+        elif self._language == JAVA:
+            language_str = 'java'
+            package_route = '$(System.DefaultWorkingDirectory)'
+            dependencies = self._java_dependencies()
+            # ADD NEW DEPENDENCIES FOR LANGUAGES HERE
         else:
             raise LanguageNotSupportException(self._language)
 
@@ -67,15 +72,11 @@ class YamlManager(object):
     def _requires_pip(self):
         return path.exists('requirements.txt')
 
-    def _requires_npm(self):
-        return path.exists('package.json')
-
     def _requires_npm_build(self):
         if path.exists('package.json'):
             with open('package.json', 'r') as f:
                 json_object = json.load(f)
                 return bool(json_object.get('scripts', {}).get('build'))
-            return False
         return False
 
     def _requires_mvn(self):
@@ -132,3 +133,13 @@ class YamlManager(object):
         dependencies.append("    modifyOutputPath: true")
         dependencies.append("    zipAfterPublish: false")
         return dependencies
+
+    def _java_dependencies(self):
+        """Helper to create the standard java dependencies"""
+        dependencies = ['- script: |', '    dotnet restore', '    dotnet build', '   mvn clean deploy']
+        logging.critical("java dependencies are currently not implemented")
+        return dependencies
+
+    def _powershell_dependencies(self):
+        # TODO
+        exit(1)
