@@ -18,9 +18,6 @@ ORGANIZATION_NAME = '{Azure Devops Organization Name}'
 PROJECT_NAME = '{Azure Devops Project Name}'
 REPOSITORY_NAME = '{Azure Devops Repository Name}'
 
-# Do not change this from default.
-POOL_NAME = 'Default'
-
 # Specify the details of your azure functions resource
 FUNCTIONAPP_NAME = '{Functionapp Name}'
 STORAGE_NAME = '{Storage Account Name}'

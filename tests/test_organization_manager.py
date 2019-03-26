@@ -66,7 +66,7 @@ class TestOrganizationManager(unittest.TestCase):
 
     @unittest.skipIf(
         not CREATE_DEVOPS_OBJECTS,
-        "Set CREATE_DEVOPS_OBJECTS to True if you don't want to skip creates"
+        "Set CREATE_DEVOPS_OBJECTS to True if you want to create resources for unit testing"
     )
     def test_create_organization(self):
         existing_organization_names = [

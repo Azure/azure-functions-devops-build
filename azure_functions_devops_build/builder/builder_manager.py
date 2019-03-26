@@ -22,21 +22,15 @@ class BuilderManager(BaseManager):
         """Inits BuilderManager as per BaseManager"""
         super(BuilderManager, self).__init__(creds, organization_name, project_name, repository_name=repository_name)
 
-    def create_definition(self, build_definition_name, pool_name, github=False):
+    def create_definition(self, build_definition_name, pool_name):
         """Create a build definition in Azure DevOps"""
         project = self._get_project_by_name(self._project_name)
         pool = self._get_pool_by_name(pool_name)
 
         # create the relevant objects that are needed for the build definition (this is the minimum amount needed)
         pool_queue = build_models.agent_pool_queue.AgentPoolQueue(id=pool.id, name=pool.name)
-        if github:
-            repository = self._get_github_repository_by_name(project, self._repository_name)
-            github_properties = repository.properties
-            build_repository = build_models.build_repository.BuildRepository(default_branch="master", id=repository.id, properties=github_properties,
-                                                                             name=repository.full_name, type="GitHub", url=repository.properties['cloneUrl'])
-        else:
-            repository = self._get_repository_by_name(project, self._repository_name)
-            build_repository = build_models.build_repository.BuildRepository(default_branch="master", id=repository.id,
+        repository = self._get_repository_by_name(project, self._repository_name)
+        build_repository = build_models.build_repository.BuildRepository(default_branch="master", id=repository.id,
                                                                              name=repository.name, type="TfsGit")
         team_project_reference = self._get_project_reference(project)
         build_definition = self._get_build_definition(team_project_reference, build_repository,

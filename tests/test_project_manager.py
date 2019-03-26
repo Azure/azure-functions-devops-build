@@ -23,12 +23,9 @@ class TestProjectManager(unittest.TestCase):
     def setUp(self):
         self.project_manager = ProjectManager(creds=get_credentials(), organization_name=ORGANIZATION_NAME)
 
-    def tearDown(self):
-        self.project_manager.close_connection()
-
     @unittest.skipIf(
         not CREATE_DEVOPS_OBJECTS,
-        "Set CREATE_DEVOPS_OBJECTS to True if you want to create resources for testing"
+        "Set CREATE_DEVOPS_OBJECTS to True if you want to create resources for unit testing"
     )
     def test_create_project(self):
         existing_project_names = [
