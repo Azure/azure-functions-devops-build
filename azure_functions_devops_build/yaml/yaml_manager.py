@@ -5,8 +5,10 @@
 
 import os.path as path
 import logging
+import json
 from jinja2 import Environment, PackageLoader, select_autoescape
 from ..constants import (WINDOWS, PYTHON, NODE, DOTNET, JAVA)
+from ..exceptions import LanguageNotSupportException
 
 class YamlManager(object):
     """ Generate yaml files for devops
@@ -45,8 +47,7 @@ class YamlManager(object):
             dependencies = self._java_dependencies()
             # ADD NEW DEPENDENCIES FOR LANGUAGES HERE
         else:
-            logging.warning("valid app type not found")
-            dependencies = ""
+            raise LanguageNotSupportException(self._language)
 
         if self._app_type == WINDOWS:
             platform_str = 'windows'
@@ -66,7 +67,20 @@ class YamlManager(object):
         return outputText
 
     def _requires_extensions(self):
-        return True if path.exists('extensions.csproj') else False
+        return path.exists('extensions.csproj')
+
+    def _requires_pip(self):
+        return path.exists('requirements.txt')
+
+    def _requires_npm(self):
+        return path.exists('package.json')
+
+    def _requires_npm_build(self):
+        if path.exists('package.json'):
+            with open('package.json', 'r') as f:
+                json_object = json.load(f)
+                return bool(json_object.get('scripts', {}).get('build'))
+        return False
 
     def _python_dependencies(self):
         """Helper to create the standard python dependencies"""
@@ -84,7 +98,8 @@ class YamlManager(object):
         dependencies.append('    python3.6 -m venv worker_venv')
         dependencies.append('    source worker_venv/bin/activate')
         dependencies.append('    pip3.6 install setuptools')
-        dependencies.append('    pip3.6 install -r requirements.txt')
+        if self._requires_pip():
+            dependencies.append('    pip3.6 install -r requirements.txt')
         return dependencies
 
     def _node_dependencies(self):
@@ -94,8 +109,13 @@ class YamlManager(object):
         if self._requires_extensions():
             dependencies.append('    dotnet restore')
             dependencies.append('    dotnet build --output \'./bin/\'')
-        dependencies.append('    npm install')
-        dependencies.append('    npm run build')
+        if self._requires_npm():
+            dependencies.append('    npm install')
+        if self._requires_npm_build():
+            dependencies.append('    npm run build')
+
+        if len(dependencies) == 1:
+            return []
         return dependencies
 
     def _dotnet_dependencies(self):
