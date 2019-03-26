@@ -14,9 +14,9 @@ from azure_functions_devops_build.constants import LINUX_CONSUMPTION, LINUX_DEDI
 CREATE_DEVOPS_OBJECTS = True
 
 # Specify the name of the devops objects you want to create/have already created (in the case of create devops objects being false)
-ORGANIZATION_NAME = '{Azure Devops Organization Name}'
-PROJECT_NAME = '{Azure Devops Project Name}'
-REPOSITORY_NAME = '{Azure Devops Repository Name}'
+ORGANIZATION_NAME = '{Azure Devops Organization Name}' # To run the full test suite, the organization must exist
+PROJECT_NAME = '{Azure Devops Project Name}' # To run the full test suite, the project must exist
+REPOSITORY_NAME = '{Azure Devops Repository Name}' # To run the full test suite, the repository must exist
 
 # Specify the details of your azure functions resource
 FUNCTIONAPP_NAME = '{Functionapp Name}'
