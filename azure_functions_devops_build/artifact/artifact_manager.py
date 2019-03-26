@@ -4,6 +4,7 @@
 # --------------------------------------------------------------------------------------------
 
 from ..base.base_manager import BaseManager
+from vsts.exceptions import VstsClientRequestError
 
 class ArtifactManager(BaseManager):
     """ Manage DevOps Artifacts
@@ -19,4 +20,8 @@ class ArtifactManager(BaseManager):
     def list_artifacts(self, build_id):
         """Lists artifacts from a build"""
         project = self._get_project_by_name(self._project_name)
-        return self._build_client.get_artifacts(build_id, project.id)
+        try:
+            result = self._build_client.get_artifacts(build_id, project.id)
+        except VstsClientRequestError:
+            return []
+        return result

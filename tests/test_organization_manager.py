@@ -3,8 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 # --------------------------------------------------------------------------------------------
 
-import unittest
 import logging
+import unittest
 from azure_functions_devops_build.organization.organization_manager import OrganizationManager
 from azure_functions_devops_build.user.user_manager import UserManager
 from msrest.exceptions import HttpOperationError

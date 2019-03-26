@@ -38,7 +38,7 @@ class TestBuilderManager(unittest.TestCase):
         self.assertEqual(definition.name, BUILD_DEFINITION_NAME)
         self.assertEqual(definition.process['yamlFilename'], 'azure-pipelines.yml')
         build = builder_manager.create_build(BUILD_DEFINITION_NAME, POOL_NAME)
-    
+
     @unittest.skipIf(CREATE_DEVOPS_OBJECTS == False,
                      "skipping - set CREATE_DEVOPS_OBJECTS to True if you don't want to skip creates")
     def test_github_create_definition_and_build(self):
