@@ -42,7 +42,7 @@ class TestBuilderManager(unittest.TestCase):
 
         # Skip if definition already exists
         if self._build_definition_name in [d.name for d in definitions]:
-            return
+            raise unittest.SkipTest("Build definition exists. No need to create a new build definition.")
 
         definition = self.builder_manager.create_definition(self._build_definition_name, "Default")
         self.assertEqual(definition.name, self._build_definition_name)

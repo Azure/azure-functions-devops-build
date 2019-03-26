@@ -50,7 +50,7 @@ class TestServiceEndpointManager(unittest.TestCase):
 
         # Skip if endpoint exists
         if len(existing_endpoints) > 0:
-            return
+            raise unittest.SkipTest("Service endpoint does not exist")
 
         # Skip if role assignment permission is not granted
         try:

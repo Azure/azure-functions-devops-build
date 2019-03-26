@@ -75,7 +75,7 @@ class TestOrganizationManager(unittest.TestCase):
 
         # If the organization exists, we will skip this test
         if ORGANIZATION_NAME in existing_organization_names:
-            return
+            raise unittest.SkipTest("Organization already exists. No need to create a new organization.")
 
         result = self.organization_manager.create_organization('CUS', ORGANIZATION_NAME)
         self.assertIsNotNone(result.id)
@@ -88,7 +88,7 @@ class TestOrganizationManager(unittest.TestCase):
 
         # If there is no existing organization, we will skip this test
         if existing_organization_names.count == 0:
-            return
+            raise unittest.SkipTest("There is no existing organization. Cannot create a duplicate.")
 
         organization_name = existing_organization_names[0]
         with self.assertRaises(HttpOperationError):

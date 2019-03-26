@@ -51,12 +51,12 @@ class TestReleaseManager(unittest.TestCase):
 
         # Skip if service endpoint does not exist
         if service_endpoint_name is None:
-            return
+            raise unittest.SkipTest("There is no service endpoint. Cannot create release definition.")
 
         # Skip if release definition already exists
         definitions = self.release_manager.list_release_definitions()
         if self._release_definition_name in [d.name for d in definitions]:
-            return
+            raise unittest.SkipTest("The release definition exists. No need to create one.")
 
         new_definition = self.release_manager.create_release_definition(
             build_name=self._build_definition_name,
@@ -80,7 +80,7 @@ class TestReleaseManager(unittest.TestCase):
         # Skip if release definition does not exist
         definitions = self.release_manager.list_release_definitions()
         if not self._release_definition_name in [d.name for d in definitions]:
-            return
+            raise unittest.SkipTest("There is no release definition. Cannot create a new release.")
 
         release = self.release_manager.create_release(self._release_definition_name)
         self.assertIsNotNone(release)

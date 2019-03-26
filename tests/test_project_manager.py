@@ -34,7 +34,7 @@ class TestProjectManager(unittest.TestCase):
 
         # If the project exists, we will skip this test
         if PROJECT_NAME in existing_project_names:
-            return
+            raise unittest.SkipTest("Project already exists. No need to create a new project.")
 
         result = self.project_manager.create_project(PROJECT_NAME)
         self.assertIsNotNone(result.id)
@@ -47,7 +47,7 @@ class TestProjectManager(unittest.TestCase):
 
         # If no project exists, we will skip this test
         if len(existing_project_names) == 0:
-            return
+            raise unittest.SkipTest("There is no existing project. Cannot create a duplicate.")
 
         result = self.project_manager.create_project(existing_project_names[0])
         self.assertFalse(result.valid)

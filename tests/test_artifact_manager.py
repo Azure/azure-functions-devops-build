@@ -27,10 +27,12 @@ class TestArtifactManager(unittest.TestCase):
 
     def test_list_artifacts(self):
         artifacts = self.artifact_manager.list_artifacts(build_id="1")
-        if artifacts:
-            # If the user is using the devops build manager to make builds there should only be one artifact
-            # called drop as a result of running the builder commands.
-            self.assertEqual(artifacts[0].name, 'drop')
+        if not artifacts:
+            raise unittest.SkipTest("The build pipeline has no artifacts")
+
+        # If the user is using the devops build manager to make builds there should only be one artifact
+        # called drop as a result of running the builder commands.
+        self.assertEqual(artifacts[0].name, 'drop')
 
     def test_invalid_list_artifacts_negative_build_id(self):
         artifacts = self.artifact_manager.list_artifacts(build_id="-1")
