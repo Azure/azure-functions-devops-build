@@ -40,6 +40,30 @@ class ServiceEndpointManager(BaseManager):
             return []
         return result
 
+    def create_github_service_endpoint(self, githubname, access_token):
+        """ Create a github access token connection """
+        project = self._get_project_by_name(self._project_name)
+
+        data = {}
+
+        auth = models.endpoint_authorization.EndpointAuthorization(
+            parameters={
+                "accessToken": access_token
+            },
+            scheme="PersonalAccessToken"
+        )
+
+        service_endpoint = models.service_endpoint.ServiceEndpoint(
+            administrators_group=None,
+            authorization=auth,
+            data=data,
+            name=githubname,
+            type="github",
+            url="http://github.com"
+        )
+
+        return self._service_endpoint_client.create_service_endpoint(service_endpoint, project.id)
+
     # This function requires user permission of Microsoft.Authorization/roleAssignments/write
     # i.e. only the owner of the subscription can use this function
     def create_service_endpoint(self, repository_name):
@@ -85,6 +109,11 @@ class ServiceEndpointManager(BaseManager):
             type="azurerm"
         )
         return self._service_endpoint_client.create_service_endpoint(service_endpoint, project.id)
+
+    def list_service_endpoints(self):
+        """List exisiting service endpoints within a project"""
+        project = self._get_project_by_name(self._project_name)
+        return self._service_endpoint_client.get_service_endpoints(project.id)
 
     def _get_service_endpoint_name(self, repository_name, service_name):
         return "{domain}/{org}/{proj}/{repo}/{service}".format(
