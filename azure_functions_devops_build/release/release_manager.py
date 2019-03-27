@@ -164,7 +164,7 @@ class ReleaseManager(BaseManager):
         deploy_phase["name"] = "Agent Job"
         deploy_phase["workflowTasks"] = workflowtasks
         deploy_phase["phaseInputs"] = phase_inputs
-        
+
         deploy_phases = [deploy_phase]
 
         return deploy_phases

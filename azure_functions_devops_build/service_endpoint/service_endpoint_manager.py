@@ -10,7 +10,7 @@ except ImportError:
     DEVNULL = open(os.devnull, 'w')
 from subprocess import check_output, check_call, CalledProcessError
 import vsts.service_endpoint.v4_1.models as models
-from vsts.exceptions import VstsClientRequestError
+from vsts.exceptions import VstsServiceError
 from ..base.base_manager import BaseManager
 from ..constants import SERVICE_ENDPOINT_DOMAIN
 from ..exceptions import RoleAssignmentException
@@ -28,10 +28,17 @@ class ServiceEndpointManager(BaseManager):
                                                      project_name=project_name)
 
     # Get the details of a service endpoint
-    # If endpoint does not exist, return None
+    # If endpoint does not exist, return an empty list
     def get_service_endpoints(self, repository_name):
         service_endpoint_name = self._get_service_endpoint_name(repository_name, "pipeline")
-        return self._service_endpoint_client.get_service_endpoints_by_names(self._project_name, [service_endpoint_name])
+        try:
+            result = self._service_endpoint_client.get_service_endpoints_by_names(
+                self._project_name,
+                [service_endpoint_name]
+            )
+        except VstsServiceError:
+            return []
+        return result
 
     def create_github_service_endpoint(self, githubname, access_token):
         """ Create a github access token connection """

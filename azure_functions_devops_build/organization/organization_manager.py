@@ -41,6 +41,9 @@ class OrganizationManager():
 
     def validate_organization_name(self, organization_name):
         """Validate an organization name by checking it does not already exist and that it fits name restrictions"""
+        if organization_name is None:
+            return models.ValidateAccountName(valid=False, message="The organization_name cannot be None")
+
         if re.search("[^0-9A-Za-z-]", organization_name):
             return models.ValidateAccountName(valid=False, message="""The name supplied contains forbidden characters.
                                                                       Only alphanumeric characters and dashes are allowed.

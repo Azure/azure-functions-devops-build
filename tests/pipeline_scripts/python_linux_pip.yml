@@ -1,0 +1,30 @@
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+# --------------------------------------------------------------------------------------------
+# Starter template for Azure functions build -- python on linux
+trigger:
+- master
+pool:
+  vmImage: 'ubuntu-16.04'
+steps:
+- task: UsePythonVersion@0
+  displayName: "Setting python version to 3.6 as required by functions"
+  inputs:
+    versionSpec: '3.6'
+    architecture: 'x64'
+- script: |
+    python3.6 -m venv worker_venv
+    source worker_venv/bin/activate
+    pip3.6 install setuptools
+    pip3.6 install -r requirements.txt
+- task: ArchiveFiles@2
+  displayName: 'Archive files'
+  inputs:
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+    includeRootFolder: false
+    archiveFile: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'
+    name: 'drop'
