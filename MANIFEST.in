@@ -1,1 +1,2 @@
-include *.jinja
+include azure_functions_devops_build/yaml/templates/*.jinja
+include LICENSE README.md
