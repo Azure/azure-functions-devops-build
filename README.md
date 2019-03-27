@@ -35,7 +35,7 @@ for organization in organizations.value:
 
 ## API documentation
 
-This Python library extensively uses the Azure DevOps REST APIs and Azure Devops Python API. See the [Azure DevOps REST API reference](https://docs.microsoft.com/en-us/rest/api/vsts/?view=vsts-rest-5.0) for details on calling different APIs and [Azure DevOps Python SDK] (https://github.com/Microsoft/azure-devops-python-api) for details on the azure-devops-python-api.
+This Python library extensively uses the Azure DevOps REST APIs and Azure Devops Python API. See the [Azure DevOps REST API reference](https://docs.microsoft.com/en-us/rest/api/vsts/?view=vsts-rest-5.0) for details on calling different APIs and [Azure DevOps Python SDK](https://github.com/Microsoft/azure-devops-python-api) for details on the azure-devops-python-api.
 
 ## Samples
 
