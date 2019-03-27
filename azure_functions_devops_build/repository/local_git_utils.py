@@ -57,6 +57,13 @@ def git_add_remote(remote_name, remote_url):
     except CalledProcessError:
         raise GitOperationException(message=" ".join(command))
 
+def git_remove_remote(remote_name):
+    command = ["git", "remote", "remove", remote_name]
+    try:
+        check_call(command, stdout=DEVNULL, stderr=STDOUT)
+    except CalledProcessError:
+        raise GitOperationException(message=" ".join(command))
+
 def git_stage_all():
     command = ["git", "add", "--all"]
     try:
