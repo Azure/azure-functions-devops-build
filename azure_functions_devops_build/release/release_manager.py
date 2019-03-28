@@ -9,6 +9,7 @@ import vsts.release.v4_1.models as models
 from ..base.base_manager import BaseManager
 from ..pool.pool_manager import PoolManager
 from ..constants import (LINUX_CONSUMPTION, LINUX_DEDICATED, WINDOWS)
+from ..exceptions import ReleaseErrorException
 
 
 class ReleaseManager(BaseManager):
@@ -97,7 +98,11 @@ class ReleaseManager(BaseManager):
             properties={"ReleaseCreationSource": "ReleaseHub"}
         )
 
-        return self._release_client.create_release(release_start_metadata, project.id)
+        try:
+            new_release = self._release_client.create_release(release_start_metadata, project.id)
+        except VstsServiceError:
+            raise ReleaseErrorException()
+        return new_release
 
     def list_releases(self):
         project = self.get_project_by_name(self._project_name)

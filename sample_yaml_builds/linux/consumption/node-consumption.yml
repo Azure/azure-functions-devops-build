@@ -15,7 +15,8 @@ jobs:
         dotnet restore # COMMENT OUT IF NOT USING FUNCTION EXTENSIONS
         dotnet build --runtime ubuntu.16.04-x64 --output './bin/' # COMMENT OUT IF NOT USING FUNCTION EXTENSIONS
         npm install
-        npm run build
+        npm run build --if-present
+        npm prune --production
     - task: ArchiveFiles@2
       displayName: "Archive files"
       inputs:
@@ -26,7 +27,7 @@ jobs:
       inputs:
         PathtoPublish: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'
         name: 'drop'
-  # Download the build artifacts from 
+  # Download the build artifacts from
   - job: Deploy
     pool:
       vmImage: 'VS2017-Win2016'

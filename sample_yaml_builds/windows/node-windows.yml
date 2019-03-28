@@ -10,7 +10,8 @@ steps:
     dotnet restore # comment out if not using extensions
     dotnet build --output \'./bin/\' # comment out if not using extensions
     npm install
-    npm run build
+    npm run build --if-present
+    npm prune --production
 - task: ArchiveFiles@2
   displayName: "Archive files"
   inputs:
