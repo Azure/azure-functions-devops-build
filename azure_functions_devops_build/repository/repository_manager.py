@@ -18,6 +18,7 @@ from .local_git_utils import (
         git_push,
         does_git_exist,
         does_local_git_repository_exist,
+        does_git_has_credential_manager,
         does_git_remote_exist,
         construct_git_remote_name,
         construct_git_remote_url
@@ -45,6 +46,10 @@ class RepositoryManager(BaseManager):
     @staticmethod
     def check_git_local_repository():
         return does_local_git_repository_exist()
+
+    @staticmethod
+    def check_git_credential_manager():
+        return does_git_has_credential_manager()
 
     # Check if the git repository exists first. If it does, check if the git remote exists.
     def check_git_remote(self, repository_name, remote_prefix):

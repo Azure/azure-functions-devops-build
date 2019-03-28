@@ -34,6 +34,15 @@ def does_git_remote_exist(remote_name):
 
     return remote_name in output
 
+def does_git_has_credential_manager():
+    command = ["git", "config", "--list"]
+    try:
+        output = check_output(command).decode("utf-8").split("\n")
+    except CalledProcessError:
+        raise GitOperationException(message=" ".join(command))
+
+    return "credential.helper=manager" in output
+
 def git_init():
     command = ["git", "init"]
     try:
