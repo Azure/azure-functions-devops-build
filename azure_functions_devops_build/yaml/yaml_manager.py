@@ -5,7 +5,6 @@
 
 import os.path as path
 import logging
-import json
 from jinja2 import Environment, PackageLoader, select_autoescape
 from ..constants import (WINDOWS, PYTHON, NODE, DOTNET, JAVA)
 from ..exceptions import LanguageNotSupportException
@@ -75,13 +74,6 @@ class YamlManager(object):
     def _requires_npm(self):
         return path.exists('package.json')
 
-    def _requires_npm_build(self):
-        if path.exists('package.json'):
-            with open('package.json', 'r') as f:
-                json_object = json.load(f)
-                return bool(json_object.get('scripts', {}).get('build'))
-        return False
-
     def _python_dependencies(self):
         """Helper to create the standard python dependencies"""
         dependencies = []
@@ -111,8 +103,8 @@ class YamlManager(object):
             dependencies.append('    dotnet build --output \'./bin/\'')
         if self._requires_npm():
             dependencies.append('    npm install')
-        if self._requires_npm_build():
-            dependencies.append('    npm run build')
+            dependencies.append('    npm run build --if-present')
+            dependencies.append('    npm prune --production')
 
         if len(dependencies) == 1:
             return []
