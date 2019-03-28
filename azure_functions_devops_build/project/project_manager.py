@@ -46,7 +46,7 @@ class ProjectManager(BaseManager):
             capabilities = dict()
             capabilities['versioncontrol'] = {"sourceControlType": "Git"}
             capabilities['processTemplate'] = {"templateTypeId": "adcc42ab-9882-485e-a3ed-7678f01f66bc"}
-            project = team_project.TeamProject(description="", name=projectName, 
+            project = team_project.TeamProject(description="", name=projectName,
                                                visibility=0, capabilities=capabilities)
             queue_object = self._core_client.queue_create_project(project)
             queue_id = queue_object.id
@@ -71,10 +71,9 @@ class ProjectManager(BaseManager):
 
         request = self._client.get(url, params=query_paramters)
         response = self._client.send(request, headers=header_paramters)
-
         # Handle Response
         deserialized = None
-        if response.status_code not in [200]:
+        if response.status_code // 100 != 2:
             logging.error("GET %s", request.url)
             logging.error("response: %s", response.status_code)
             logging.error(response.text)
@@ -108,7 +107,7 @@ class ProjectManager(BaseManager):
 
         # Handle Response
         deserialized = None
-        if response.status_code not in [200]:
+        if response.status_code // 100 != 2:
             logging.error("GET %s", request.url)
             logging.error("response: %s", response.status_code)
             logging.error(response.text)

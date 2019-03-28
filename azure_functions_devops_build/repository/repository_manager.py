@@ -13,6 +13,7 @@ from . import models
 from .local_git_utils import (
         git_init,
         git_add_remote,
+        git_remove_remote,
         git_stage_all,
         git_commit,
         git_push,
@@ -58,6 +59,10 @@ class RepositoryManager(BaseManager):
 
         remote_name = construct_git_remote_name(self._organization_name, self._project_name, repository_name, remote_prefix)
         return does_git_remote_exist(remote_name)
+
+    def remove_git_remote(self, repository_name, remote_prefix):
+        remote_name = construct_git_remote_name(self._organization_name, self._project_name, repository_name, remote_prefix)
+        git_remove_remote(remote_name)
 
     def get_azure_devops_repository_branches(self, repository_name):
         try:

@@ -64,7 +64,7 @@ class OrganizationManager():
 
         # Handle Response
         deserialized = None
-        if response.status_code not in [200]:
+        if response.status_code // 100 != 2:
             logging.error("GET %s", request.url)
             logging.error("response: %s", response.status_code)
             logging.error(response.text)
@@ -124,7 +124,7 @@ class OrganizationManager():
 
         # Handle Response
         deserialized = None
-        if response.status_code not in [200]:
+        if response.status_code // 100 != 2:
             logging.error("GET %s", request.url)
             logging.error("response: %s", response.status_code)
             logging.error(response.text)
@@ -158,7 +158,7 @@ class OrganizationManager():
 
         # Handle Response
         deserialized = None
-        if response.status_code not in [200]:
+        if response.status_code // 100 != 2:
             logging.error("GET %s", request.url)
             logging.error("response: %s", response.status_code)
             logging.error(response.text)
@@ -184,7 +184,7 @@ class OrganizationManager():
 
         # Handle Response
         deserialized = None
-        if response.status_code not in [200]:
+        if response.status_code // 100 != 2:
             logging.error("GET %s", request.url)
             logging.error("response: %s", response.status_code)
             logging.error(response.text)
