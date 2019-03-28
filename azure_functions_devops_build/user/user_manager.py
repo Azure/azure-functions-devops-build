@@ -15,7 +15,7 @@ class UserManager(object):
     Attributes:
         See BaseManager
     """
-    
+
     def __init__(self, base_url='https://peprodscussu2.portalext.visualstudio.com', creds=None):
         """Inits UserManager as to be able to send the right requests"""
         self._config = Configuration(base_url=base_url)
@@ -36,7 +36,7 @@ class UserManager(object):
 
         # Handle Response
         deserialized = None
-        if response.status_code not in [200]:
+        if response.status_code // 100 != 2:
             logging.error("GET %s", request.url)
             logging.error("response: %s", response.status_code)
             logging.error(response.text)
