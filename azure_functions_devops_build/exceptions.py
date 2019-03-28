@@ -13,3 +13,7 @@ class RoleAssignmentException(BaseException):
 
 class LanguageNotSupportException(BaseException):
     pass
+
+
+class ReleaseErrorException(BaseException):
+    pass

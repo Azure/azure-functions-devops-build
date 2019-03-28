@@ -97,7 +97,11 @@ class ReleaseManager(BaseManager):
             properties={"ReleaseCreationSource": "ReleaseHub"}
         )
 
-        return self._release_client.create_release(release_start_metadata, project.id)
+        try:
+            new_release = self._release_client.create_release(release_start_metadata, project.id)
+        except VstsServiceError:
+            raise ReleaseErrorException()
+        return new_release
 
     def list_releases(self):
         project = self.get_project_by_name(self._project_name)
