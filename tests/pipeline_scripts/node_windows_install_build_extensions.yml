@@ -1,0 +1,26 @@
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+# --------------------------------------------------------------------------------------------
+# Starter template for Azure functions build -- node on windows
+trigger:
+- master
+pool:
+  vmImage: 'VS2017-Win2016'
+steps:
+- script: |
+    dotnet restore
+    dotnet build --output \'./bin/\'
+    npm install
+    npm run build --if-present
+    npm prune --production
+- task: ArchiveFiles@2
+  displayName: 'Archive files'
+  inputs:
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+    includeRootFolder: false
+    archiveFile: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'
+    name: 'drop'

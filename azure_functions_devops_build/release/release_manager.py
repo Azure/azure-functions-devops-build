@@ -9,6 +9,7 @@ import vsts.release.v4_1.models as models
 from ..base.base_manager import BaseManager
 from ..pool.pool_manager import PoolManager
 from ..constants import (LINUX_CONSUMPTION, LINUX_DEDICATED, WINDOWS)
+from ..exceptions import ReleaseErrorException
 
 
 class ReleaseManager(BaseManager):

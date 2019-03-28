@@ -100,7 +100,10 @@ class YamlManager(object):
         dependencies.append('- script: |')
         if self._requires_extensions():
             dependencies.append('    dotnet restore')
-            dependencies.append('    dotnet build --output \'./bin/\'')
+            if self._app_type == WINDOWS:
+                dependencies.append("    dotnet build --output {bs}'./bin/{bs}'".format(bs="\\"))
+            else:
+                dependencies.append("    dotnet build --runtime ubuntu.16.04-x64 --output './bin/'")
         if self._requires_npm():
             dependencies.append('    npm install')
             dependencies.append('    npm run build --if-present')

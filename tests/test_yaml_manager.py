@@ -94,6 +94,24 @@ class TestYamlManager(unittest.TestCase):
         result = TestYamlManager.is_two_files_equal("azure-pipelines.yml", yaml_path)
         self.assertTrue(result)
 
+    def test_create_yaml_node_linux_install_build_extensions(self):
+        # Create a temporary requirements.txt and make a build script in it
+        # Create a temporary extensions.csproj
+        with open("package.json", "w") as f:
+            json.dump(obj={"scripts": {"build": "echo test"}}, fp=f)
+        with open("extensions.csproj", "w") as f:
+            f.write('<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003"></Project>')
+
+        yaml_manager = YamlManager(language=NODE, app_type=LINUX_CONSUMPTION)
+        yaml_manager.create_yaml()
+
+        os.remove("package.json")
+        os.remove("extensions.csproj")
+
+        yaml_path = os.path.join(self._current_directory, "pipeline_scripts", "node_linux_install_build_extensions.yml")
+        result = TestYamlManager.is_two_files_equal("azure-pipelines.yml", yaml_path)
+        self.assertTrue(result)
+
     def test_create_yaml_node_windows(self):
         yaml_manager = YamlManager(language=NODE, app_type=WINDOWS)
         yaml_manager.create_yaml()
@@ -122,6 +140,24 @@ class TestYamlManager(unittest.TestCase):
         os.remove("package.json")
 
         yaml_path = os.path.join(self._current_directory, "pipeline_scripts", "node_windows_install_build.yml")
+        result = TestYamlManager.is_two_files_equal("azure-pipelines.yml", yaml_path)
+        self.assertTrue(result)
+
+    def test_create_yaml_node_windows_install_build_extensions(self):
+        # Create a temporary requirements.txt and make a build script in it
+        # Create a temporary extensions.csproj
+        with open("package.json", "w") as f:
+            json.dump(obj={"scripts": {"build": "echo test"}}, fp=f)
+        with open("extensions.csproj", "w") as f:
+            f.write('<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003"></Project>')
+
+        yaml_manager = YamlManager(language=NODE, app_type=WINDOWS)
+        yaml_manager.create_yaml()
+
+        os.remove("package.json")
+        os.remove("extensions.csproj")
+
+        yaml_path = os.path.join(self._current_directory, "pipeline_scripts", "node_windows_install_build_extensions.yml")
         result = TestYamlManager.is_two_files_equal("azure-pipelines.yml", yaml_path)
         self.assertTrue(result)
 
