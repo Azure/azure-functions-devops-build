@@ -1,5 +1,7 @@
 # Azure Devops Build Manager For Azure Functions
 
+> :construction: The project is currently **work in progress**. Please **do not use in production** as we expect developments over time. :construction:
+
 This project provides the class AzureDevopsBuildManager and supporting classes. This manager class allows
 the caller to manage Azure Devops pipelines that are maintained within an Azure Devops account. This project was created to be able to support command line tooling for the AZ Cli.
 
