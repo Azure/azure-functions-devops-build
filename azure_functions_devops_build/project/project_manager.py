@@ -63,15 +63,12 @@ class ProjectManager(BaseManager):
         """Lists the current projects within an organization"""
         url = '/_apis/projects'
 
-        query_paramters = {}
-        query_paramters['includeCapabilities'] = 'true'
+        # First pass without X-VSS-ForceMsaPassThrough header
+        response = self._list_projects_request(url)
+        if response.status_code == 203:
+            # If return with Non-Authoritative Information, force MSA pass through
+            response = self._list_projects_request(url, msa=True)
 
-        header_paramters = {}
-        header_paramters['Accept'] = 'application/json'
-
-        request = self._client.get(url, params=query_paramters)
-        response = self._client.send(request, headers=header_paramters)
-        # Handle Response
         deserialized = None
         if response.status_code // 100 != 2:
             logging.error("GET %s", request.url)
@@ -83,6 +80,18 @@ class ProjectManager(BaseManager):
 
         return deserialized
 
+    def _list_projects_request(self, url, msa=False):
+        query_paramters = {}
+        query_paramters['includeCapabilities'] = 'true'
+
+        header_paramters = {}
+        header_paramters['Accept'] = 'application/json'
+        if msa:
+            header_paramters['X-VSS-ForceMsaPassThrough'] = 'true'
+
+        request = self._client.get(url, params=query_paramters)
+        response = self._client.send(request, headers=header_paramters)
+        return response
 
     def _poll_project(self, project_id):
         """Helper function to poll the project"""
