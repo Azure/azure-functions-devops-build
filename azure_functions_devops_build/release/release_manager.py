@@ -6,6 +6,7 @@
 import logging
 
 import vsts.release.v4_1.models as models
+from vsts.exceptions import VstsServiceError
 from ..base.base_manager import BaseManager
 from ..pool.pool_manager import PoolManager
 from ..constants import (LINUX_CONSUMPTION, LINUX_DEDICATED, WINDOWS)
@@ -73,7 +74,6 @@ class ReleaseManager(BaseManager):
             deploy_step=release_deploy_step,
             conditions=[condition]
         )
-
 
         release_definition = models.release_definition.ReleaseDefinition(
             name=release_definition_name,
