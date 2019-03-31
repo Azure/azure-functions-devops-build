@@ -128,13 +128,3 @@ class YamlManager(object):
         dependencies.append("    modifyOutputPath: true")
         dependencies.append("    zipAfterPublish: false")
         return dependencies
-
-    def _java_dependencies(self):
-        """Helper to create the standard java dependencies"""
-        dependencies = ['- script: |', '    dotnet restore', '    dotnet build', '   mvn clean deploy']
-        logging.critical("java dependencies are currently not implemented")
-        return dependencies
-
-    def _powershell_dependencies(self):
-        # TODO
-        exit(1)
