@@ -6,7 +6,7 @@
 import os.path as path
 import logging
 from jinja2 import Environment, PackageLoader, select_autoescape
-from ..constants import (WINDOWS, PYTHON, NODE, DOTNET, JAVA)
+from ..constants import (WINDOWS, PYTHON, NODE, DOTNET)
 from ..exceptions import LanguageNotSupportException
 
 class YamlManager(object):
@@ -128,13 +128,3 @@ class YamlManager(object):
         dependencies.append("    modifyOutputPath: true")
         dependencies.append("    zipAfterPublish: false")
         return dependencies
-
-    def _java_dependencies(self):
-        """Helper to create the standard java dependencies"""
-        dependencies = ['- script: |', '    dotnet restore', '    dotnet build', '   mvn clean deploy']
-        logging.critical("java dependencies are currently not implemented")
-        return dependencies
-
-    def _powershell_dependencies(self):
-        # TODO
-        exit(1)
