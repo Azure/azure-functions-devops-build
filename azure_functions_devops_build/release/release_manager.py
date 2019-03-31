@@ -49,7 +49,8 @@ class ReleaseManager(BaseManager):
         elif app_type == WINDOWS:
             workflowtasks.append(self._app_service_deploy_task_windows(service_endpoint.id, functionapp_name))
         else:
-            logging.error("Invalid app type provided. Correct types are: Linux Consumption: %s, Linux Dedicated: %s, Windows: %s",
+            logging.error("Invalid app type provided. Correct types are: "
+                          "Linux Consumption: %s, Linux Dedicated: %s, Windows: %s",
                           LINUX_CONSUMPTION, LINUX_DEDICATED, WINDOWS)
 
         if settings is not None:
@@ -58,7 +59,9 @@ class ReleaseManager(BaseManager):
                 settings_str += (setting[0] + "='" + setting[1] + "'")
             # Check that settings were actually set otherwise we don't want to use the task
             if settings_str != "":
-                workflowtasks.append(self._app_settings_task_customized(service_endpoint.id, functionapp_name, resource_name, settings_str))
+                workflowtasks.append(self._app_settings_task_customized(
+                    service_endpoint.id, functionapp_name, resource_name, settings_str
+                ))
 
         deploy_phases = self._get_deploy_phases(deployment_input, workflowtasks, phase_inputs)
 
@@ -110,7 +113,8 @@ class ReleaseManager(BaseManager):
 
     def _get_service_endpoint_by_name(self, project, service_endpoint_name):
         service_endpoints = self._service_endpoint_client.get_service_endpoints(project.id)
-        return next((service_endpoint for service_endpoint in service_endpoints if service_endpoint.name == service_endpoint_name), None)
+        return next((service_endpoint for service_endpoint in service_endpoints
+                     if service_endpoint.name == service_endpoint_name), None)
 
     def _get_pool_by_name(self, pool_name):
         """Helper function to get the pool object from its name"""
@@ -142,7 +146,7 @@ class ReleaseManager(BaseManager):
 
     def _get_deployment_input(self, pool_id):
         deployment_input = {}
-        deployment_input["parallelExecution"] = { "parallelExecutionType": 0 }
+        deployment_input["parallelExecution"] = {"parallelExecutionType": 0}
         deployment_input["queueId"] = pool_id
         return deployment_input
 
@@ -176,8 +180,8 @@ class ReleaseManager(BaseManager):
 
     def _get_retention_policy(self):
         return models.environment_retention_policy.EnvironmentRetentionPolicy(
-                    days_to_keep=300, releases_to_keep=3, retain_build=True
-                )
+            days_to_keep=300, releases_to_keep=3, retain_build=True
+        )
 
     def _get_artifact(self, build, project, artifact_name):
         artifacts = self._build_client.get_artifacts(build.id, project.id)
@@ -198,17 +202,17 @@ class ReleaseManager(BaseManager):
 
     def _get_pre_post_approvals(self):
         pre_approval = models.release_definition_approval_step.ReleaseDefinitionApprovalStep(
-            id = 0,
-            rank = 1,
-            is_automated = True,
-            is_notification_on = False
+            id=0,
+            rank=1,
+            is_automated=True,
+            is_notification_on=False
         )
 
         post_approval = models.release_definition_approval_step.ReleaseDefinitionApprovalStep(
-            id = 0,
-            rank = 1,
-            is_automated = True,
-            is_notification_on = False
+            id=0,
+            rank=1,
+            is_automated=True,
+            is_notification_on=False
         )
 
 
@@ -270,7 +274,9 @@ class ReleaseManager(BaseManager):
         appsetttingstask_inputs["ConnectedServiceName"] = connectedServiceNameARM
         appsetttingstask_inputs["WebAppName"] = functionapp_name
         appsetttingstask_inputs["ResourceGroupName"] = resource_name
-        appsetttingstask_inputs["AppSettings"] = "WEBSITE_RUN_FROM_PACKAGE='$(storageUri)/build$(Build.BuildId).zip$(storageToken)'"
+        appsetttingstask_inputs["AppSettings"] = (
+            "WEBSITE_RUN_FROM_PACKAGE='$(storageUri)/build$(Build.BuildId).zip$(storageToken)'"
+        )
         appsetttingstask["inputs"] = appsetttingstask_inputs
         return appsetttingstask
 

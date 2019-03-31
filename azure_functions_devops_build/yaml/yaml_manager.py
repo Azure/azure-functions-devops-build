@@ -6,7 +6,7 @@
 import os.path as path
 import logging
 from jinja2 import Environment, PackageLoader, select_autoescape
-from ..constants import (WINDOWS, PYTHON, NODE, DOTNET, JAVA)
+from ..constants import (WINDOWS, PYTHON, NODE, DOTNET)
 from ..exceptions import LanguageNotSupportException
 
 class YamlManager(object):
