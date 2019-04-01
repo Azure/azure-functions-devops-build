@@ -4,11 +4,12 @@
 # --------------------------------------------------------------------------------------------
 
 import json
+import os
 try:
     from subprocess import DEVNULL
 except ImportError:
     DEVNULL = open(os.devnull, 'w')
-from subprocess import check_output, check_call, CalledProcessError
+from subprocess import check_output, CalledProcessError
 import vsts.service_endpoint.v4_1.models as models
 from vsts.exceptions import VstsServiceError
 from ..base.base_manager import BaseManager
@@ -34,35 +35,12 @@ class ServiceEndpointManager(BaseManager):
         try:
             result = self._service_endpoint_client.get_service_endpoints_by_names(
                 self._project_name,
-                [service_endpoint_name]
+                [service_endpoint_name],
+                type="azurerm"
             )
         except VstsServiceError:
             return []
         return result
-
-    def create_github_service_endpoint(self, githubname, access_token):
-        """ Create a github access token connection """
-        project = self._get_project_by_name(self._project_name)
-
-        data = {}
-
-        auth = models.endpoint_authorization.EndpointAuthorization(
-            parameters={
-                "accessToken": access_token
-            },
-            scheme="PersonalAccessToken"
-        )
-
-        service_endpoint = models.service_endpoint.ServiceEndpoint(
-            administrators_group=None,
-            authorization=auth,
-            data=data,
-            name=githubname,
-            type="github",
-            url="http://github.com"
-        )
-
-        return self._service_endpoint_client.create_service_endpoint(service_endpoint, project.id)
 
     # This function requires user permission of Microsoft.Authorization/roleAssignments/write
     # i.e. only the owner of the subscription can use this function
@@ -87,7 +65,7 @@ class ServiceEndpointManager(BaseManager):
         command = "az ad sp create-for-rbac --o json --name http://" + service_principle_name
         try:
             token_resp = check_output(command, stderr=DEVNULL, shell=True).decode()
-        except CalledProcessError as cpe:
+        except CalledProcessError:
             raise RoleAssignmentException()
 
         token_resp_dict = json.loads(token_resp)

@@ -44,7 +44,7 @@ class TestBuilderManager(unittest.TestCase):
         if self._build_definition_name in [d.name for d in definitions]:
             raise unittest.SkipTest("Build definition exists. No need to create a new build definition.")
 
-        definition = self.builder_manager.create_definition(self._build_definition_name, "Default")
+        definition = self.builder_manager.create_devops_build_definition(self._build_definition_name, "Default")
         self.assertEqual(definition.name, self._build_definition_name)
         self.assertEqual(definition.process['yamlFilename'], 'azure-pipelines.yml')
 

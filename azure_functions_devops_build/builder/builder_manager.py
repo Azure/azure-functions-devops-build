@@ -3,10 +3,12 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 # --------------------------------------------------------------------------------------------
 
+import time
 import vsts.build.v4_1.models as build_models
+from vsts.exceptions import VstsServiceError
 from ..base.base_manager import BaseManager
 from ..pool.pool_manager import PoolManager
-import time
+from ..exceptions import GithubIntegrationRequestError, GithubContentNotFound
 
 class BuilderManager(BaseManager):
     """ Manage DevOps Builds
@@ -22,27 +24,53 @@ class BuilderManager(BaseManager):
         """Inits BuilderManager as per BaseManager"""
         super(BuilderManager, self).__init__(creds, organization_name, project_name, repository_name=repository_name)
 
-    def create_definition(self, build_definition_name, pool_name, github=False):
+    def create_devops_build_definition(self, build_definition_name, pool_name):
         """Create a build definition in Azure DevOps"""
         project = self._get_project_by_name(self._project_name)
         pool = self._get_pool_by_name(pool_name)
 
         # create the relevant objects that are needed for the build definition (this is the minimum amount needed)
         pool_queue = build_models.agent_pool_queue.AgentPoolQueue(id=pool.id, name=pool.name)
-        if github:
-            repository = self._get_github_repository_by_name(project, self._repository_name)
-            github_properties = repository.properties
-            build_repository = build_models.build_repository.BuildRepository(default_branch="master", id=repository.id, properties=github_properties,
-                                                                             name=repository.full_name, type="GitHub", url=repository.properties['cloneUrl'])
-        else:
-            repository = self._get_repository_by_name(project, self._repository_name)
-            build_repository = build_models.build_repository.BuildRepository(default_branch="master", id=repository.id,
-                                                                             name=repository.name, type="TfsGit")
+        repository = self._get_repository_by_name(project, self._repository_name)
+        build_repository = build_models.build_repository.BuildRepository(
+            default_branch="master",
+            id=repository.id,
+            name=repository.name,
+            type="TfsGit"
+        )
         team_project_reference = self._get_project_reference(project)
-        build_definition = self._get_build_definition(team_project_reference, build_repository,
-                                                      build_definition_name, pool_queue)
-
+        build_definition = self._get_build_definition(
+            team_project_reference, build_repository, build_definition_name, pool_queue
+        )
         return self._build_client.create_definition(build_definition, project=project.name)
+
+    def create_github_build_definition(self, build_definition_name, pool_name, github_repository):
+        project = self._get_project_by_name(self._project_name)
+        pool = self._get_pool_by_name(pool_name)
+        pool_queue = build_models.agent_pool_queue.AgentPoolQueue(id=pool.id, name=pool.name)
+        repository = self._get_github_repository_by_name(github_repository)
+
+        if repository is None:
+            raise GithubContentNotFound()
+
+        github_properties = repository.properties
+        build_repository = build_models.build_repository.BuildRepository(
+            default_branch="master",
+            id=repository.id,
+            properties=github_properties,
+            name=repository.full_name,
+            type="GitHub",
+            url=repository.properties['cloneUrl']
+        )
+        team_project_reference = self._get_project_reference(project)
+        build_definition = self._get_build_definition(
+            team_project_reference, build_repository, build_definition_name, pool_queue
+        )
+        try:
+            result = self._build_client.create_definition(build_definition, project=project.name)
+        except VstsServiceError as vse:
+            raise GithubIntegrationRequestError(vse.message)
+        return result
 
     def list_definitions(self):
         """List the build definitions that exist in Azure DevOps"""
@@ -60,7 +88,6 @@ class BuilderManager(BaseManager):
         build_definition_reference = self._get_build_definition_reference(team_project_reference, definition)
         pool_queue = build_models.agent_pool_queue.AgentPoolQueue(id=pool.id, name=pool_name)
         build = build_models.build.Build(definition=build_definition_reference, queue=pool_queue)
-
         return self._build_client.queue_build(build, project=project.id)
 
     def list_builds(self):

@@ -8,6 +8,7 @@ from msrest.service_client import ServiceClient
 from msrest import Configuration, Deserializer
 from msrest.exceptions import HttpOperationError
 
+from ..user.user_manager import UserManager
 from ..base.base_manager import BaseManager
 from . import models
 
@@ -26,6 +27,7 @@ class PoolManager(BaseManager):
         self._client = ServiceClient(creds, self._config)
         client_models = {k: v for k, v in models.__dict__.items() if isinstance(v, type)}
         self._deserialize = Deserializer(client_models)
+        self._user_mgr = UserManager(creds=self._creds)
 
     def list_pools(self):
         """List what pools this project has"""
@@ -36,6 +38,8 @@ class PoolManager(BaseManager):
 
         #construct header parameters
         header_paramters = {}
+        if self._user_mgr.is_msa_account():
+            header_paramters['X-VSS-ForceMsaPassThrough'] = 'true'
         header_paramters['Accept'] = 'application/json'
 
         # Construct and send request

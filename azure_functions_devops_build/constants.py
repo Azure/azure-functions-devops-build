@@ -7,9 +7,9 @@ LINUX_CONSUMPTION = 0
 LINUX_DEDICATED = 1
 WINDOWS = 2
 
-PYTHON = 0
-NODE = 1
-DOTNET = 2
-JAVA = 3
+PYTHON = "python"
+NODE = "node"
+DOTNET = "dotnet"
+JAVA = "java"
 
 SERVICE_ENDPOINT_DOMAIN = "dev.azure.com"

@@ -4,7 +4,6 @@
 # --------------------------------------------------------------------------------------------
 from msrest.service_client import ServiceClient
 from msrest import Configuration, Deserializer
-from msrest.exceptions import HttpOperationError
 import vsts.git.v4_1.models.git_repository_create_options as git_repository_create_options
 from vsts.exceptions import VstsServiceError
 
@@ -57,18 +56,21 @@ class RepositoryManager(BaseManager):
         if not does_local_git_repository_exist():
             return False
 
-        remote_name = construct_git_remote_name(self._organization_name, self._project_name, repository_name, remote_prefix)
+        remote_name = construct_git_remote_name(
+            self._organization_name, self._project_name, repository_name, remote_prefix
+        )
         return does_git_remote_exist(remote_name)
 
     def remove_git_remote(self, repository_name, remote_prefix):
-        remote_name = construct_git_remote_name(self._organization_name, self._project_name, repository_name, remote_prefix)
+        remote_name = construct_git_remote_name(
+            self._organization_name, self._project_name, repository_name, remote_prefix
+        )
         git_remove_remote(remote_name)
 
     def get_azure_devops_repository_branches(self, repository_name):
         try:
             result = self._git_client.get_branches(repository_name, self._project_name)
         except VstsServiceError:
-            # If the repository does not exist, we return an empty list
             return []
         return result
 
@@ -76,22 +78,21 @@ class RepositoryManager(BaseManager):
         try:
             result = self._git_client.get_repository(repository_name, self._project_name)
         except VstsServiceError:
-            # If the repository does not exist, we return None
             return None
         return result
 
     def create_repository(self, repository_name):
-        """Create a new azure functions git repository"""
         project = self._get_project_by_name(self._project_name)
-        git_repo_options = git_repository_create_options.GitRepositoryCreateOptions(name=repository_name, project=project)
+        git_repo_options = git_repository_create_options.GitRepositoryCreateOptions(
+            name=repository_name,
+            project=project
+        )
         return self._git_client.create_repository(git_repo_options)
 
     def list_repositories(self):
-        """List the current repositories in a project"""
         return self._git_client.get_repositories(self._project_name)
 
     def list_commits(self, repository_name):
-        """List the commits for a given repository"""
         project = self._get_project_by_name(self._project_name)
         repository = self._get_repository_by_name(project, repository_name)
         return self._git_client.get_commits(repository.id, None, project=project.id)
@@ -106,9 +107,9 @@ class RepositoryManager(BaseManager):
     # The function will initialize a git repo, create git remote, stage all changes and commit the code
     # Exceptions: GitOperationException
     def setup_local_git_repository(self, repository_name, remote_prefix):
-        """This command sets up a remote. It is normally used if a user already has a repository locally that they don't wish to get rid of"""
-
-        remote_name = construct_git_remote_name(self._organization_name, self._project_name, repository_name, remote_prefix)
+        remote_name = construct_git_remote_name(
+            self._organization_name, self._project_name, repository_name, remote_prefix
+        )
         remote_url = construct_git_remote_url(self._organization_name, self._project_name, repository_name)
 
         if not does_local_git_repository_exist():
@@ -121,16 +122,7 @@ class RepositoryManager(BaseManager):
     # The function will push the current context in local git repository to Azure Devops
     # Exceptions: GitOperationException
     def push_local_to_azure_devops_repository(self, repository_name, remote_prefix, force):
-        remote_name = construct_git_remote_name(self._organization_name, self._project_name, repository_name, remote_prefix)
+        remote_name = construct_git_remote_name(
+            self._organization_name, self._project_name, repository_name, remote_prefix
+        )
         git_push(remote_name, force)
-
-    def list_github_repositories(self):
-        """List github repositories if there are any from the current connection"""
-        project = self._get_project_by_name(self._project_name)
-        service_endpoints = self._service_endpoint_client.get_service_endpoints(project.id)
-        github_endpoint = next((endpoint for endpoint in service_endpoints if endpoint.type == "github"), None)
-        if github_endpoint is None:
-            return []
-        else:
-            return self._build_client.list_repositories(project.id, 'github', github_endpoint.id)
-

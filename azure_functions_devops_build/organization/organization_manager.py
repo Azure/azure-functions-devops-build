@@ -38,6 +38,7 @@ class OrganizationManager():
         self._list_region_client = ServiceClient(creds, self._create_organization_config)
         client_models = {k: v for k, v in models.__dict__.items() if isinstance(v, type)}
         self._deserialize = Deserializer(client_models)
+        self._user_mgr = UserManager(creds=self._creds)
 
     def validate_organization_name(self, organization_name):
         """Validate an organization name by checking it does not already exist and that it fits name restrictions"""
@@ -77,29 +78,26 @@ class OrganizationManager():
     def list_organizations(self):
         """List what organizations this user is part of"""
 
-        user_manager = UserManager(creds=self._creds)
-
-        user_id_aad = user_manager.get_user_id(msa=False)
-        user_id_msa = user_manager.get_user_id(msa=True)
-
-        if (user_id_aad.id == user_id_msa.id):
+        if not self._user_mgr.is_msa_account():
             # Only need to do the one request as ids are the same
-            organizations = self._list_organizations_request(user_id_aad.id)
+            organizations = self._list_organizations_request(self._user_mgr.aad_id)
         else:
-            def uniq(lst):
-                last = object()
-                for item in lst:
-                    if item == last:
-                        continue
-                    yield item
-                    last = item
-            # Need to do a request for each of the ids and then combine them
-            organizations_aad = self._list_organizations_request(user_id_aad.id, msa=False)
-            organizations_msa = self._list_organizations_request(user_id_msa.id, msa=True)
-            organizations = organizations_aad
-            # Now we just want to take the set of these two lists!
-            organizations.value = list(uniq(organizations_aad.value + organizations_msa.value))
-            organizations.count = len(organizations.value)
+            # Need to do a request for each of the ids and then combine them (disabled)
+            #organizations_aad = self._list_organizations_request(self._user_mgr.aad_id, msa=False)
+            #organizations_msa = self._list_organizations_request(self._user_mgr.msa_id, msa=True)
+            #organizations = organizations_msa
+
+            # Overwrite merge aad organizations with msa organizations
+            #duplicated_aad_orgs = []
+            #for msa_org in organizations_msa.value:
+            #    duplicated_aad_orgs.extend([
+            #        o for o in organizations_aad.value if o.accountName == msa_org.accountName
+            #    ])
+            #filtered_organizations_aad = [o for o in organizations_aad.value if (o not in duplicated_aad_orgs)]
+
+            #organizations.value += list(filtered_organizations_aad)
+            #organizations.count = len(organizations.value)
+            organizations = self._list_organizations_request(self._user_mgr.msa_id, msa=True)
 
         return organizations
 
@@ -115,8 +113,7 @@ class OrganizationManager():
 
         #construct header parameters
         header_parameters = {}
-        if msa:
-            header_parameters['X-VSS-ForceMsaPassThrough'] = 'true'
+        header_parameters['X-VSS-ForceMsaPassThrough'] = 'true' if msa else 'false'
         header_parameters['Accept'] = 'application/json'
 
         request = self._client.get(url, params=query_paramters)
@@ -148,6 +145,8 @@ class OrganizationManager():
         header_paramters = {}
         header_paramters['Accept'] = 'application/json'
         header_paramters['Content-Type'] = 'application/json'
+        if self._user_mgr.is_msa_account():
+            header_paramters['X-VSS-ForceMsaPassThrough'] = 'true'
 
         #construct the payload
         payload = {}

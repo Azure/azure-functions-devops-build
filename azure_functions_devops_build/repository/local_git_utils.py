@@ -15,12 +15,11 @@ from ..exceptions import GitOperationException
 
 def does_git_exist():
     try:
-        result = check_call("git", stdout=DEVNULL, stderr=STDOUT)
-    except CalledProcessError as e:
+        check_call("git", stdout=DEVNULL, stderr=STDOUT)
+    except CalledProcessError as cpe:
         # Git will return exit code 1 when it exist
-        return True
-    except Exception:
-        return False
+        return cpe.returncode == 1
+    return True
 
 def does_local_git_repository_exist():
     return os.path.exists(".git")
@@ -96,14 +95,16 @@ def _sanitize_git_remote_name(organization_name, project_name, repository_name):
 
 def construct_git_remote_name(organization_name, project_name, repository_name, remote_prefix):
     remote_name = "_{prefix}_{name}".format(
-            prefix=remote_prefix,
-            name=_sanitize_git_remote_name(organization_name, project_name, repository_name))
+        prefix=remote_prefix,
+        name=_sanitize_git_remote_name(organization_name, project_name, repository_name)
+    )
     return remote_name
 
 def construct_git_remote_url(organization_name, project_name, repository_name, domain_name="dev.azure.com"):
     url = "https://{domain}/{org}/{proj}/_git/{repo}".format(
-            domain=domain_name,
-            org=organization_name,
-            proj=project_name,
-            repo=repository_name)
+        domain=domain_name,
+        org=organization_name,
+        proj=project_name,
+        repo=repository_name
+    )
     return url
