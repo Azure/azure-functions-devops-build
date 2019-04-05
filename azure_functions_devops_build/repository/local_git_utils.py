@@ -19,6 +19,8 @@ def does_git_exist():
     except CalledProcessError as cpe:
         # Git will return exit code 1 when it exist
         return cpe.returncode == 1
+    except FileNotFoundError:
+        return False
     return True
 
 def does_local_git_repository_exist():
