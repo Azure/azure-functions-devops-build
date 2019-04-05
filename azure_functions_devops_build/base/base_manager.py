@@ -30,7 +30,9 @@ class BaseManager(object):
         self._extension_management_client = self._connection.get_client('vsts.extension_management.v4_1.extension_management_client.ExtensionManagementClient') # pylint: disable=line-too-long
         self._git_client = self._connection.get_client("vsts.git.v4_1.git_client.GitClient")
         self._release_client = self._connection.get_client('vsts.release.v4_1.release_client.ReleaseClient')
-        self._service_endpoint_client = self._connection.get_client('vsts.service_endpoint.v4_1.service_endpoint_client.ServiceEndpointClient')
+        self._service_endpoint_client = self._connection.get_client(
+            'vsts.service_endpoint.v4_1.service_endpoint_client.ServiceEndpointClient'
+        )
 
     def _get_project_by_name(self, project_name):
         """Helper function to get the project object from its name"""
@@ -53,10 +55,17 @@ class BaseManager(object):
         builds = sorted(builds_unsorted, key=lambda x: x.start_time, reverse=True)
         return next((build for build in builds if build.definition.name == name), None)
 
-    def _get_github_repository_by_name(self, project, name):
+    def _get_github_repository_by_name(self, github_repository_name):
         """Helper function to get a github repository object from its name"""
-        service_endpoints = self._service_endpoint_client.get_service_endpoints(project.id)
-        github_endpoint = next((endpoint for endpoint in service_endpoints if endpoint.type == "github"), None)
-        repositories = self._build_client.list_repositories(project.id, 'github', github_endpoint.id)
-        repository_match = next((repository for repository in repositories.repositories if repository.full_name == name), None)
+        service_endpoints = self._service_endpoint_client.get_service_endpoints(self._project_name, type="github")
+        github_endpoint = service_endpoints[0]
+        repositories = self._build_client.list_repositories(
+            project=self._project_name,
+            provider_name='github',
+            service_endpoint_id=github_endpoint.id,
+            repository=github_repository_name
+        )
+        repository_match = next((
+            repository for repository in repositories.repositories if repository.full_name == github_repository_name
+        ), None)
         return repository_match

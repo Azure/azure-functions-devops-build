@@ -24,12 +24,24 @@ class UserManager(object):
         client_models = {k: v for k, v in models.__dict__.items() if isinstance(v, type)}
         self._deserialize = Deserializer(client_models)
 
-    def get_user_id(self, msa=False):
-        """Get the user id"""
+        # create cache for two user type
+        self._cache_aad_user = None
+        self._cache_msa_user = None
+
+    def is_msa_account(self):
+        user_id_aad = self.get_user(msa=False).id
+        user_id_msa = self.get_user(msa=True).id
+        return user_id_aad != user_id_msa
+
+    def get_user(self, msa=False):
+        # Try to get from cache
+        if msa is True and self._cache_msa_user is not None:
+            return self._cache_msa_user
+        if msa is False and self._cache_aad_user is not None:
+            return self._cache_aad_user
 
         header_parameters = {}
-        if msa:
-            header_parameters['X-VSS-ForceMsaPassThrough'] = 'true'
+        header_parameters['X-VSS-ForceMsaPassThrough'] = 'true' if msa else 'false'
         header_parameters['Accept'] = 'application/json'
         request = self._client.get('/_apis/AzureTfs/UserContext')
         response = self._client.send(request, header_parameters)
@@ -44,7 +56,21 @@ class UserManager(object):
         else:
             deserialized = self._deserialize('User', response)
 
+        # Write to cache
+        if msa is True and self._cache_msa_user is None:
+            self._cache_msa_user = deserialized
+        if msa is False and self._cache_aad_user is None:
+            self._cache_aad_user = deserialized
+
         return deserialized
+
+    @property
+    def aad_id(self):
+        return self.get_user(msa=False).id
+
+    @property
+    def msa_id(self):
+        return self.get_user(msa=True).id
 
     def close_connection(self):
         self._client.close()

@@ -3,21 +3,20 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 # --------------------------------------------------------------------------------------------
 
-import os.path as path
+from datetime import datetime
 from jinja2 import Environment, PackageLoader, select_autoescape
+from ..repository.github_repository_manager import GithubRepositoryManager
+from ..base.base_github_manager import BaseGithubManager
 from ..constants import (WINDOWS, PYTHON, NODE, DOTNET)
 from ..exceptions import LanguageNotSupportException
 
-class YamlManager(object):
-    """ Generate yaml files for devops
 
-    Attributes:
-        language: the language of the functionapp you are creating
-        app_type: the type of functionapp that you are creating
-    """
+class GithubYamlManager(BaseGithubManager):
 
-    def __init__(self, language, app_type):
-        """Inits YamlManager as to be able generate the yaml files easily"""
+    def __init__(self, language, app_type, github_pat, github_repository):
+        super(GithubYamlManager, self).__init__(pat=github_pat)
+        self._github_repo_mgr = GithubRepositoryManager(pat=github_pat)
+        self._github_repository = github_repository
         self._language = language
         self._app_type = app_type
         self.jinja_env = Environment(
@@ -25,8 +24,7 @@ class YamlManager(object):
             autoescape=select_autoescape(['html', 'xml', 'jinja'])
         )
 
-    def create_yaml(self):
-        """Create the yaml to be able to create build in the azure-pipelines.yml file"""
+    def create_yaml(self, overwrite=False):
         if self._language == PYTHON:
             language_str = 'python'
             package_route = '$(System.DefaultWorkingDirectory)'
@@ -49,8 +47,36 @@ class YamlManager(object):
             platform_str = 'linux'
             yaml = self._generate_yaml(dependencies, 'ubuntu-16.04', language_str, platform_str, package_route)
 
-        with open('azure-pipelines.yml', 'w') as f:
-            f.write(yaml)
+        if overwrite:
+            return self._overwrite_yaml_file(yaml)
+        else:
+            return self._commit_yaml_file(yaml)
+
+    def _commit_yaml_file(self, data):
+        return self._github_repo_mgr.commit_file(
+            repository_fullname=self._github_repository,
+            file_path="azure-pipelines.yml",
+            file_data=data,
+            commit_message="Created azure-pipelines.yml by Azure CLI ({time})".format(
+                time=datetime.utcnow().strftime("%Y-%m-%d %X UTC")
+            ),
+        )
+
+    def _overwrite_yaml_file(self, data):
+        sha = self._github_repo_mgr.get_content(
+            self._github_repository,
+            'azure-pipelines.yml',
+            get_metadata=True
+        ).get("sha")
+        return self._github_repo_mgr.commit_file(
+            repository_fullname=self._github_repository,
+            file_path="azure-pipelines.yml",
+            file_data=data,
+            commit_message="Overwritten azure-pipelines.yml by Azure CLI ({time})".format(
+                time=datetime.utcnow().strftime("%Y-%m-%d %X UTC")
+            ),
+            sha=sha
+        )
 
     def _generate_yaml(self, dependencies, vmImage, language_str, platform_str, package_route):
         template = self.jinja_env.get_template('build.jinja')
@@ -60,13 +86,13 @@ class YamlManager(object):
         return outputText
 
     def _requires_extensions(self):
-        return path.exists('extensions.csproj')
+        return self._github_repo_mgr.check_github_file(self._github_repository, 'extensions.csproj')
 
     def _requires_pip(self):
-        return path.exists('requirements.txt')
+        return self._github_repo_mgr.check_github_file(self._github_repository, 'requirements.txt')
 
     def _requires_npm(self):
-        return path.exists('package.json')
+        return self._github_repo_mgr.check_github_file(self._github_repository, 'package.json')
 
     def _python_dependencies(self):
         """Helper to create the standard python dependencies"""
