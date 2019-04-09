@@ -91,7 +91,11 @@ def git_push(remote_name, force=False):
         raise GitOperationException(message=" ".join(command))
 
 def _sanitize_git_remote_name(organization_name, project_name, repository_name):
-    concatenated_remote_name = f"{organization_name}_{project_name}_{repository_name}"
+    concatenated_remote_name = "{organization_name}_{project_name}_{repository_name}".format(
+        organization_name=organization_name,
+        project_name=project_name,
+        repository_name=repository_name
+    )
     sanitized_remote_name = re.sub(r"[^A-Za-z0-9_-]|\s", "-", concatenated_remote_name)
     return sanitized_remote_name
 
