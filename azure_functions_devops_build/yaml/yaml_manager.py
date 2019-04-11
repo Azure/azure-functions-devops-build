@@ -4,7 +4,7 @@
 # --------------------------------------------------------------------------------------------
 
 import os.path as path
-from jinja2 import Environment, PackageLoader, select_autoescape
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 from ..constants import (WINDOWS, PYTHON, NODE, DOTNET)
 from ..exceptions import LanguageNotSupportException
 
@@ -21,8 +21,8 @@ class YamlManager(object):
         self._language = language
         self._app_type = app_type
         self.jinja_env = Environment(
-            loader=PackageLoader('azure_functions_devops_build.yaml', 'templates'),
-            autoescape=select_autoescape(['html', 'xml', 'jinja'])
+            loader=FileSystemLoader(path.join(path.abspath(path.dirname(__file__)), 'templates')),
+            autoescape=select_autoescape(['jinja'])
         )
 
     def create_yaml(self):
