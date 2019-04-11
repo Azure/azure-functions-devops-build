@@ -3,8 +3,9 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 # --------------------------------------------------------------------------------------------
 
+from os import path
 from datetime import datetime
-from jinja2 import Environment, PackageLoader, select_autoescape
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 from ..repository.github_repository_manager import GithubRepositoryManager
 from ..base.base_github_manager import BaseGithubManager
 from ..constants import (WINDOWS, PYTHON, NODE, DOTNET)
@@ -20,8 +21,8 @@ class GithubYamlManager(BaseGithubManager):
         self._language = language
         self._app_type = app_type
         self.jinja_env = Environment(
-            loader=PackageLoader('azure_functions_devops_build.yaml', 'templates'),
-            autoescape=select_autoescape(['html', 'xml', 'jinja'])
+            loader=FileSystemLoader(path.join(path.abspath(path.dirname(__file__)), 'templates')),
+            autoescape=select_autoescape(['jinja'])
         )
 
     def create_yaml(self, overwrite=False):
