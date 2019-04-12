@@ -8,7 +8,11 @@ import vsts.build.v4_1.models as build_models
 from vsts.exceptions import VstsServiceError
 from ..base.base_manager import BaseManager
 from ..pool.pool_manager import PoolManager
-from ..exceptions import GithubIntegrationRequestError, GithubContentNotFound
+from ..exceptions import (
+    GithubIntegrationRequestError,
+    GithubContentNotFound,
+    BuildErrorException
+)
 
 class BuilderManager(BaseManager):
     """ Manage DevOps Builds
@@ -88,7 +92,12 @@ class BuilderManager(BaseManager):
         build_definition_reference = self._get_build_definition_reference(team_project_reference, definition)
         pool_queue = build_models.agent_pool_queue.AgentPoolQueue(id=pool.id, name=pool_name)
         build = build_models.build.Build(definition=build_definition_reference, queue=pool_queue)
-        return self._build_client.queue_build(build, project=project.id)
+
+        try:
+            result = self._build_client.queue_build(build, project=project.id)
+        except VstsServiceError as vse:
+            raise BuildErrorException(vse.message)
+        return result
 
     def list_builds(self):
         """List the builds that exist in Azure DevOps"""

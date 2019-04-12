@@ -8,7 +8,7 @@ from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from ..repository.github_repository_manager import GithubRepositoryManager
 from ..base.base_github_manager import BaseGithubManager
-from ..constants import (WINDOWS, PYTHON, NODE, DOTNET)
+from ..constants import (WINDOWS, PYTHON, NODE, DOTNET, POWERSHELL)
 from ..exceptions import LanguageNotSupportException
 
 
@@ -38,6 +38,10 @@ class GithubYamlManager(BaseGithubManager):
             language_str = 'dotnet'
             package_route = '$(System.DefaultWorkingDirectory)/publish_output/s'
             dependencies = self._dotnet_dependencies()
+        elif self._language == POWERSHELL:
+            language_str = 'powershell'
+            package_route = '$(System.DefaultWorkingDirectory)'
+            dependencies = self._powershell_dependencies()
         else:
             raise LanguageNotSupportException(self._language)
 
@@ -148,4 +152,16 @@ class GithubYamlManager(BaseGithubManager):
         dependencies.append("    publishWebProjects: false")
         dependencies.append("    modifyOutputPath: true")
         dependencies.append("    zipAfterPublish: false")
+        return dependencies
+
+    def _powershell_dependencies(self):
+        dependencies = []
+        dependencies.append('- script: |')
+        if self._requires_extensions():
+            # Powershell preview only runs on windows
+            dependencies.append('    dotnet restore')
+            dependencies.append("    dotnet build --output {bs}'./bin/{bs}'".format(bs="\\"))
+
+        if len(dependencies) == 1:
+            return []
         return dependencies

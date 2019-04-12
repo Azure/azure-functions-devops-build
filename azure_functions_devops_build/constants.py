@@ -11,5 +11,6 @@ PYTHON = "python"
 NODE = "node"
 DOTNET = "dotnet"
 JAVA = "java"
+POWERSHELL = "powershell"
 
 SERVICE_ENDPOINT_DOMAIN = "dev.azure.com"

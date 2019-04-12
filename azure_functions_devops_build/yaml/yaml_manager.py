@@ -5,7 +5,7 @@
 
 import os.path as path
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from ..constants import (WINDOWS, PYTHON, NODE, DOTNET)
+from ..constants import (WINDOWS, PYTHON, NODE, DOTNET, POWERSHELL)
 from ..exceptions import LanguageNotSupportException
 
 class YamlManager(object):
@@ -39,6 +39,10 @@ class YamlManager(object):
             language_str = 'dotnet'
             package_route = '$(System.DefaultWorkingDirectory)/publish_output/s'
             dependencies = self._dotnet_dependencies()
+        elif self._language == POWERSHELL:
+            language_str = 'powershell'
+            package_route = '$(System.DefaultWorkingDirectory)'
+            dependencies = self._powershell_dependencies()
         else:
             raise LanguageNotSupportException(self._language)
 
@@ -121,4 +125,16 @@ class YamlManager(object):
         dependencies.append("    publishWebProjects: false")
         dependencies.append("    modifyOutputPath: true")
         dependencies.append("    zipAfterPublish: false")
+        return dependencies
+
+    def _powershell_dependencies(self):
+        dependencies = []
+        dependencies.append('- script: |')
+        if self._requires_extensions():
+            # Powershell preview only runs on windows
+            dependencies.append('    dotnet restore')
+            dependencies.append("    dotnet build --output {bs}'./bin/{bs}'".format(bs="\\"))
+
+        if len(dependencies) == 1:
+            return []
         return dependencies
