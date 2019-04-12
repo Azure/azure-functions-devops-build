@@ -8,7 +8,7 @@ from os import path
 from setuptools import setup, find_packages
 
 NAME = "azure-functions-devops-build"
-VERSION = "0.0.18"
+VERSION = "0.0.19"
 
 REQUIRES = ["msrest",
             "vsts",
@@ -16,7 +16,7 @@ REQUIRES = ["msrest",
 
 file_directory = path.abspath(path.dirname(__file__))
 
-with open(path.join(file_directory, 'README.md'), encoding='utf-8') as f:
+with open(path.join(file_directory, 'README.md')) as f:
     long_description = f.read()
 
 setup(
@@ -31,6 +31,5 @@ setup(
     install_requires=REQUIRES,
     packages=find_packages(exclude=["tests", "sample_yaml_builds"]),
     include_package_data=True,
-    long_description=long_description,
-    long_description_content_type='text/markdown'
+    long_description=long_description
 )
