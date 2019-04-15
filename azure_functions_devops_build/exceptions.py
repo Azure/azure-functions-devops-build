@@ -19,6 +19,10 @@ class LanguageNotSupportException(BaseException):
     pass
 
 
+class BuildErrorException(BaseException):
+    pass
+
+
 class ReleaseErrorException(BaseException):
     pass
 
