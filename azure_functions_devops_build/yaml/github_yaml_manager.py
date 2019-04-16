@@ -99,19 +99,29 @@ class GithubYamlManager(BaseGithubManager):
     def _requires_npm(self):
         return self._github_repo_mgr.check_github_file(self._github_repository, 'package.json')
 
+    def _inject_extensions_build(self, dependencies):
+        if self._app_type == WINDOWS:
+            runtime = 'win10-x64'
+        else:
+            runtime = 'ubuntu.16.04-x64'
+
+        dependencies.append("- task: DotNetCoreCLI@2")
+        dependencies.append("  displayName: '.NET Core build extensions'")
+        dependencies.append("  inputs:")
+        dependencies.append("    projects: extensions.csproj")
+        dependencies.append("    arguments: '--runtime {runtime} --output bin/'".format(runtime=runtime))
+
     def _python_dependencies(self):
         """Helper to create the standard python dependencies"""
         dependencies = []
+        if self._requires_extensions():
+            self._inject_extensions_build(dependencies)
         dependencies.append('- task: UsePythonVersion@0')
         dependencies.append('  displayName: "Setting python version to 3.6 as required by functions"')
         dependencies.append('  inputs:')
         dependencies.append('    versionSpec: \'3.6\'')
         dependencies.append('    architecture: \'x64\'')
         dependencies.append('- script: |')
-        if self._requires_extensions():
-            # We need to add the dependencies for the extensions if the functionapp has them
-            dependencies.append('    dotnet restore')
-            dependencies.append('    dotnet build --runtime ubuntu.16.04-x64 --output \'./bin/\'')
         dependencies.append('    python3.6 -m venv worker_venv')
         dependencies.append('    source worker_venv/bin/activate')
         dependencies.append('    pip3.6 install setuptools')
@@ -122,20 +132,14 @@ class GithubYamlManager(BaseGithubManager):
     def _node_dependencies(self):
         """Helper to create the standard node dependencies"""
         dependencies = []
-        dependencies.append('- script: |')
         if self._requires_extensions():
-            dependencies.append('    dotnet restore')
-            if self._app_type == WINDOWS:
-                dependencies.append("    dotnet build --output {bs}'./bin/{bs}'".format(bs="\\"))
-            else:
-                dependencies.append("    dotnet build --runtime ubuntu.16.04-x64 --output './bin/'")
+            self._inject_extensions_build(dependencies)
         if self._requires_npm():
+            dependencies.append('- script: |')
             dependencies.append('    npm install')
             dependencies.append('    npm run build --if-present')
             dependencies.append('    npm prune --production')
 
-        if len(dependencies) == 1:
-            return []
         return dependencies
 
     def _dotnet_dependencies(self):
@@ -156,12 +160,7 @@ class GithubYamlManager(BaseGithubManager):
 
     def _powershell_dependencies(self):
         dependencies = []
-        dependencies.append('- script: |')
         if self._requires_extensions():
-            # Powershell preview only runs on windows
-            dependencies.append('    dotnet restore')
-            dependencies.append("    dotnet build --output {bs}'./bin/{bs}'".format(bs="\\"))
+            self._inject_extensions_build(dependencies)
 
-        if len(dependencies) == 1:
-            return []
         return dependencies
