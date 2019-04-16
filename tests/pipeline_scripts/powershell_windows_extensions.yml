@@ -8,9 +8,11 @@ trigger:
 pool:
   vmImage: 'VS2017-Win2016'
 steps:
-- script: |
-    dotnet restore
-    dotnet build --output \'./bin/\'
+- task: DotNetCoreCLI@2
+  displayName: '.NET Core build extensions'
+  inputs:
+    projects: extensions.csproj
+    arguments: '--runtime win10-x64 --output bin/'
 - task: ArchiveFiles@2
   displayName: 'Archive files'
   inputs:

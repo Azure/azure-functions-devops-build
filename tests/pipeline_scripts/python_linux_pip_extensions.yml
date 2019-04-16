@@ -2,21 +2,27 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 # --------------------------------------------------------------------------------------------
-# Starter template for Azure functions build -- node on windows
+# Starter template for Azure functions build -- python on linux
 trigger:
 - master
 pool:
-  vmImage: 'VS2017-Win2016'
+  vmImage: 'ubuntu-16.04'
 steps:
 - task: DotNetCoreCLI@2
   displayName: '.NET Core build extensions'
   inputs:
     projects: extensions.csproj
-    arguments: '--runtime win10-x64 --output bin/'
+    arguments: '--runtime ubuntu.16.04-x64 --output bin/'
+- task: UsePythonVersion@0
+  displayName: "Setting python version to 3.6 as required by functions"
+  inputs:
+    versionSpec: '3.6'
+    architecture: 'x64'
 - script: |
-    npm install
-    npm run build --if-present
-    npm prune --production
+    python3.6 -m venv worker_venv
+    source worker_venv/bin/activate
+    pip3.6 install setuptools
+    pip3.6 install -r requirements.txt
 - task: ArchiveFiles@2
   displayName: 'Archive files'
   inputs:

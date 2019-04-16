@@ -8,9 +8,12 @@ trigger:
 pool:
   vmImage: 'ubuntu-16.04'
 steps:
+- task: DotNetCoreCLI@2
+  displayName: '.NET Core build extensions'
+  inputs:
+    projects: extensions.csproj
+    arguments: '--runtime ubuntu.16.04-x64 --output bin/'
 - script: |
-    dotnet restore
-    dotnet build --runtime ubuntu.16.04-x64 --output './bin/'
     npm install
     npm run build --if-present
     npm prune --production

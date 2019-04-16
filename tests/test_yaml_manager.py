@@ -65,6 +65,20 @@ class TestYamlManager(unittest.TestCase):
         result = TestYamlManager.is_two_files_equal("azure-pipelines.yml", yaml_path)
         self.assertTrue(result)
 
+    def test_create_yaml_python_linux_pip_extensions(self):
+        # Create a temporary requirements.txt
+        # Create a temporary extensions.csproj
+        open("requirements.txt", "a").close()
+        with open("extensions.csproj", "w") as f:
+            f.write('<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003"></Project>')
+
+        yaml_manager = YamlManager(language=PYTHON, app_type=LINUX_CONSUMPTION)
+        yaml_manager.create_yaml()
+
+        yaml_path = os.path.join(self._current_directory, "pipeline_scripts", "python_linux_pip_extensions.yml")
+        result = TestYamlManager.is_two_files_equal("azure-pipelines.yml", yaml_path)
+        self.assertTrue(result)
+
     def test_create_yaml_dotnet_linux(self):
         yaml_manager = YamlManager(language=DOTNET, app_type=LINUX_CONSUMPTION)
         yaml_manager.create_yaml()
@@ -191,6 +205,7 @@ class TestYamlManager(unittest.TestCase):
             content1 = f1.read()
         with open(filepath2, "r") as f2:
             content2 = f2.read()
+
         return content1 == content2
 
     @staticmethod
