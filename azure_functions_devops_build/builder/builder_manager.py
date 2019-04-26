@@ -3,7 +3,9 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 # --------------------------------------------------------------------------------------------
 
+import os
 import time
+from collections import OrderedDict
 import vsts.build.v4_1.models as build_models
 from vsts.exceptions import VstsServiceError
 from ..base.base_manager import BaseManager
@@ -13,6 +15,7 @@ from ..exceptions import (
     GithubContentNotFound,
     BuildErrorException
 )
+
 
 class BuilderManager(BaseManager):
     """ Manage DevOps Builds
@@ -103,6 +106,67 @@ class BuilderManager(BaseManager):
         """List the builds that exist in Azure DevOps"""
         project = self._get_project_by_name(self._project_name)
         return self._build_client.get_builds(project=project.id)
+
+    # Returns a dictionary containing the log status
+    # {
+    #   <log_id>: <vsts.build.v4_1.models.build_log>
+    # }
+    def get_build_logs_status(self, build_id):
+        try:
+            build_logs = self._build_client.get_build_logs(self._project_name, build_id)
+        except VstsServiceError as vse:
+            raise BuildErrorException(vse.message)
+
+        result = OrderedDict()
+        for build_log in build_logs:
+            result[build_log.id] = build_log
+        return result
+
+    # Return the log content by the difference between two logs
+    def get_build_logs_content_from_statuses(self, build_id, prev_logs_status=None, curr_logs_status=None):
+        if prev_logs_status is None:
+            prev_logs_status = {}
+
+        if curr_logs_status is None:
+            curr_logs_status = {}
+
+        result = []
+        for log_id in curr_logs_status:
+            log_content = self._get_log_content_by_id(
+                build_id,
+                prev_logs_status.get(log_id),
+                curr_logs_status.get(log_id)
+            )
+            result.extend(log_content)
+
+        return os.linesep.join(result)
+
+    # Return the log content by single build_log
+    def _get_log_content_by_id(self, build_id, prev_log_status=None, curr_log_status=None):
+        if prev_log_status is None or prev_log_status.line_count is None:
+            starting_line = 0
+        else:
+            starting_line = prev_log_status.line_count
+
+        if curr_log_status is None or curr_log_status.line_count is None:
+            ending_line = 0
+        else:
+            ending_line = curr_log_status.line_count
+
+        if starting_line >= ending_line:
+            return []
+
+        try:
+            result = self._build_client.get_build_log_lines(
+                self._project_name,
+                build_id,
+                curr_log_status.id,
+                starting_line,
+                ending_line
+            )
+        except VstsServiceError as vse:
+            raise BuildErrorException(vse.message)
+        return result
 
     def _get_build_by_id(self, build_id):
         builds = self.list_builds()
