@@ -13,6 +13,7 @@ except ImportError:
 from subprocess import STDOUT, check_call, check_output, CalledProcessError
 from ..exceptions import GitOperationException
 
+
 def does_git_exist():
     try:
         check_call("git", stdout=DEVNULL, stderr=STDOUT)
@@ -23,8 +24,10 @@ def does_git_exist():
         return False
     return True
 
+
 def does_local_git_repository_exist():
     return os.path.exists(".git")
+
 
 def does_git_remote_exist(remote_name):
     command = ["git", "remote", "show"]
@@ -35,6 +38,7 @@ def does_git_remote_exist(remote_name):
 
     return remote_name in output
 
+
 def does_git_has_credential_manager():
     command = ["git", "config", "--list"]
     try:
@@ -44,12 +48,14 @@ def does_git_has_credential_manager():
 
     return "credential.helper=manager" in output
 
+
 def git_init():
     command = ["git", "init"]
     try:
         check_call(command, stdout=DEVNULL, stderr=STDOUT)
     except CalledProcessError:
         raise GitOperationException(message=" ".join(command))
+
 
 def git_add_remote(remote_name, remote_url):
     command = ["git", "remote", "add", remote_name, remote_url]
@@ -58,12 +64,14 @@ def git_add_remote(remote_name, remote_url):
     except CalledProcessError:
         raise GitOperationException(message=" ".join(command))
 
+
 def git_remove_remote(remote_name):
     command = ["git", "remote", "remove", remote_name]
     try:
         check_call(command, stdout=DEVNULL, stderr=STDOUT)
     except CalledProcessError:
         raise GitOperationException(message=" ".join(command))
+
 
 def git_stage_all():
     command = ["git", "add", "--all"]
@@ -72,12 +80,14 @@ def git_stage_all():
     except CalledProcessError:
         raise GitOperationException(message=" ".join(command))
 
+
 def git_commit(message):
     command = ["git", "commit", "--allow-empty", "--message", message]
     try:
         check_call(command, stdout=DEVNULL, stderr=STDOUT)
     except CalledProcessError:
         raise GitOperationException(message=" ".join(command))
+
 
 def git_push(remote_name, force=False):
     command = ["git", "push", remote_name, "--all"]
@@ -90,6 +100,7 @@ def git_push(remote_name, force=False):
     except CalledProcessError:
         raise GitOperationException(message=" ".join(command))
 
+
 def _sanitize_git_remote_name(organization_name, project_name, repository_name):
     concatenated_remote_name = "{organization_name}_{project_name}_{repository_name}".format(
         organization_name=organization_name,
@@ -99,12 +110,14 @@ def _sanitize_git_remote_name(organization_name, project_name, repository_name):
     sanitized_remote_name = re.sub(r"[^A-Za-z0-9_-]|\s", "-", concatenated_remote_name)
     return sanitized_remote_name
 
+
 def construct_git_remote_name(organization_name, project_name, repository_name, remote_prefix):
     remote_name = "_{prefix}_{name}".format(
         prefix=remote_prefix,
         name=_sanitize_git_remote_name(organization_name, project_name, repository_name)
     )
     return remote_name
+
 
 def construct_git_remote_url(organization_name, project_name, repository_name, domain_name="dev.azure.com"):
     url = "https://{domain}/{org}/{proj}/_git/{repo}".format(

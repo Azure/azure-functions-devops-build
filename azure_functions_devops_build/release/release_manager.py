@@ -103,13 +103,27 @@ class ReleaseManager(BaseManager):
 
         try:
             new_release = self._release_client.create_release(release_start_metadata, project.id)
-        except VstsServiceError:
-            raise ReleaseErrorException()
+        except VstsServiceError as vse:
+            raise ReleaseErrorException(vse.message)
         return new_release
 
     def list_releases(self):
         project = self.get_project_by_name(self._project_name)
         return self._release_client.get_releases(project.id)
+
+    def get_latest_release(self, release_definition_name):
+        project = self.get_project_by_name(self._project_name)
+        build_definition = self.get_release_definition_by_name(project, release_definition_name)
+
+        try:
+            releases = self._release_client.get_releases(self._project_name, definition_id=build_definition.id)
+        except VstsServiceError:
+            return None
+
+        releases.sort(key=lambda r: r.id, reverse=True)
+        if releases:
+            return releases[0]
+        return None
 
     def _get_service_endpoint_by_name(self, project, service_endpoint_name):
         service_endpoints = self._service_endpoint_client.get_service_endpoints(project.id)
@@ -122,7 +136,6 @@ class ReleaseManager(BaseManager):
                                    project_name=self._project_name, creds=self._creds)
         pools = pool_manager.list_pools()
         return next((pool for pool in pools.value if pool.name == pool_name), None)
-
 
     def get_project_by_name(self, name):
         for p in self._core_client.get_projects():
@@ -190,8 +203,8 @@ class ReleaseManager(BaseManager):
             if a.name == artifact_name:
                 artifact = a
         definition_reference = {}
-        definition_reference["project"] = {"id":project.id, "name":project.name}
-        definition_reference["definition"] = {"id":build.definition.id, "name":build.definition.name}
+        definition_reference["project"] = {"id": project.id, "name": project.name}
+        definition_reference["definition"] = {"id": build.definition.id, "name": build.definition.name}
         definition_reference["defaultVersionType"] = {"id": "latestType", "name": "Latest"}
 
         return models.artifact.Artifact(
@@ -214,7 +227,6 @@ class ReleaseManager(BaseManager):
             is_automated=True,
             is_notification_on=False
         )
-
 
         pre_release_approvals = models.release_definition_approvals.ReleaseDefinitionApprovals(
             approvals=[pre_approval]
@@ -314,7 +326,6 @@ class ReleaseManager(BaseManager):
         return appservicetask
 
     def _app_service_deploy_task_windows(self, connectedServiceNameARM, functionapp_name):
-        #TODO verify that this is correct
         appservicetask = {}
         appservicetask["name"] = "Azure App Service Deploy: " + functionapp_name
         appservicetask["enabled"] = True
