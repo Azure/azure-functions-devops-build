@@ -11,6 +11,7 @@ from ..exceptions import (
 )
 from ..base.base_github_manager import BaseGithubManager
 
+
 class GithubRepositoryManager(BaseGithubManager):
 
     def check_github_repository(self, repository_fullname):
@@ -91,6 +92,7 @@ class GithubRepositoryManager(BaseGithubManager):
 
     def commit_file(self, repository_fullname, file_path, commit_message, file_data, sha=None, encode='utf-8'):
         data = {
+            "branch": "master",
             "message": "{message}".format(message=commit_message),
             "content": base64.b64encode(bytes(file_data.encode(encode))).decode('ascii'),
         }

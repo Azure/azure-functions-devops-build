@@ -8,6 +8,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from ..constants import (WINDOWS, PYTHON, NODE, DOTNET, POWERSHELL)
 from ..exceptions import LanguageNotSupportException
 
+
 class YamlManager(object):
     """ Generate yaml files for devops
 

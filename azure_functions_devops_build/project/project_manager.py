@@ -35,7 +35,7 @@ class ProjectManager(BaseManager):
         self._config = Configuration(base_url=base_url)
         self._client = ServiceClient(creds, self._config)
         self._credentials = creds
-        #need to make a secondary client for the creating project as it uses a different base url
+        # Need to make a secondary client for the creating project as it uses a different base url
         self._create_project_config = Configuration(base_url=create_project_url)
         self._create_project_client = ServiceClient(creds, self._create_project_config)
         client_models = {k: v for k, v in models.__dict__.items() if isinstance(v, type)}
