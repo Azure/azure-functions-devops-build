@@ -9,7 +9,7 @@ jobs:
   # Build the python packages in a virtual env
   - job: Build
     pool:
-      vmImage: ubuntu-16.04
+      vmImage: ubuntu-18.04
     steps:
     - script: |
         dotnet restore
@@ -32,7 +32,7 @@ jobs:
       inputs:
         PathtoPublish: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'
         name: 'drop'
-  # Download the build artifacts from 
+  # Download the build artifacts from
   - job: Deploy
     pool:
       vmImage: 'VS2017-Win2016'
