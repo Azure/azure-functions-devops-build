@@ -44,5 +44,5 @@ requests==2.21.0
 requests-oauthlib==1.2.0
 six==1.12.0
 tabulate==0.8.2
-urllib3==1.24.1
+urllib3==1.26.5
 vsts==0.1.25
