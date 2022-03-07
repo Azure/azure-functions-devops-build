@@ -48,7 +48,7 @@ class ServiceEndpointManager(BaseManager):
         """Create a new service endpoint within a project with an associated service principal"""
         project = self._get_project_by_name(self._project_name)
 
-        command = "az account show --o json"
+        command = "az account show -o json"
         token_resp = check_output(command, shell=True).decode()
         account = json.loads(token_resp)
 
@@ -62,7 +62,7 @@ class ServiceEndpointManager(BaseManager):
         service_principle_name = self._get_service_endpoint_name(repository_name, "pipeline")
 
         # A service principal name has to include the http/https to be valid
-        command = "az ad sp create-for-rbac --o json --name http://" + service_principle_name
+        command = "az ad sp create-for-rbac -o json --name http://" + service_principle_name
         try:
             token_resp = check_output(command, stderr=DEVNULL, shell=True).decode()
         except CalledProcessError:
